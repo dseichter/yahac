@@ -16,8 +16,10 @@
 # importing wx files
 import wx
 import wx.adv
+
 # import the newly created GUI file
 import gui
+
 
 class YahacFrame(gui.MainFrame):
     # constructor
@@ -29,7 +31,7 @@ class YahacFrame(gui.MainFrame):
         config_frame = gui.ConfigFrame(self)
         print("Showing settings dialog")
         config_frame.Show()
-        
+
 
 # mandatory in wx, create an app, False stands for not deteriction stdin/stdout
 # refer manual for details
