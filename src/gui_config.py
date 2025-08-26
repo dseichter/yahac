@@ -7,6 +7,10 @@ class ConfigFrame(wx.Frame):
 
         vbox = wx.BoxSizer(wx.VERTICAL)
 
+        # Set frame icon
+        frame_icon = wx.Icon(wx.ArtProvider.GetBitmap(wx.ART_REPORT_VIEW, wx.ART_OTHER, (16, 16)))
+        self.SetIcon(frame_icon)
+
         # URL
         hbox_url = wx.BoxSizer(wx.HORIZONTAL)
         lbl_url = wx.StaticText(panel, label="URL:")
@@ -57,58 +61,4 @@ class ConfigFrame(wx.Frame):
 
     def on_cancel(self, event):
         self.Close()
-
-class TrayIcon(wx.adv.TaskBarIcon):
-    def __init__(self, frame):
-        super().__init__()
-        self.frame = frame
-        icon = wx.Icon(wx.ArtProvider.GetBitmap(wx.ART_INFORMATION, wx.ART_OTHER, (16, 16)))
-        self.SetIcon(icon, "YAHAC")
-        self.Bind(wx.adv.EVT_TASKBAR_RIGHT_UP, self.on_menu)
-
-
-    def CreatePopupMenu(self):
-        menu = wx.Menu()
-        menu.Append(1, "Sensors", "Your selected sensors", kind=wx.ITEM_NORMAL)
-        menu.AppendSeparator()
-        menu.AppendSeparator()
-        menu.Append(2, "Sensors", "Manage your sensors")
-        menu.Append(3, "Settings", "Configure connection to your Home Assistant")
-        menu.AppendSeparator()
-        menu.Append(4, "Exit")
-        self.Bind(wx.EVT_MENU, self.on_show, id=1)
-        self.Bind(wx.EVT_MENU, self.on_sensors, id=3)
-        self.Bind(wx.EVT_MENU, self.on_settings, id=3)
-        self.Bind(wx.EVT_MENU, self.on_exit, id=4)
-        return menu
-
-    def on_menu(self, event):
-        self.PopupMenu(self.CreatePopupMenu())
-
-    def on_show(self, event):
-        self.frame.Show()
-        self.frame.Raise()
-
-    def on_sensors(self, event):
-        if hasattr(self.frame, "on_sensors"):
-            self.frame.on_sensors(event)
-
-    def on_settings(self, event):
-        if hasattr(self.frame, "on_settings"):
-            self.frame.on_settings(event)
-
-    def on_exit(self, event):
-        wx.CallAfter(self.frame.Close)
-
-class MainFrame(wx.Frame):
-    def __init__(self):
-        super().__init__(None, title="YAHAC", size=(300, 200))
-        self.tray_icon = TrayIcon(self)
-        self.Bind(wx.EVT_CLOSE, self.on_close)
-
-
-    def on_close(self, event):
-        self.tray_icon.RemoveIcon()
-        self.tray_icon.Destroy()
-        self.Destroy()
 

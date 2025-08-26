@@ -18,19 +18,15 @@ import wx
 import wx.adv
 
 # import the newly created GUI file
-import gui
+import gui_mainframe
 
 
-class YahacFrame(gui.MainFrame):
+class YahacFrame(gui_mainframe.MainFrame):
     # constructor
     def __init__(self):
         # initialize parent class
-        gui.MainFrame.__init__(self)
+        gui_mainframe.MainFrame.__init__(self)
 
-    def on_settings(self, event):
-        config_frame = gui.ConfigFrame(self)
-        print("Showing settings dialog")
-        config_frame.Show()
 
 
 # mandatory in wx, create an app, False stands for not deteriction stdin/stdout
