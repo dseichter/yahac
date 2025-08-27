@@ -43,17 +43,15 @@ def create_config():
         data = json.load(f)
 
     # check and add missing keys
-    if 'language' not in data:
-        data['language'] = 'en'
-    if 'interface' not in data:
-        data['interface'] = 'vies'
-    if 'delimiter' not in data:
-        data['delimiter'] = '|'
     if 'logfilename' not in data:
         log_dir = tempfile.gettempdir()
         data['logfilename'] = f'{log_dir}/vatvalidation.log'
     if 'loglevel' not in data:
         data['loglevel'] = 'ERROR'
+    if 'checkupdate' not in data:
+        data['checkupdate'] = True
+    if 'entities' not in data:
+        data['entities'] = []
 
     with open(CONFIGFILE, 'w') as f:
         json.dump(data, f, indent=4, sort_keys=True)

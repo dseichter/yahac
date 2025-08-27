@@ -13,27 +13,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-# importing wx files
-import wx
-import wx.adv
+import urllib3
+import json
+import logging
 
-# import the newly created GUI file
-import gui_mainframe
-import settings
-
-
-class YahacFrame(gui_mainframe.MainFrame):
-    # constructor
-    def __init__(self):
-        # initialize parent class
-        gui_mainframe.MainFrame.__init__(self)
-        settings.create_config()
+VERSION = "v2025-08-27"
+UPDATEURL = 'https://api.github.com/repos/dseichter/yahac/releases/latest'
+RELEASES = 'https://github.com/dseichter/yahac/releases'
+NAME = 'yahac'
+LICENCE = 'GPL-3.0'
 
 
-# mandatory in wx, create an app, False stands for not deteriction stdin/stdout
-# refer manual for details
-if __name__ == "__main__":
-    app = wx.App(False)
-    frame = YahacFrame()
-    frame.Hide()  # Start hidden, only tray icon visible
-    app.MainLoop()
+def check_for_new_release():
+    try:
+        http = urllib3.PoolManager()
+        r = http.request('GET', UPDATEURL)
+        data = json.loads(r.data.decode('utf-8'))
+        latest_version = data['tag_name']
+        return latest_version != VERSION
+    except Exception as e:
+        logging.error(f"Error checking for new release: {e}")
+        return False

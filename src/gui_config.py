@@ -1,5 +1,6 @@
 import wx
 
+
 class ConfigFrame(wx.Frame):
     def __init__(self, parent):
         super().__init__(parent, title="Settings", size=(350, 220))
@@ -17,7 +18,7 @@ class ConfigFrame(wx.Frame):
         self.txt_url = wx.TextCtrl(panel)
         hbox_url.Add(lbl_url, flag=wx.RIGHT, border=8)
         hbox_url.Add(self.txt_url, proportion=1)
-        vbox.Add(hbox_url, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
+        vbox.Add(hbox_url, flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, border=10)
 
         # Token
         hbox_token = wx.BoxSizer(wx.HORIZONTAL)
@@ -25,7 +26,7 @@ class ConfigFrame(wx.Frame):
         self.txt_token = wx.TextCtrl(panel)
         hbox_token.Add(lbl_token, flag=wx.RIGHT, border=8)
         hbox_token.Add(self.txt_token, proportion=1)
-        vbox.Add(hbox_token, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
+        vbox.Add(hbox_token, flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, border=10)
 
         # Buttons
         hbox_btn = wx.BoxSizer(wx.HORIZONTAL)
@@ -35,7 +36,7 @@ class ConfigFrame(wx.Frame):
         hbox_btn.Add(self.btn_test, flag=wx.RIGHT, border=5)
         hbox_btn.Add(self.btn_save, flag=wx.RIGHT, border=5)
         hbox_btn.Add(self.btn_cancel)
-        vbox.Add(hbox_btn, flag=wx.ALIGN_RIGHT|wx.ALL, border=10)
+        vbox.Add(hbox_btn, flag=wx.ALIGN_RIGHT | wx.ALL, border=10)
 
         panel.SetSizer(vbox)
 
@@ -61,4 +62,3 @@ class ConfigFrame(wx.Frame):
 
     def on_cancel(self, event):
         self.Close()
-

@@ -3,6 +3,7 @@ import wx
 import wx.adv
 import gui_config
 import gui_sensors
+import settings
 
 
 class TrayIcon(wx.adv.TaskBarIcon):
@@ -13,11 +14,13 @@ class TrayIcon(wx.adv.TaskBarIcon):
         self.SetIcon(icon, "YAHAC")
         self.Bind(wx.adv.EVT_TASKBAR_RIGHT_UP, self.on_menu)
 
-
     def CreatePopupMenu(self):
         menu = wx.Menu()
         menu.Append(1, "Your Sensors:", "Your selected sensors:", kind=wx.ITEM_NORMAL)
         menu.AppendSeparator()
+        # Dynamic generation of sensor/switch - start
+        self.load_sensors(menu)
+        # Dynamic generation of sensor/switch - end
         menu.AppendSeparator()
         # Sensors menu item
         sensors_item = wx.MenuItem(menu, 2, "Sensors", "Manage your sensors")
@@ -29,7 +32,7 @@ class TrayIcon(wx.adv.TaskBarIcon):
         settings_icon = wx.ArtProvider.GetBitmap(wx.ART_REPORT_VIEW, wx.ART_MENU, (16, 16))
         settings_item.SetBitmap(settings_icon)
         menu.Append(settings_item)
-        
+
         menu.AppendSeparator()
         # Settings menu item
         exit_item = wx.MenuItem(menu, 4, "Exit", "Exit the application")
@@ -48,7 +51,7 @@ class TrayIcon(wx.adv.TaskBarIcon):
         sensors_frame = gui_sensors.SensorSelectorFrame(self.frame)
         print("Showing sensors dialog")
         sensors_frame.Show()
-        
+
     def on_settings(self, event):
         config_frame = gui_config.ConfigFrame(self.frame)
         print("Showing settings dialog")
@@ -57,3 +60,27 @@ class TrayIcon(wx.adv.TaskBarIcon):
     def on_exit(self, event):
         wx.CallAfter(self.frame.Close)
 
+    def load_sensors(self, menu):
+        sensors = settings.load_value_from_json_file("entities")
+        if not sensors:
+            return
+        for sensor in sensors:
+            entity_id = sensor.get("entity_id", "")
+            friendly_name = sensor.get("friendly_name", entity_id)
+            entity_type = sensor.get("type", "switch")
+            # Add to the UI or internal list
+            print(f"Loaded sensor: {friendly_name} ({entity_id}) - {entity_type}")
+            if entity_type == "sensor":
+                sensor_item = menu.Append(wx.ID_ANY, friendly_name, helpString=entity_id, kind=wx.ITEM_NORMAL)
+                sensor_icon = wx.ArtProvider.GetBitmap(wx.ART_INFORMATION, wx.ART_MENU, (16, 16))
+                sensor_item.SetBitmap(sensor_icon)
+            if entity_type == "switch":
+                switch_item = menu.Append(wx.ID_ANY, friendly_name, helpString=entity_id, kind=wx.ITEM_CHECK)
+                switch_icon = wx.ArtProvider.GetBitmap(wx.ART_FOLDER, wx.ART_MENU, (16, 16))  # TODO: find appropriate icon
+                switch_item.SetBitmap(switch_icon)
+                # self.Bind(wx.EVT_MENU, self.on_switch_selected, id=switch_item.GetId())
+
+    def on_switch_selected(self, event):
+        item = self.GetPopupMenuSelection()
+        if item:
+            print(f"Switch selected: {item.GetItemLabelText()}")
