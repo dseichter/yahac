@@ -4,6 +4,7 @@ import settings
 import api
 import os
 import sys
+import winshell
 
 
 class ConfigFrame(wx.Frame):
@@ -119,23 +120,12 @@ class ConfigFrame(wx.Frame):
         app_name = "yahac"
         startup_dir = os.path.join(os.environ["APPDATA"], "Microsoft", "Windows", "Start Menu", "Programs", "Startup")
         shortcut_path = os.path.join(startup_dir, f"{app_name}.lnk")
-        
+        exe_path = sys.executable if getattr(sys, 'frozen', False) else sys.argv[0]
         if autostart:
-            # Code to enable autostart
-            exe_path = sys.executable if getattr(sys, 'frozen', False) else sys.argv[0]
-            try:
-                shell = Dispatch('WScript.Shell')
-                shortcut = shell.CreateShortCut(shortcut_path)
-                shortcut.Targetpath = exe_path
-                shortcut.WorkingDirectory = os.path.dirname(exe_path)
-                shortcut.IconLocation = exe_path
-                shortcut.save()
-            except Exception as e:
-                wx.MessageBox(f"Failed to enable autostart: {e}", "Autostart", wx.OK | wx.ICON_ERROR)
+            with winshell.shortcut(shortcut_path) as link:
+                link.path = exe_path
+                link.working_directory = os.path.dirname(exe_path)
+                link.icon_location = exe_path
         else:
-            # Code to disable autostart
-            try:
-                if os.path.exists(shortcut_path):
-                    os.remove(shortcut_path)
-            except Exception as e:
-                wx.MessageBox(f"Failed to disable autostart: {e}", "Autostart", wx.OK | wx.ICON_ERROR)
+            if os.path.exists(shortcut_path):
+                os.remove(shortcut_path)
