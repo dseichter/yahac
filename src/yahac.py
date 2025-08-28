@@ -20,6 +20,7 @@ import wx.adv
 # import the newly created GUI file
 import gui_mainframe
 import settings
+import helper
 
 
 class YahacFrame(gui_mainframe.MainFrame):
@@ -28,6 +29,9 @@ class YahacFrame(gui_mainframe.MainFrame):
         # initialize parent class
         gui_mainframe.MainFrame.__init__(self)
         settings.create_config()
+        # Check for update if enabled
+        if settings.load_value_from_json_file("checkupdate"):
+            helper.check_for_new_release()
 
 
 # mandatory in wx, create an app, False stands for not deteriction stdin/stdout

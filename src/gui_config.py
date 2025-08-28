@@ -2,6 +2,9 @@ import wx
 
 import settings
 import api
+import os
+import sys
+
 
 class ConfigFrame(wx.Frame):
     def __init__(self, parent):
@@ -17,7 +20,7 @@ class ConfigFrame(wx.Frame):
 
         # URL
         lbl_url = wx.StaticText(panel, label="URL:")
-        self.txt_url = wx.TextCtrl(panel)
+        self.txt_url = wx.TextCtrl(panel, style=wx.TE_LEFT)
         grid.Add(lbl_url, flag=wx.ALIGN_CENTER_VERTICAL | wx.LEFT, border=10)
         grid.Add(self.txt_url, flag=wx.EXPAND | wx.RIGHT, border=10)
 
@@ -73,23 +76,22 @@ class ConfigFrame(wx.Frame):
         self.chk_checkupdate.SetValue(bool(checkupdate))
         self.chk_autostart.SetValue(bool(autostart))        
 
-    def on_show_token(self, event):
-        # Toggle token visibility
+    def on_show_token(self, _event):
+        current_value = self.txt_token.GetValue()
         if self.token_visible:
-            self.txt_token.SetWindowStyleFlag(wx.TE_PASSWORD)
+            self.txt_token.SetWindowStyle(wx.TE_PASSWORD)
             self.btn_show_token.SetLabel("Show")
             self.token_visible = False
         else:
-            self.txt_token.SetWindowStyleFlag(wx.TE_LEFT)
+            self.txt_token.SetWindowStyle(wx.TE_PROCESS_ENTER)
             self.btn_show_token.SetLabel("Hide")
             self.token_visible = True
-        # Refresh to apply style change
-        self.txt_token.Refresh()
+        # Re-set the value to force a refresh
+        self.txt_token.ChangeValue(current_value)
 
     def on_test(self, event):
         url = self.txt_url.GetValue()
         token = self.txt_token.GetValue()
-        # Dummy test logic
         if url and token:
             result = api.check_connection(url, token)
             wx.MessageBox(result, "Test", wx.OK | wx.ICON_INFORMATION)
@@ -112,3 +114,28 @@ class ConfigFrame(wx.Frame):
 
     def on_cancel(self, event):
         self.Close()
+
+    def set_autostart(self, autostart):
+        app_name = "yahac"
+        startup_dir = os.path.join(os.environ["APPDATA"], "Microsoft", "Windows", "Start Menu", "Programs", "Startup")
+        shortcut_path = os.path.join(startup_dir, f"{app_name}.lnk")
+        
+        if autostart:
+            # Code to enable autostart
+            exe_path = sys.executable if getattr(sys, 'frozen', False) else sys.argv[0]
+            try:
+                shell = Dispatch('WScript.Shell')
+                shortcut = shell.CreateShortCut(shortcut_path)
+                shortcut.Targetpath = exe_path
+                shortcut.WorkingDirectory = os.path.dirname(exe_path)
+                shortcut.IconLocation = exe_path
+                shortcut.save()
+            except Exception as e:
+                wx.MessageBox(f"Failed to enable autostart: {e}", "Autostart", wx.OK | wx.ICON_ERROR)
+        else:
+            # Code to disable autostart
+            try:
+                if os.path.exists(shortcut_path):
+                    os.remove(shortcut_path)
+            except Exception as e:
+                wx.MessageBox(f"Failed to disable autostart: {e}", "Autostart", wx.OK | wx.ICON_ERROR)

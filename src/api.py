@@ -15,7 +15,7 @@ headers = {
 }
 
 def check_connection(url, token):
-    url = f"{url}/api/status"
+    url = f"{url}/api/"
     headers = {
         "Authorization": f"Bearer {token}",
         "User-Agent": f"{helper.NAME}/{helper.VERSION}"
@@ -31,7 +31,7 @@ def check_connection(url, token):
 
 
 def check_api_status():
-    url = f"{URL}/api/status"
+    url = f"{URL}/api/"
     try:
         response = http.request("GET", url, headers=headers)
         if response.status == 200:
