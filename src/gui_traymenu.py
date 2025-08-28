@@ -4,6 +4,8 @@ import wx.adv
 import gui_config
 import gui_sensors
 import settings
+import helper
+import webbrowser
 
 
 class TrayIcon(wx.adv.TaskBarIcon):
@@ -33,6 +35,20 @@ class TrayIcon(wx.adv.TaskBarIcon):
         settings_item.SetBitmap(settings_icon)
         menu.Append(settings_item)
 
+        # Check for update
+        checkupdate_item = wx.MenuItem(menu, 5, "Check for update...", "Check for new version")
+        update_icon = wx.ArtProvider.GetBitmap(wx.ART_FIND, wx.ART_MENU, (16, 16))
+        checkupdate_item.SetBitmap(update_icon)
+        menu.Append(checkupdate_item)
+        self.Bind(wx.EVT_MENU, self.on_check_update, id=5)
+        
+        # Open Webpage/Repository
+        webpage_item = wx.MenuItem(menu, 6, "Open Webpage/Repository", "Open the project's webpage or repository")
+        update_icon = wx.ArtProvider.GetBitmap(wx.ART_GO_HOME, wx.ART_MENU, (16, 16))
+        webpage_item.SetBitmap(update_icon)
+        menu.Append(webpage_item)
+        self.Bind(wx.EVT_MENU, self.on_webpage_open, id=6)
+
         menu.AppendSeparator()
         # Settings menu item
         exit_item = wx.MenuItem(menu, 4, "Exit", "Exit the application")
@@ -56,6 +72,21 @@ class TrayIcon(wx.adv.TaskBarIcon):
         config_frame = gui_config.ConfigFrame(self.frame)
         print("Showing settings dialog")
         config_frame.Show()
+        
+    def on_check_update(self, event):
+        if helper.check_for_new_release():
+            result = wx.MessageBox(
+                "A new release is available.\nWould you like to open the download page?",
+                "Update available",
+                wx.YES_NO | wx.ICON_INFORMATION,
+            )
+            if result == wx.YES:
+                webbrowser.open_new_tab(helper.RELEASES)
+        else:
+            wx.MessageBox("No new release available.", "No update", wx.OK | wx.ICON_INFORMATION)
+
+    def on_webpage_open(self, event):
+        webbrowser.open_new_tab(helper.WEBSITE)
 
     def on_exit(self, event):
         wx.CallAfter(self.frame.Close)

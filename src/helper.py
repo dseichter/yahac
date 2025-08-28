@@ -20,6 +20,7 @@ import logging
 VERSION = "v2025-08-27"
 UPDATEURL = 'https://api.github.com/repos/dseichter/yahac/releases/latest'
 RELEASES = 'https://github.com/dseichter/yahac/releases'
+WEBSITE = 'https://dseichter.github.io/yahac/'
 NAME = 'yahac'
 LICENCE = 'GPL-3.0'
 
