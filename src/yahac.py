@@ -21,6 +21,7 @@ import wx.adv
 import gui_mainframe
 import settings
 import helper
+import webbrowser
 
 
 class YahacFrame(gui_mainframe.MainFrame):
@@ -31,7 +32,14 @@ class YahacFrame(gui_mainframe.MainFrame):
         settings.create_config()
         # Check for update if enabled
         if settings.load_value_from_json_file("checkupdate"):
-            helper.check_for_new_release()
+            if helper.check_for_new_release():
+                result = wx.MessageBox(
+                    "A new release is available.\nWould you like to open the download page?",
+                    "Update available",
+                    wx.YES_NO | wx.ICON_INFORMATION,
+                )
+                if result == wx.YES:
+                    webbrowser.open_new_tab(helper.RELEASES)
 
 
 # mandatory in wx, create an app, False stands for not deteriction stdin/stdout
