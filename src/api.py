@@ -14,9 +14,24 @@ headers = {
     "User-Agent": f"{helper.NAME}/{helper.VERSION}"
 }
 
+def check_connection(url, token):
+    url = f"{url}/api/"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "User-Agent": f"{helper.NAME}/{helper.VERSION}"
+    }
+    try:
+        response = http.request("GET", url, headers=headers)
+        if response.status == 200:
+            return "Your url and token are valid."
+        else:
+            return f"API returned status code: {response.status}"
+    except Exception as e:
+        return f"Error checking API status: {e}"
+
 
 def check_api_status():
-    url = f"{URL}/api/status"
+    url = f"{URL}/api/"
     try:
         response = http.request("GET", url, headers=headers)
         if response.status == 200:
