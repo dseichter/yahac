@@ -6,6 +6,7 @@ import gui_sensors
 import settings
 import helper
 import webbrowser
+import api
 
 
 class TrayIcon(wx.adv.TaskBarIcon):
@@ -15,6 +16,9 @@ class TrayIcon(wx.adv.TaskBarIcon):
         icon = wx.Icon(wx.ArtProvider.GetBitmap(wx.ART_INFORMATION, wx.ART_OTHER, (16, 16)))
         self.SetIcon(icon, "YAHAC")
         self.Bind(wx.adv.EVT_TASKBAR_RIGHT_UP, self.on_menu)
+        
+        # Build the mapping of the sensors, to be used for interactive elements, like switches
+        self.menu_id_map = {}
 
     def CreatePopupMenu(self):
         menu = wx.Menu()
@@ -99,19 +103,28 @@ class TrayIcon(wx.adv.TaskBarIcon):
             entity_id = sensor.get("entity_id", "")
             friendly_name = sensor.get("friendly_name", entity_id)
             entity_type = sensor.get("type", "switch")
+            entity_state = api.get_entity_state(entity_id)
             # Add to the UI or internal list
-            print(f"Loaded sensor: {friendly_name} ({entity_id}) - {entity_type}")
+            print(f"Loaded sensor: {friendly_name} ({entity_id}) - {entity_type} - {entity_state}")
             if entity_type == "sensor":
-                sensor_item = menu.Append(wx.ID_ANY, friendly_name, helpString=entity_id, kind=wx.ITEM_NORMAL)
+                sensor_item = menu.Append(wx.ID_ANY, f"{friendly_name} ({entity_state})", helpString=entity_id, kind=wx.ITEM_NORMAL)
                 sensor_icon = wx.ArtProvider.GetBitmap(wx.ART_INFORMATION, wx.ART_MENU, (16, 16))
                 sensor_item.SetBitmap(sensor_icon)
+                self.menu_id_map[sensor_item.GetId()] = sensor
+                self.Bind(wx.EVT_MENU, self.on_sensor_selected, id=sensor_item.GetId())
             if entity_type == "switch":
-                switch_item = menu.Append(wx.ID_ANY, friendly_name, helpString=entity_id, kind=wx.ITEM_CHECK)
+                switch_item = menu.Append(wx.ID_ANY, f"{friendly_name} ({entity_state})", helpString=entity_id, kind=wx.ITEM_NORMAL)
                 switch_icon = wx.ArtProvider.GetBitmap(wx.ART_FOLDER, wx.ART_MENU, (16, 16))  # TODO: find appropriate icon
                 switch_item.SetBitmap(switch_icon)
-                # self.Bind(wx.EVT_MENU, self.on_switch_selected, id=switch_item.GetId())
+                self.menu_id_map[switch_item.GetId()] = sensor
+                self.Bind(wx.EVT_MENU, self.on_switch_selected, id=switch_item.GetId())
+
+    def on_sensor_selected(self, event):
+        sensor = self.menu_id_map.get(event.GetId())
+        if sensor:
+            print(f"Sensor selected: {sensor['friendly_name']} ({sensor['entity_id']})")
 
     def on_switch_selected(self, event):
-        item = self.GetPopupMenuSelection()
-        if item:
-            print(f"Switch selected: {item.GetItemLabelText()}")
+        switch = self.menu_id_map.get(event.GetId())
+        if switch:
+            print(f"Switch selected: {switch['friendly_name']} ({switch['entity_id']})")
