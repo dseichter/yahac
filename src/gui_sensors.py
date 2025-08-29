@@ -14,7 +14,9 @@ for entity in entities:
 
 class SensorSelectorFrame(wx.Frame):
     def __init__(self, parent):
-        super().__init__(parent, title="Select Entity", size=(500, 220))
+        super().__init__(parent, title="Select Entity", size=(550, 350), pos=(100, 100))
+        self.Centre(wx.BOTH)
+        self.Centre(direction = wx.VERTICAL)
         panel = wx.Panel(self)
 
         vbox = wx.BoxSizer(wx.VERTICAL)
