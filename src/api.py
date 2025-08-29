@@ -52,12 +52,15 @@ def list_states():
     except Exception as e:
         return f"Error checking API status: {e}"
 
-def get_state(entity_id):
+def get_entity_state(entity_id):
     url = f"{URL}/api/states/{entity_id}"
     try:
         response = http.request("GET", url, headers=headers)
         if response.status == 200:
-            return json.loads(response.data.decode('utf-8'))
+            entitystate = json.loads(response.data.decode('utf-8'))
+            current_state = entitystate.get("state", "unknown")
+            unit_of_measurement = entitystate.get("attributes", {}).get("unit_of_measurement", "")
+            return f"{current_state} {unit_of_measurement}".strip()
         else:
             return f"API returned status code: {response.status}"
     except Exception as e:
