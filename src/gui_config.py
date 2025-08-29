@@ -4,7 +4,7 @@ import settings
 import api
 import os
 import sys
-import winshell
+import win32com.client
 
 
 class ConfigFrame(wx.Frame):
@@ -54,7 +54,6 @@ class ConfigFrame(wx.Frame):
         hbox_btn.Add(self.btn_cancel, flag=wx.RIGHT, border=0)
         grid.AddSpacer(0)  # Fills the first column for alignment
         grid.Add(hbox_btn, flag=wx.ALIGN_RIGHT | wx.ALL, border=10)
-        
 
         panel.SetSizer(grid)
 
@@ -67,15 +66,15 @@ class ConfigFrame(wx.Frame):
         self.load_settings()
 
     def load_settings(self):
-        url = settings.load_value_from_json_file('url')
-        token = settings.load_value_from_json_file('token')
-        checkupdate = settings.load_value_from_json_file('checkupdate')
-        autostart = settings.load_value_from_json_file('autostart')
+        url = settings.load_value_from_json_file("url")
+        token = settings.load_value_from_json_file("token")
+        checkupdate = settings.load_value_from_json_file("checkupdate")
+        autostart = settings.load_value_from_json_file("autostart")
 
         self.txt_url.SetValue(url if url else "")
         self.txt_token.SetValue(token if token else "")
         self.chk_checkupdate.SetValue(bool(checkupdate))
-        self.chk_autostart.SetValue(bool(autostart))        
+        self.chk_autostart.SetValue(bool(autostart))
 
     def on_show_token(self, _event):
         current_value = self.txt_token.GetValue()
@@ -105,10 +104,10 @@ class ConfigFrame(wx.Frame):
         checkupdate = self.chk_checkupdate.GetValue()
         autostart = self.chk_autostart.GetValue()
         # Save logic placeholder
-        settings.save_config('url', url)
-        settings.save_config('token', token)
-        settings.save_config('checkupdate', checkupdate)
-        settings.save_config('autostart', autostart)
+        settings.save_config("url", url)
+        settings.save_config("token", token)
+        settings.save_config("checkupdate", checkupdate)
+        settings.save_config("autostart", autostart)
 
         wx.MessageBox("Settings saved.", "Save", wx.OK | wx.ICON_INFORMATION)
         self.Close()
@@ -118,14 +117,38 @@ class ConfigFrame(wx.Frame):
 
     def set_autostart(self, autostart):
         app_name = "yahac"
-        startup_dir = os.path.join(os.environ["APPDATA"], "Microsoft", "Windows", "Start Menu", "Programs", "Startup")
-        shortcut_path = os.path.join(startup_dir, f"{app_name}.lnk")
-        exe_path = sys.executable if getattr(sys, 'frozen', False) else sys.argv[0]
-        if autostart:
-            with winshell.shortcut(shortcut_path) as link:
-                link.path = exe_path
-                link.working_directory = os.path.dirname(exe_path)
-                link.icon_location = exe_path
-        else:
-            if os.path.exists(shortcut_path):
-                os.remove(shortcut_path)
+        exe_path = sys.executable if getattr(sys, "frozen", False) else sys.argv[0]
+
+        if sys.platform.startswith("win"):
+            startup_dir = os.path.join(os.environ["APPDATA"], "Microsoft", "Windows", "Start Menu", "Programs", "Startup")
+            shortcut_path = os.path.join(startup_dir, f"{app_name}.lnk")
+            shell = win32com.client.Dispatch("WScript.Shell")
+            if autostart:
+                shortcut = shell.CreateShortcut(shortcut_path)
+                shortcut.TargetPath = exe_path
+                shortcut.WorkingDirectory = os.path.dirname(exe_path)
+                shortcut.IconLocation = exe_path
+                shortcut.Save()
+            else:
+                if os.path.exists(shortcut_path):
+                    os.remove(shortcut_path)
+        elif sys.platform.startswith("linux"):
+            # Untested!!!
+            autostart_dir = os.path.expanduser("~/.config/autostart")
+            os.makedirs(autostart_dir, exist_ok=True)
+            desktop_path = os.path.join(autostart_dir, f"{app_name}.desktop")
+            if autostart:
+                desktop_entry = f"""[Desktop Entry]
+Type=Application
+Exec={exe_path}
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name={app_name}
+Comment=Autostart {app_name}
+"""
+                with open(desktop_path, "w", encoding="utf-8") as f:
+                    f.write(desktop_entry)
+            else:
+                if os.path.exists(desktop_path):
+                    os.remove(desktop_path)

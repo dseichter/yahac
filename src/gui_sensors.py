@@ -14,7 +14,9 @@ for entity in entities:
 
 class SensorSelectorFrame(wx.Frame):
     def __init__(self, parent):
-        super().__init__(parent, title="Select Entity", size=(500, 220))
+        super().__init__(parent, title="Select Entity", size=(550, 350), pos=(100, 100))
+        self.Centre(wx.BOTH)
+        self.Centre(direction = wx.VERTICAL)
         panel = wx.Panel(self)
 
         vbox = wx.BoxSizer(wx.VERTICAL)
@@ -43,9 +45,14 @@ class SensorSelectorFrame(wx.Frame):
         vbox.Add(self.selected_table, flag=wx.EXPAND | wx.ALL, border=10, proportion=1)
 
         # Save button
+        hbox_btns = wx.BoxSizer(wx.HORIZONTAL)
         self.btn_save = wx.Button(panel, label="Save Selection")
-        vbox.Add(self.btn_save, flag=wx.ALIGN_RIGHT | wx.ALL, border=10)
+        self.btn_remove = wx.Button(panel, label="Remove Selected")
+        hbox_btns.Add(self.btn_save, flag=wx.RIGHT, border=5)
+        hbox_btns.Add(self.btn_remove)
+        vbox.Add(hbox_btns, flag=wx.ALIGN_RIGHT | wx.ALL, border=10)
         self.btn_save.Bind(wx.EVT_BUTTON, self.on_save_selection)
+        self.btn_remove.Bind(wx.EVT_BUTTON, self.on_remove_selected)
 
         panel.SetSizer(vbox)
 
@@ -82,7 +89,6 @@ class SensorSelectorFrame(wx.Frame):
             self.entity_types[entity_id] = "sensor"
 
     def on_table_select(self, event):
-        # Allow user to change type between 'sensor' and 'switch'
         index = event.GetIndex()
         entity_id = self.selected_table.GetItemText(index)
         current_type = self.entity_types.get(entity_id, "sensor")
@@ -105,6 +111,15 @@ class SensorSelectorFrame(wx.Frame):
         # Save to settings
         settings.save_config("entities", selected)
         wx.MessageBox("Selection saved!", "Saved", wx.OK | wx.ICON_INFORMATION)
+
+    def on_remove_selected(self, event):
+        selected_idx = self.selected_table.GetFirstSelected()
+        while selected_idx != -1:
+            entity_id = self.selected_table.GetItemText(selected_idx)
+            self.selected_table.DeleteItem(selected_idx)
+            self.entity_types.pop(entity_id, None)
+            selected_entities.pop(entity_id, None)
+            selected_idx = self.selected_table.GetFirstSelected()
 
     def load_selected_entities(self):
         # Load from settings
