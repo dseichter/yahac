@@ -3,6 +3,10 @@ import wx
 import wx.adv
 import gui_traymenu
 
+import logging_config  # Setup the logging  # noqa: F401
+import logging
+
+logger = logging.getLogger(__name__)
 
 class MainFrame(wx.Frame):
     def __init__(self):

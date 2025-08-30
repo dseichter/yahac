@@ -8,6 +8,10 @@ import helper
 import webbrowser
 import api
 
+import logging_config  # Setup the logging  # noqa: F401
+import logging
+
+logger = logging.getLogger(__name__)
 
 class TrayIcon(wx.adv.TaskBarIcon):
     def __init__(self, frame):
@@ -69,12 +73,12 @@ class TrayIcon(wx.adv.TaskBarIcon):
 
     def on_sensors(self, event):
         sensors_frame = gui_sensors.SensorSelectorFrame(self.frame)
-        print("Showing sensors dialog")
+        logger.info("Showing sensors dialog")
         sensors_frame.Show()
 
     def on_settings(self, event):
         config_frame = gui_config.ConfigFrame(self.frame)
-        print("Showing settings dialog")
+        logger.info("Showing settings dialog")
         config_frame.Show()
         
     def on_check_update(self, event):
@@ -104,7 +108,7 @@ class TrayIcon(wx.adv.TaskBarIcon):
             friendly_name = sensor.get("friendly_name", entity_id)
             entity_type = sensor.get("type", "switch")
             entity_state = api.get_entity_state(entity_id)
-            print(f"Loaded sensor: {friendly_name} ({entity_id}) - {entity_type} - {entity_state}")
+            logger.info(f"Loaded sensor: {friendly_name} ({entity_id}) - {entity_type} - {entity_state}")
             if entity_type == "sensor":
                 sensor_item = menu.Append(wx.ID_ANY, f"{friendly_name} ({entity_state})", helpString=entity_id, kind=wx.ITEM_NORMAL)
                 sensor_icon = wx.ArtProvider.GetBitmap(wx.ART_INFORMATION, wx.ART_MENU, (16, 16))
@@ -121,7 +125,7 @@ class TrayIcon(wx.adv.TaskBarIcon):
     def on_sensor_selected(self, event):
         sensor = self.menu_id_map.get(event.GetId())
         if sensor:
-            print(f"Sensor selected: {sensor['friendly_name']} ({sensor['entity_id']})")
+            logger.info(f"Sensor selected: {sensor['friendly_name']} ({sensor['entity_id']})")
 
     def on_switch_selected(self, event):
         switch = self.menu_id_map.get(event.GetId())
@@ -139,7 +143,7 @@ class TrayIcon(wx.adv.TaskBarIcon):
             if not confirm_state_change:
                 success = api.set_entity_switch_state(switch['entity_id'], new_state)
                 if success:
-                    print(f"Switch {switch['friendly_name']} ({switch['entity_id']}) set to {new_state.upper()}")
+                    logger.info(f"Switch {switch['friendly_name']} ({switch['entity_id']}) set to {new_state.upper()}")
                 else:
                     wx.MessageBox(f"Failed to set {switch['friendly_name']} ({switch['entity_id']}) to {new_state.upper()}", "Error", wx.OK | wx.ICON_ERROR)
-                    print(f"Failed to set switch {switch['friendly_name']} ({switch['entity_id']}) to {new_state.upper()}")
+                    logger.info(f"Failed to set switch {switch['friendly_name']} ({switch['entity_id']}) to {new_state.upper()}")

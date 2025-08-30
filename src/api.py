@@ -3,6 +3,12 @@ import urllib3
 import settings
 import helper
 import json
+
+import logging_config  # Setup the logging  # noqa: F401
+import logging
+
+logger = logging.getLogger(__name__)
+
 http = urllib3.PoolManager()
 
 settings.create_config()
@@ -76,4 +82,5 @@ def set_entity_switch_state(entity_id, state):
         else:
             return False
     except Exception as e:
+        logger.error(f"Error setting switch state: {e}")
         return False
