@@ -3,6 +3,12 @@ import wx
 import api
 import settings
 
+
+import logging_config  # Setup the logging  # noqa: F401
+import logging
+
+logger = logging.getLogger(__name__)
+
 entities = api.list_states()
 
 # Create a list of entity IDs to select as sensors

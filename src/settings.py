@@ -45,7 +45,7 @@ def create_config():
     # check and add missing keys
     if 'logfilename' not in data:
         log_dir = tempfile.gettempdir()
-        data['logfilename'] = f'{log_dir}/vatvalidation.log'
+        data['logfilename'] = f'{log_dir}/yahac.log'
     if 'loglevel' not in data:
         data['loglevel'] = 'ERROR'
     if 'checkupdate' not in data:

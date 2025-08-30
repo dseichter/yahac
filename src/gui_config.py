@@ -6,6 +6,10 @@ import os
 import sys
 import win32com.client
 
+import logging_config  # Setup the logging  # noqa: F401
+import logging
+
+logger = logging.getLogger(__name__)
 
 class ConfigFrame(wx.Frame):
     def __init__(self, parent):
