@@ -104,7 +104,6 @@ class TrayIcon(wx.adv.TaskBarIcon):
             friendly_name = sensor.get("friendly_name", entity_id)
             entity_type = sensor.get("type", "switch")
             entity_state = api.get_entity_state(entity_id)
-            # Add to the UI or internal list
             print(f"Loaded sensor: {friendly_name} ({entity_id}) - {entity_type} - {entity_state}")
             if entity_type == "sensor":
                 sensor_item = menu.Append(wx.ID_ANY, f"{friendly_name} ({entity_state})", helpString=entity_id, kind=wx.ITEM_NORMAL)
@@ -114,7 +113,7 @@ class TrayIcon(wx.adv.TaskBarIcon):
                 self.Bind(wx.EVT_MENU, self.on_sensor_selected, id=sensor_item.GetId())
             if entity_type == "switch":
                 switch_item = menu.Append(wx.ID_ANY, f"{friendly_name} ({entity_state})", helpString=entity_id, kind=wx.ITEM_NORMAL)
-                switch_icon = wx.ArtProvider.GetBitmap(wx.ART_FOLDER, wx.ART_MENU, (16, 16))  # TODO: find appropriate icon
+                switch_icon = wx.ArtProvider.GetBitmap(wx.ART_TICK_MARK, wx.ART_MENU, (16, 16))  # TODO: find appropriate icon
                 switch_item.SetBitmap(switch_icon)
                 self.menu_id_map[switch_item.GetId()] = sensor
                 self.Bind(wx.EVT_MENU, self.on_switch_selected, id=switch_item.GetId())
@@ -127,4 +126,20 @@ class TrayIcon(wx.adv.TaskBarIcon):
     def on_switch_selected(self, event):
         switch = self.menu_id_map.get(event.GetId())
         if switch:
-            print(f"Switch selected: {switch['friendly_name']} ({switch['entity_id']})")
+            current_state = api.get_entity_state(switch['entity_id'])
+
+            new_state = "off" if current_state == "on" else "on"
+            confirm_state_change = settings.load_value_from_json_file("confirm_state_change")
+            if confirm_state_change:
+                confirmation = wx.MessageBox(f"Toggle {switch['friendly_name']} from {current_state} to {new_state}?", "Confirm", wx.YES_NO | wx.ICON_QUESTION)
+                if confirmation == wx.YES:
+                    confirm_state_change = False
+
+            # only, if confirm_state_change is False
+            if not confirm_state_change:
+                success = api.set_entity_switch_state(switch['entity_id'], new_state)
+                if success:
+                    print(f"Switch {switch['friendly_name']} ({switch['entity_id']}) set to {new_state.upper()}")
+                else:
+                    wx.MessageBox(f"Failed to set {switch['friendly_name']} ({switch['entity_id']}) to {new_state.upper()}", "Error", wx.OK | wx.ICON_ERROR)
+                    print(f"Failed to set switch {switch['friendly_name']} ({switch['entity_id']}) to {new_state.upper()}")
