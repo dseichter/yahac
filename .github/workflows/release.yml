@@ -28,7 +28,7 @@ jobs:
             run: pip install -r src/requirements.txt
 
           - name: Build Windows binary
-            run: pyinstaller --onefile -w src/yahac.py -n yahac-${{ github.ref_name }}.exe --icon=icons/Opened_Folder.ico
+            run: pyinstaller --onefile -w src/yahac.py -n yahac-${{ github.ref_name }}.exe --icon=icons/yahac.ico
 
           - name: Upload artifact
             uses: actions/upload-artifact@v4
@@ -60,7 +60,7 @@ jobs:
             run: pip install -r src/requirements.txt
 
           - name: Build Linux binary
-            run: pyinstaller --onefile src/yahac.py -n yahac-linux-${{ github.ref_name }} --icon=icons/Opened_Folder.ico
+            run: pyinstaller --onefile src/yahac.py -n yahac-linux-${{ github.ref_name }} --icon=icons/yahac.ico
 
           - name: Upload artifact
             uses: actions/upload-artifact@v4

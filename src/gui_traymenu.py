@@ -7,6 +7,7 @@ import settings
 import helper
 import webbrowser
 import api
+import icons
 
 import logging_config  # Setup the logging  # noqa: F401
 import logging
@@ -17,7 +18,7 @@ class TrayIcon(wx.adv.TaskBarIcon):
     def __init__(self, frame):
         super().__init__()
         self.frame = frame
-        icon = wx.Icon(wx.ArtProvider.GetBitmap(wx.ART_INFORMATION, wx.ART_OTHER, (16, 16)))
+        icon = icons.home_app_logo_24dp_1976d2_fill0_wght400_grad0_opsz24.GetIcon()
         self.SetIcon(icon, "YAHAC")
         self.Bind(wx.adv.EVT_TASKBAR_RIGHT_UP, self.on_menu)
         
@@ -34,25 +35,25 @@ class TrayIcon(wx.adv.TaskBarIcon):
         menu.AppendSeparator()
         # Sensors menu item
         sensors_item = wx.MenuItem(menu, 2, "Sensors", "Manage your sensors")
-        sensors_icon = wx.ArtProvider.GetBitmap(wx.ART_LIST_VIEW, wx.ART_MENU, (16, 16))
+        sensors_icon = icons.database_24dp_1976d2_fill0_wght400_grad0_opsz24.GetBitmap()
         sensors_item.SetBitmap(sensors_icon)
         menu.Append(sensors_item)
         # Settings menu item
         settings_item = wx.MenuItem(menu, 3, "Settings", "Configure connection to your Home Assistant")
-        settings_icon = wx.ArtProvider.GetBitmap(wx.ART_REPORT_VIEW, wx.ART_MENU, (16, 16))
+        settings_icon = icons.settings_24dp_1976d2_fill0_wght400_grad0_opsz24.GetBitmap()
         settings_item.SetBitmap(settings_icon)
         menu.Append(settings_item)
 
         # Check for update
         checkupdate_item = wx.MenuItem(menu, 5, "Check for update...", "Check for new version")
-        update_icon = wx.ArtProvider.GetBitmap(wx.ART_FIND, wx.ART_MENU, (16, 16))
+        update_icon = icons.update_24dp_1976d2_fill0_wght400_grad0_opsz24.GetBitmap()
         checkupdate_item.SetBitmap(update_icon)
         menu.Append(checkupdate_item)
         self.Bind(wx.EVT_MENU, self.on_check_update, id=5)
         
         # Open Webpage/Repository
         webpage_item = wx.MenuItem(menu, 6, "Open Webpage/Repository", "Open the project's webpage or repository")
-        update_icon = wx.ArtProvider.GetBitmap(wx.ART_GO_HOME, wx.ART_MENU, (16, 16))
+        update_icon = icons.globe_24dp_1976d2_fill0_wght400_grad0_opsz24.GetBitmap()
         webpage_item.SetBitmap(update_icon)
         menu.Append(webpage_item)
         self.Bind(wx.EVT_MENU, self.on_webpage_open, id=6)
@@ -60,7 +61,7 @@ class TrayIcon(wx.adv.TaskBarIcon):
         menu.AppendSeparator()
         # Settings menu item
         exit_item = wx.MenuItem(menu, 4, "Exit", "Exit the application")
-        exit_icon = wx.ArtProvider.GetBitmap(wx.ART_QUIT, wx.ART_MENU, (16, 16))
+        exit_icon = icons.logout_24dp_1976d2_fill0_wght400_grad0_opsz24.GetBitmap()
         exit_item.SetBitmap(exit_icon)
         menu.Append(exit_item)
         self.Bind(wx.EVT_MENU, self.on_sensors, id=2)
@@ -111,13 +112,16 @@ class TrayIcon(wx.adv.TaskBarIcon):
             logger.info(f"Loaded sensor: {friendly_name} ({entity_id}) - {entity_type} - {entity_state}")
             if entity_type == "sensor":
                 sensor_item = menu.Append(wx.ID_ANY, f"{friendly_name} ({entity_state})", helpString=entity_id, kind=wx.ITEM_NORMAL)
-                sensor_icon = wx.ArtProvider.GetBitmap(wx.ART_INFORMATION, wx.ART_MENU, (16, 16))
+                sensor_icon = icons.sensors_24dp_1976d2_fill0_wght400_grad0_opsz24.GetBitmap()
                 sensor_item.SetBitmap(sensor_icon)
                 self.menu_id_map[sensor_item.GetId()] = sensor
                 self.Bind(wx.EVT_MENU, self.on_sensor_selected, id=sensor_item.GetId())
             if entity_type == "switch":
                 switch_item = menu.Append(wx.ID_ANY, f"{friendly_name} ({entity_state})", helpString=entity_id, kind=wx.ITEM_NORMAL)
-                switch_icon = wx.ArtProvider.GetBitmap(wx.ART_TICK_MARK, wx.ART_MENU, (16, 16))  # TODO: find appropriate icon
+                if entity_state == "on":
+                    switch_icon = icons.toggle_on_24dp_1976d2_fill0_wght400_grad0_opsz24.GetBitmap()
+                else:
+                    switch_icon = icons.toggle_off_24dp_1976d2_fill0_wght400_grad0_opsz24.GetBitmap()
                 switch_item.SetBitmap(switch_icon)
                 self.menu_id_map[switch_item.GetId()] = sensor
                 self.Bind(wx.EVT_MENU, self.on_switch_selected, id=switch_item.GetId())

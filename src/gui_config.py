@@ -2,6 +2,8 @@ import wx
 
 import settings
 import api
+import icons
+
 import os
 import sys
 import win32com.client
@@ -17,7 +19,7 @@ class ConfigFrame(wx.Frame):
         panel = wx.Panel(self)
 
         # Set frame icon
-        frame_icon = wx.Icon(wx.ArtProvider.GetBitmap(wx.ART_REPORT_VIEW, wx.ART_OTHER, (16, 16)))
+        frame_icon = wx.Icon(icons.settings_24dp_1976d2_fill0_wght400_grad0_opsz24.GetIcon())
         self.SetIcon(frame_icon)
         # Use FlexGridSizer for two columns
         grid = wx.FlexGridSizer(rows=0, cols=2, vgap=10, hgap=10)

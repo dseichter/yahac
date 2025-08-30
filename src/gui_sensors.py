@@ -2,7 +2,7 @@ import wx
 
 import api
 import settings
-
+import icons
 
 import logging_config  # Setup the logging  # noqa: F401
 import logging
@@ -28,7 +28,7 @@ class SensorSelectorFrame(wx.Frame):
         vbox = wx.BoxSizer(wx.VERTICAL)
 
         # Set frame icon
-        frame_icon = wx.Icon(wx.ArtProvider.GetBitmap(wx.ART_LIST_VIEW, wx.ART_OTHER, (16, 16)))
+        frame_icon = wx.Icon(icons.database_24dp_1976d2_fill0_wght400_grad0_opsz24.GetIcon())
         self.SetIcon(frame_icon)
 
         label = wx.StaticText(panel, label="Choose an entity:")
