@@ -9,7 +9,7 @@ import win32com.client
 
 class ConfigFrame(wx.Frame):
     def __init__(self, parent):
-        super().__init__(parent, title="Settings", size=(400, 220))
+        super().__init__(parent, title="Settings", size=(400, 260))
         panel = wx.Panel(self)
 
         # Set frame icon
@@ -43,6 +43,10 @@ class ConfigFrame(wx.Frame):
         grid.Add(wx.StaticText(panel, label=""))  # Empty label for alignment
         self.chk_autostart = wx.CheckBox(panel, label="Autostart application")
         grid.Add(self.chk_autostart, flag=wx.LEFT, border=0)
+        
+        grid.Add(wx.StaticText(panel, label=""))  # Empty label for alignment
+        self.chk_confirm_state_change = wx.CheckBox(panel, label="Ask for confirmation before toggling switch")
+        grid.Add(self.chk_confirm_state_change, flag=wx.LEFT, border=0)
 
         # Buttons (span two columns)
         hbox_btn = wx.BoxSizer(wx.HORIZONTAL)
@@ -70,11 +74,13 @@ class ConfigFrame(wx.Frame):
         token = settings.load_value_from_json_file("token")
         checkupdate = settings.load_value_from_json_file("checkupdate")
         autostart = settings.load_value_from_json_file("autostart")
+        confirm_state_change = settings.load_value_from_json_file('confirm_state_change')
 
         self.txt_url.SetValue(url if url else "")
         self.txt_token.SetValue(token if token else "")
         self.chk_checkupdate.SetValue(bool(checkupdate))
         self.chk_autostart.SetValue(bool(autostart))
+        self.chk_confirm_state_change.SetValue(bool(confirm_state_change))
 
     def on_show_token(self, _event):
         current_value = self.txt_token.GetValue()
@@ -103,11 +109,13 @@ class ConfigFrame(wx.Frame):
         token = self.txt_token.GetValue()
         checkupdate = self.chk_checkupdate.GetValue()
         autostart = self.chk_autostart.GetValue()
+        confirm_state_change = self.chk_confirm_state_change.GetValue()
         # Save logic placeholder
         settings.save_config("url", url)
         settings.save_config("token", token)
         settings.save_config("checkupdate", checkupdate)
         settings.save_config("autostart", autostart)
+        settings.save_config('confirm_state_change', confirm_state_change)
 
         wx.MessageBox("Settings saved.", "Save", wx.OK | wx.ICON_INFORMATION)
         self.Close()

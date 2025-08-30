@@ -52,6 +52,8 @@ def create_config():
         data['checkupdate'] = True
     if 'entities' not in data:
         data['entities'] = []
+    if 'confirm_state_change' not in data:
+        data['confirm_state_change'] = True
 
     with open(CONFIGFILE, 'w') as f:
         json.dump(data, f, indent=4, sort_keys=True)
