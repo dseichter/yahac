@@ -131,7 +131,7 @@ class TrayIcon(wx.adv.TaskBarIcon):
             new_state = "off" if current_state == "on" else "on"
             confirm_state_change = settings.load_value_from_json_file("confirm_state_change")
             if confirm_state_change:
-                confirmation = wx.MessageBox(f"Toggle {switch['friendly_name']} ({switch['entity_id']})?", "Confirm", wx.YES_NO | wx.ICON_QUESTION)
+                confirmation = wx.MessageBox(f"Toggle {switch['friendly_name']} from {current_state} to {new_state}?", "Confirm", wx.YES_NO | wx.ICON_QUESTION)
                 if confirmation == wx.YES:
                     confirm_state_change = False
 
