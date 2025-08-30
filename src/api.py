@@ -65,3 +65,15 @@ def get_entity_state(entity_id):
             return f"API returned status code: {response.status}"
     except Exception as e:
         return f"Error checking API status: {e}"
+
+def set_entity_switch_state(entity_id, state):
+    url = f"{URL}/api/services/switch/turn_{state}"
+    payload = {"entity_id": entity_id}
+    try:
+        response = http.request("POST", url, headers=headers, body=json.dumps(payload))
+        if response.status == 200:
+            return True
+        else:
+            return False
+    except Exception as e:
+        return False
