@@ -1,28 +1,26 @@
 # yahac
 
+<p align="center">
+  <img src="icons/home_app_logo_48dp_1976D2_FILL0_wght400_GRAD0_opsz48.png" alt="YAHAC Logo""/>
+
 Yet Another Home Assistant Client tool
+</p>
+
+<p align="center">
+  <b><a href="https://dseichter.github.io/yahac/">📖 Documentation (GitHub Pages)</a></b>
+</p>
+
+yahac - Yet Another Home Assistant Client - is a tool to show your most important entities of Home Assistant. See current values/states of your sensors or turn on/off your switches. And everything in the tray area.
+
+![yahac in tray Icon](docs/docs/assets/screenshots/yahac_traymenu_with_entities.png)
+
+You can configure as much as needed sensors and switches. As soon as you show the menu (right click on the yahac icon), the latest value of your entities will be collected and shown.
+
+## Home Assistant
+
+Open source home automation that puts local control and privacy first. [https://www.home-assistant.io/](https://www.home-assistant.io/)
 
 ## Icons
 
 yahac uses [Google Material Symbols](https://fonts.google.com/icons) within its code for UI icons.  
 Material Symbols are licensed under the [Apache License 2.0](https://github.com/google/material-design-icons/blob/master/LICENSE) and are free for use in open source projects.
-
-### Overview Icon usage
-
-Base color: #1976D2
-
-Alphabetical order:
-
-| Image name                                               | Usage |
-| -------------------------------------------------------- | ----- |
-| database_24dp_1976D2_FILL0_wght400_GRAD0_opsz24.png      | Sensors frame (add/remove sensors) |
-| globe_24dp_1976D2_FILL0_wght400_GRAD0_opsz24.png         | link to website |
-| home_app_logo_24dp_1976D2_FILL0_wght400_GRAD0_opsz24.png | YAHAC itself, ICO file available |
-| logout_24dp_1976D2_FILL0_wght400_GRAD0_opsz24.png        | TrayMenu Exit |
-| sensors_24dp_1976D2_FILL0_wght400_GRAD0_opsz24.png       | Listed sensor in Traymenu |
-| settings_24dp_1976D2_FILL0_wght400_GRAD0_opsz24.png      | Configuration frame (settings) |
-| toggle_off_24dp_1976D2_FILL0_wght400_GRAD0_opsz24.png    | TrayMenu switch with state off |
-| toggle_on_24dp_1976D2_FILL0_wght400_GRAD0_opsz24.png     | TrayMenu switch with state on |
-| update_24dp_1976D2_FILL0_wght400_GRAD0_opsz24.png        | TrayMenu Check for updates |
-
-If more icons are are being added, list them. Keep original filename for faster identification.

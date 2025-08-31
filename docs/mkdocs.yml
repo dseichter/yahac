@@ -7,7 +7,7 @@ repo_url: https://github.com/dseichter/yahac
 repo_name: dseichter/yahac
 theme:
   name: material
-  logo: assets/home_app_logo_24dp_1976d2_fill0_wght400_grad0_opsz24.png
+  logo: assets/home_app_logo_48dp_1976d2_fill0_wght400_grad0_opsz48.png
   favicon: assets/home_app_logo_24dp_1976d2_fill0_wght400_grad0_opsz24.png
   icon:
     alternate: assets/globe_icon_24dp_1976d2_fill0_wght400_grad0_opsz24.png
@@ -31,9 +31,7 @@ nav:
   - Installation: installation.md
   - Configuration: configuration.md
   - Sensors: sensors.md
-  - Usage: usage.md
   - Development: development.md
-  - About: about.md
 
 
 markdown_extensions:
