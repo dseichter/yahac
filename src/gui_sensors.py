@@ -9,20 +9,22 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+selected_entities = {}  # key: entity_id, value: friendly_name
 entities = api.list_states()
 
 # Create a list of entity IDs to select as sensors
 entity_list = []
-selected_entities = {}  # key: entity_id, value: friendly_name
-for entity in entities:
-    entity_list.append(entity["entity_id"])
+
+if isinstance(entities, list):
+    for entity in entities:
+        entity_list.append(entity["entity_id"])
 
 
 class SensorSelectorFrame(wx.Frame):
     def __init__(self, parent):
         super().__init__(parent, title="Select Entity", size=(550, 350), pos=(100, 100))
         self.Centre(wx.BOTH)
-        self.Centre(direction = wx.VERTICAL)
+        self.Centre(direction=wx.VERTICAL)
         panel = wx.Panel(self)
 
         vbox = wx.BoxSizer(wx.VERTICAL)
