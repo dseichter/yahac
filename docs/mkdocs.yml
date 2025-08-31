@@ -1,0 +1,43 @@
+site_name: yahac
+site_url: https://dseichter.github.io/yahac/
+site_description: Yet Another Home Assistant Client
+site_author: Daniel Seichter
+copyright: Copyright © 2025 Daniel Seichter
+repo_url: https://github.com/dseichter/yahac
+repo_name: dseichter/yahac
+theme:
+  name: material
+  logo: assets/home_app_logo_24dp_1976d2_fill0_wght400_grad0_opsz24.png
+  favicon: assets/home_app_logo_24dp_1976d2_fill0_wght400_grad0_opsz24.png
+  icon:
+    alternate: assets/globe_icon_24dp_1976d2_fill0_wght400_grad0_opsz24.png
+  palette:
+    - scheme: slate
+      primary: cyan
+      accent: green
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+      default: true
+    - scheme: default
+      primary: cyan
+      accent: green
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode  
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Configuration: configuration.md
+  - Sensors: sensors.md
+  - Usage: usage.md
+  - Development: development.md
+  - About: about.md
+
+
+markdown_extensions:
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
