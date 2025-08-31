@@ -27,7 +27,7 @@ class TrayIcon(wx.adv.TaskBarIcon):
 
     def CreatePopupMenu(self):
         menu = wx.Menu()
-        menu.Append(1, "Your Sensors:", "Your selected sensors:", kind=wx.ITEM_NORMAL)
+        menu.Append(1, f"{helper.NAME} {helper.VERSION}", kind=wx.ITEM_NORMAL)
         menu.AppendSeparator()
         # Dynamic generation of sensor/switch - start
         self.load_sensors(menu)
@@ -50,9 +50,9 @@ class TrayIcon(wx.adv.TaskBarIcon):
         checkupdate_item.SetBitmap(update_icon)
         menu.Append(checkupdate_item)
         self.Bind(wx.EVT_MENU, self.on_check_update, id=5)
-        
-        # Open Webpage/Repository
-        webpage_item = wx.MenuItem(menu, 6, "Open Webpage/Repository", "Open the project's webpage or repository")
+
+        # Open Webpage/Repository/Documentation
+        webpage_item = wx.MenuItem(menu, 6, "Open Documentation", "Open the project's webpage or repository")
         update_icon = icons.globe_24dp_1976d2_fill0_wght400_grad0_opsz24.GetBitmap()
         webpage_item.SetBitmap(update_icon)
         menu.Append(webpage_item)

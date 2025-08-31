@@ -15,13 +15,14 @@
 
 import json
 import tempfile
+import os
 
-CONFIGFILE = 'config.json'
-
+CONFIGFILE = os.path.join(os.path.expanduser('~'), '.yahac', 'config.json')
+os.makedirs(os.path.dirname(CONFIGFILE), exist_ok=True)
 
 # load value from json file with given key
 def load_value_from_json_file(key):
-    with open("config.json", "r") as f:
+    with open(CONFIGFILE, "r") as f:
         data = json.load(f)
 
     if key not in data:
