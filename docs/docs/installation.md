@@ -2,8 +2,6 @@
 
 yahac itself does not need any additional libraries or components intstalled on your computer. Download the latest releases, place it into a directory of your choice and start.
 
-There is a false positive alert after downloading the windows binary [#34](https://github.com/dseichter/yahac/issues/34). Exlude this file from Windows Defender. Working on it.
-
 ## First time
 
 If you start yahac the first time, it will create within your users directory a subfolder `.yahac` and also creates the configuration file `config.json`.
