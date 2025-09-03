@@ -18,6 +18,8 @@ You can configure as much as needed sensors and switches. As soon as you show th
 
 **!!! There is a false positive alert after downloading the windows binary [#34](https://github.com/dseichter/yahac/issues/34). Exlude this file from your Windows Defender. I am working on it. !!!**
 
+**!!! The binaries in the releases v0.1.x are currently not working and used to identify all possible error messages. !!!**
+
 ## Home Assistant
 
 Open source home automation that puts local control and privacy first. [https://www.home-assistant.io/](https://www.home-assistant.io/)
