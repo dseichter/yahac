@@ -7,7 +7,7 @@ See current values/states of your sensors or turn on/off your switches. And ever
 
 You can configure as much as needed sensors and switches. As soon as you show the menu (right click on the yahac icon), the latest value of your entities will be collected and shown.
 
-**!!! There is a false positive alert after downloading the windows binary [#34](https://github.com/dseichter/yahac/issues/34). Exlude this file from your Windows Defender. I am working on it. !!!**
+**!!! There is a false positive alert after downloading the windows binary [#34](https://github.com/dseichter/yahac/issues/34). Exclude this file from your Windows Defender. I am working on it. !!!**
 
 ## Start yahac
 

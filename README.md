@@ -16,9 +16,9 @@ yahac - Yet Another Home Assistant Client - is a tool to show your most importan
 
 You can configure as much as needed sensors and switches. As soon as you show the menu (right click on the yahac icon), the latest value of your entities will be collected and shown.
 
-**!!! There is a false positive alert after downloading the windows binary [#34](https://github.com/dseichter/yahac/issues/34). Exlude this file from your Windows Defender. I am working on it. !!!**
+**!!! There is a false positive alert after downloading the windows binary [#34](https://github.com/dseichter/yahac/issues/34). Exclude this file from your Windows Defender. I am working on it. !!!**
 
-**!!! The binaries in the releases v0.1.x are currently not working and used to identify all possible error messages. !!!**
+**!!! The binaries for Microsoft Windows are currently not working. Linux Binaries are ready for testing !!!**
 
 ## Home Assistant
 
