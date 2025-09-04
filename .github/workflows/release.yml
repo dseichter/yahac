@@ -59,10 +59,14 @@ jobs:
               . venv/bin/activate
 
           - name: Install dependencies
-            run: pip install -r src/requirements.txt
+            run: |
+              . venv/bin/activate
+              pip install -r src/requirements.txt
 
           - name: Build Linux binary
-            run: pyinstaller --onefile src/yahac.py -n yahac-ubuntu-24-04-${{ github.ref_name }}
+            run: |
+              . venv/bin/activate
+              pyinstaller --onefile src/yahac.py -n yahac-ubuntu-24-04-${{ github.ref_name }}
 
           - name: Upload artifact
             uses: actions/upload-artifact@v4
@@ -93,10 +97,14 @@ jobs:
               . venv/bin/activate
 
           - name: Install dependencies
-            run: pip install -r src/requirements.txt
+            run: |
+              . venv/bin/activate
+              pip install -r src/requirements.txt
 
           - name: Build Linux binary
-            run: pyinstaller --onefile src/yahac.py -n yahac-ubuntu-25-04-${{ github.ref_name }}
+            run: |
+              . venv/bin/activate
+              pyinstaller --onefile src/yahac.py -n yahac-ubuntu-25-04-${{ github.ref_name }}
 
           - name: Upload artifact
             uses: actions/upload-artifact@v4
