@@ -18,7 +18,7 @@ You can start the yahac by running the following command:
 
 ## Testing
 
-At this time, there is no automated test available. The following test steps are done on **all** Windows and Linux distributions
+At this time, there is no automated test available. The following test steps are done on **all** Windows and Linux distributions:
 
 * Delete old configuration to have a fresh setup
 * Run yahac binary
