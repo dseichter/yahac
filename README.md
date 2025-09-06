@@ -1,4 +1,4 @@
-# yahac - Yet Another Home Assistant Client tool
+# yahac - Yet Another Home Assistant Client
 
 <p align="center">
   <img src="icons/home_app_logo_48dp_1976D2_FILL0_wght400_GRAD0_opsz48.png" alt="YAHAC Logo""/>
