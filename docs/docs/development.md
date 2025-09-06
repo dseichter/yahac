@@ -16,9 +16,35 @@ You can start the yahac by running the following command:
 
 ```cd src && python yahac.py```
 
-## Images
+## Testing
 
-### Overview Icon usage
+At this time, there is no automated test available. The following test steps are done on **all** Windows and Linux distributions
+
+* Delete old configuration to have a fresh setup
+* Run yahac binary
+* Message should appear to request for configuration
+* Provide information (URL and token)
+* Restart application
+* Message regarding configuration should not appear anymore
+* Open Sensors
+* Add first entity with type sensor (a dynamic one, so check if new values are reported)
+* Add second entity with type switch (change to switch).
+* Save
+* Sensor and switch should be shown in Tray Menu
+* State (current value) of sensor should change while opening the tray menu.
+* Trigger switch to change state
+* Entity of type switch should now change it's state
+* Click on "Check for update" (no update should be shown, except there was meanwhile a new release)
+* Click on "Open Documentation" and a browser should open and browse to [yahac documentation](https://dseichter.github.io/yahac/)
+
+
+## Resources
+
+### Images
+
+If you add further images, taken from [Google Material Symbols](https://fonts.google.com/icons), please add this to table below within your PR.
+
+#### Overview Icon usage
 
 Base color: #1976D2
 

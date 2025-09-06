@@ -8,7 +8,7 @@ If you open the sensors window of yahac the first time, you will see an empty wi
 
 ![Sensors - first start](assets/screenshots/yahac_sensors_empty.png)
 
-Open the combobox (list) which will represent you all possible entities within your Home Assistant instance.
+Open the combobox (drop down list) which will represent you all possible entities within your Home Assistant instance.
 This list contains the entity_ids, which are unique.
 
 ![Sensors - select entity](assets/screenshots/yahac_sensors_select_entity.png)

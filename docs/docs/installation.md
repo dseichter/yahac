@@ -1,6 +1,6 @@
 # Installation
 
-yahac itself does not need any additional libraries or components intstalled on your computer. Download the latest releases, place it into a directory of your choice and start.
+yahac itself does not need any additional libraries or components intstalled on your computer[^1]. Download the latest releases, place it into a directory of your choice and start.
 
 ## First time
 
@@ -18,3 +18,4 @@ Now you can choose to proceed with adding your first [sensors](sensors.md) or ma
 
 ![empty sensors](assets/screenshots/yahac_traymenu_empty.png)
 
+[^1]: The default installations of the Linux distributions did not requiere to install extra packages. See [compatibility](compatibility.md) for further information.

@@ -6,7 +6,7 @@ The configuration of yahac is really simple. Therefore most of the settings are 
 
 ## Option
 
-Important: after changing the host or token, you need to restart the application.
+**Important**: after changing the host or token, you need to restart the application.
 
 ### URL
 

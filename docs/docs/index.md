@@ -7,7 +7,7 @@ See current values/states of your sensors or turn on/off your switches. And ever
 
 You can configure as much as needed sensors and switches. As soon as you show the menu (right click on the yahac icon), the latest value of your entities will be collected and shown.
 
-**!!! There is a false positive alert after downloading the windows binary [#34](https://github.com/dseichter/yahac/issues/34). Exclude this file from your Windows Defender. I am working on it. !!!**
+A full list of compatible and tested operating systems, can be found in the [compatibility](compatibility.md) overview.
 
 ## Start yahac
 
@@ -20,3 +20,11 @@ Next to the list of your entities, you will find the possibility to check for up
 ### Open Documentation
 
 This will open this documentation.
+
+### Known issues
+
+#### Windows Defender 
+There is a false positive alert after downloading the windows binary [#34](https://github.com/dseichter/yahac/issues/34). Exclude this file from your Windows Defender. I am working on it.
+
+#### GNOME
+GNOME does not support Tray Menu out of the box. There are serveral solutions to enable a tray menu within GNOME. I can't recommend any of them at the moment.
