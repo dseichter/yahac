@@ -72,6 +72,7 @@ class ConfigFrame(wx.Frame):
         self.btn_test.Bind(wx.EVT_BUTTON, self.on_test)
         self.btn_save.Bind(wx.EVT_BUTTON, self.on_save)
         self.btn_cancel.Bind(wx.EVT_BUTTON, self.on_cancel)
+        self.chk_autostart.Bind(wx.EVT_CHECKBOX, self.set_autostart)
         self.token_visible = False
 
         self.load_settings()
@@ -130,11 +131,13 @@ class ConfigFrame(wx.Frame):
     def on_cancel(self, event):
         self.Close()
 
-    def set_autostart(self, autostart):
+    def set_autostart(self, event):
+        autostart = self.chk_autostart.GetValue()
+        logger.info(f"Setting autostart to: {autostart}")
         app_name = "yahac"
         exe_path = sys.executable if getattr(sys, "frozen", False) else sys.argv[0]
-
         if sys.platform.startswith("win"):
+            
             startup_dir = os.path.join(os.environ["APPDATA"], "Microsoft", "Windows", "Start Menu", "Programs", "Startup")
             shortcut_path = os.path.join(startup_dir, f"{app_name}.lnk")
             shell = win32com.client.Dispatch("WScript.Shell")
