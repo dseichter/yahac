@@ -17,7 +17,7 @@ import urllib3
 import json
 import logging
 
-VERSION = "v0.1.3"
+VERSION = "v0.1.3-beta2"
 UPDATEURL = 'https://api.github.com/repos/dseichter/yahac/releases/latest'
 RELEASES = 'https://github.com/dseichter/yahac/releases'
 WEBSITE = 'https://dseichter.github.io/yahac/'
