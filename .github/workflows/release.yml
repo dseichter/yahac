@@ -177,7 +177,7 @@ jobs:
             tag_name: ${{ github.ref_name }}
             name: Release ${{ github.ref_name }}
             draft: false
-            prerelease: contains(github.ref_name, 'rc') || contains(github.ref_name, 'beta')
+            prerelease: ${{ contains(github.ref_name, 'rc') || contains(github.ref_name, 'beta') }}
             generate_release_notes: true
             files: |
               yahac-ubuntu-24-04-${{ github.ref_name }}
