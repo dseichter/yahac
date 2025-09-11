@@ -1,7 +1,7 @@
 # yahac - Yet Another Home Assistant Client
 
 <p align="center">
-  <img src="icons/home_app_logo_48dp_1976D2_FILL0_wght400_GRAD0_opsz48.png" alt="YAHAC Logo""/>
+  <img src="icons/home_app_logo_48dp_1976D2_FILL0_wght400_GRAD0_opsz48.png" alt="YAHAC Logo"/>
 </p>
 
 <p align="center">
@@ -14,7 +14,8 @@ yahac - is a tool for Windows and Linux to show your most important entities of 
 
 You can configure as much as needed sensors and switches. As soon as you show the menu (right click on the yahac icon), the latest value of your entities will be collected and shown.
 
-**!!! Because of false positive in Windows Defender ([see #34](https://github.com/dseichter/yahac/issues/34)) take a look into the [compatibility](https://dseichter.github.io/yahac/compatibility/) !!!**
+> [!WARNING]  
+> Because of false positive in Windows Defender ([see #34](https://github.com/dseichter/yahac/issues/34)) take a look into the [compatibility](https://dseichter.github.io/yahac/compatibility/)
 
 ## Home Assistant
 
