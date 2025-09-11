@@ -13,7 +13,8 @@ yahac is compatible with [Home Assistant](https://www.home-assistant.io/) 2025.x
 | Windows 11       | ✅       | Windows Defender reports false positive |
 | Windows 10       | ✅       | Windows Defender reports false positive |
 
-Please whitelist yahac within Windows Defender to ensure, yahac is running. With [#34](https://github.com/dseichter/yahac/issues/34) I am working on a solution.
+!!! warning
+    Please whitelist yahac within Windows Defender to ensure, yahac is running. With [#34](https://github.com/dseichter/yahac/issues/34) I am working on a solution.
 
 ### Linux
 
