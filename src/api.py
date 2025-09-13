@@ -84,3 +84,35 @@ def set_entity_switch_state(entity_id, state):
     except Exception as e:
         logger.error(f"Error setting switch state: {e}")
         return False
+
+def set_yahac_state(online: bool, mac_address: str):
+    logger.info(f"Setting yahac sensor state to {'online' if online else 'offline'} for MAC {mac_address}")
+    url = f"{URL}/api/states/sensor.yahac_{mac_address.replace(':', '')}"
+    state = "online" if online else "offline"
+    payload = {
+        "state": state,
+        "attributes": {
+            "is_on": online,
+            "name": "yahac",
+            "icon": "mdi:access-point-network",
+            "attribution": "Data provided by yahac",
+            "source": "yahac",
+            "version": helper.VERSION,
+            "website": helper.WEBSITE,
+            "license": helper.LICENCE,
+            "author": "Daniel Seichter",
+            "entity_category": "diagnostic",
+            "device_class": "BinarySensorDeviceClass.CONNECTIVITY",
+            "state_class": "measurement"           
+            
+        }
+    }
+    try:
+        response = http.request("POST", url, headers=headers, body=json.dumps(payload))
+        if response.status == 200:
+            return True
+        else:
+            return False
+    except Exception as e:
+        logger.error(f"Error setting yahac sensor state: {e}")
+        return False

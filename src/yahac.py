@@ -21,8 +21,13 @@ import wx.adv
 import gui_mainframe
 import settings
 import helper
+import ha_helper
 import webbrowser
 
+import logging_config  # Setup the logging  # noqa: F401
+import logging
+
+logger = logging.getLogger(__name__)
 
 class YahacFrame(gui_mainframe.MainFrame):
     # constructor
@@ -40,6 +45,19 @@ class YahacFrame(gui_mainframe.MainFrame):
                 )
                 if result == wx.YES:
                     webbrowser.open_new_tab(helper.RELEASES)
+        
+        # connect entity, if enabled
+        if settings.load_value_from_json_file("register_entity"):
+            logger.info("Set entity state to online on start.")
+            ha_helper.set_entity_state_online()
+            
+    def on_close(self, event):
+        # set entity offline, if enabled
+        if settings.load_value_from_json_file("register_entity"):
+            logger.info("Set entity state to offline on close.")
+            ha_helper.set_entity_state_offline()
+        # call parent close method
+        gui_mainframe.MainFrame.on_close(self, event)
 
 
 # mandatory in wx, create an app, False stands for not deteriction stdin/stdout
