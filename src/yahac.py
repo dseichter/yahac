@@ -29,6 +29,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class YahacFrame(gui_mainframe.MainFrame):
     # constructor
     def __init__(self):
@@ -45,12 +46,22 @@ class YahacFrame(gui_mainframe.MainFrame):
                 )
                 if result == wx.YES:
                     webbrowser.open_new_tab(helper.RELEASES)
-        
-        # connect entity, if enabled
+
         if settings.load_value_from_json_file("register_entity"):
-            logger.info("Set entity state to online on start.")
-            ha_helper.set_entity_state_online()
-            
+            # hack: before setting the entity online, set it offline first to be able to trigger the state change
+            logger.info("Set entity offline first to be able to trigger the state change.")
+            ha_helper.set_entity_state_offline()
+            logger.info("Create timer and set entity state online.")
+            self.timer = wx.Timer(self)
+            self.Bind(wx.EVT_TIMER, self.on_timer, self.timer)
+            self.timer.Start(5000)  # Check every 5 seconds
+        else:
+            logger.info("Remove the entity from Home Assistant, if config is disabling the integration.")
+            ha_helper.set_entity_state_offline()
+
+    def on_timer(self, event):
+        ha_helper.set_entity_state_online()
+
     def on_close(self, event):
         # set entity offline, if enabled
         if settings.load_value_from_json_file("register_entity"):

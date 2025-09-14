@@ -18,6 +18,12 @@ def set_entity_state_offline():
     logger.info("Change yahac state to offline.")
     # trigger rest api call to get the current state
     api.set_yahac_state(False, get_computer_name())
+    
+    
+def remove_entity():
+    logger.info("Remove yahac entity from Home Assistant.")
+    # trigger rest api call to get the current state
+    api.remove_yahac_entity(get_computer_name())
 
 
 def get_computer_name():

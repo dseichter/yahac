@@ -3,7 +3,6 @@ import wx
 import settings
 import api
 import icons
-import ha_helper
 
 import os
 import sys
