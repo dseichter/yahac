@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class ConfigFrame(wx.Frame):
     def __init__(self, parent):
-        super().__init__(parent, title="Settings", size=(400, 260))
+        super().__init__(parent, title="Settings", size=(550, 400))
         panel = wx.Panel(self)
 
         # Set frame icon
@@ -59,11 +59,11 @@ class ConfigFrame(wx.Frame):
         self.chk_register_entity = wx.CheckBox(panel, label="Register yahac as a Home Assistant entity using MQTT (restart required)")
         grid.Add(self.chk_register_entity, flag=wx.LEFT, border=0)
 
-        lbl_mqtt_url = wx.StaticText(panel, label="MQTT URL:")
-        self.txt_mqtt_url = wx.TextCtrl(panel, style=wx.TE_LEFT)
-        grid.Add(lbl_mqtt_url, flag=wx.ALIGN_CENTER_VERTICAL | wx.LEFT, border=10)
-        grid.Add(self.txt_mqtt_url, flag=wx.EXPAND | wx.RIGHT, border=10)
-        
+        lbl_mqtt_host = wx.StaticText(panel, label="MQTT Host:")
+        self.txt_mqtt_host = wx.TextCtrl(panel, style=wx.TE_LEFT)
+        grid.Add(lbl_mqtt_host, flag=wx.ALIGN_CENTER_VERTICAL | wx.LEFT, border=10)
+        grid.Add(self.txt_mqtt_host, flag=wx.EXPAND | wx.RIGHT, border=10)
+
         lbl_mqtt_port = wx.StaticText(panel, label="MQTT Port:")
         self.txt_mqtt_port = wx.TextCtrl(panel, style=wx.TE_LEFT)
         grid.Add(lbl_mqtt_port, flag=wx.ALIGN_CENTER_VERTICAL | wx.LEFT, border=10)
@@ -119,7 +119,7 @@ class ConfigFrame(wx.Frame):
         self.chk_autostart.SetValue(bool(autostart))
         self.chk_confirm_state_change.SetValue(bool(confirm_state_change))
         self.chk_register_entity.SetValue(bool(register_entity))
-        self.txt_mqtt_url.SetValue(mqtt_host if mqtt_host else "")
+        self.txt_mqtt_host.SetValue(mqtt_host if mqtt_host else "")
         self.txt_mqtt_port.SetValue(str(mqtt_port) if mqtt_port else "")
         self.txt_mqtt_user.SetValue(mqtt_user if mqtt_user else "")
         self.txt_mqtt_password.SetValue(mqtt_password if mqtt_password else "")
@@ -160,7 +160,7 @@ class ConfigFrame(wx.Frame):
         settings.save_config("autostart", autostart)
         settings.save_config('confirm_state_change', confirm_state_change)
         settings.save_config('register_entity', register_entity)
-        settings.save_config("mqtt_host", self.txt_mqtt_url.GetValue())
+        settings.save_config("mqtt_host", self.txt_mqtt_host.GetValue())
         settings.save_config("mqtt_port", int(self.txt_mqtt_port.GetValue()) if self.txt_mqtt_port.GetValue().isdigit() else 0)
         settings.save_config("mqtt_user", self.txt_mqtt_user.GetValue())
         settings.save_config("mqtt_password", self.txt_mqtt_password.GetValue())
