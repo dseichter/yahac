@@ -21,7 +21,7 @@ import wx.adv
 import gui_mainframe
 import settings
 import helper
-import ha_helper
+import mqtt
 import webbrowser
 
 import logging_config  # Setup the logging  # noqa: F401
@@ -47,26 +47,34 @@ class YahacFrame(gui_mainframe.MainFrame):
                 if result == wx.YES:
                     webbrowser.open_new_tab(helper.RELEASES)
 
+
         if settings.load_value_from_json_file("register_entity"):
             # hack: before setting the entity online, set it offline first to be able to trigger the state change
-            logger.info("Set entity offline first to be able to trigger the state change.")
-            ha_helper.set_entity_state_offline()
-            logger.info("Create timer and set entity state online.")
-            self.timer = wx.Timer(self)
-            self.Bind(wx.EVT_TIMER, self.on_timer, self.timer)
-            self.timer.Start(5000)  # Check every 5 seconds
-        else:
-            logger.info("Remove the entity from Home Assistant, if config is disabling the integration.")
-            ha_helper.set_entity_state_offline()
+            logger.info("Get (or create) MQTT sensor.")
+            proceed = False
+            try:
+                self.ha_helper = mqtt.create_mqtt_sensor(helper.get_computer_name())
+                proceed = True
+            except Exception as e:
+                result = wx.MessageBox(
+                    f"Are your MQTT settings correct? Please check your configuration.\n\n{e}",
+                    "MQTT Error",
+                    wx.OK | wx.ICON_EXCLAMATION,
+                )
+            if proceed:
+                logger.info("Create timer and set entity state online.")
+                self.timer = wx.Timer(self)
+                self.Bind(wx.EVT_TIMER, self.on_timer, self.timer)
+                self.timer.Start(5000)  # Check every 5 seconds
 
     def on_timer(self, event):
-        ha_helper.set_entity_state_online()
+        mqtt.publish_sensor_state(self.ha_helper, online=True)  # Set entity online after 5 seconds
 
     def on_close(self, event):
         # set entity offline, if enabled
         if settings.load_value_from_json_file("register_entity"):
             logger.info("Set entity state to offline on close.")
-            ha_helper.set_entity_state_offline()
+            mqtt.publish_sensor_state(self.ha_helper, online=False)
         # call parent close method
         gui_mainframe.MainFrame.on_close(self, event)
 

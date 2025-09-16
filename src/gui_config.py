@@ -56,8 +56,28 @@ class ConfigFrame(wx.Frame):
         grid.Add(self.chk_confirm_state_change, flag=wx.LEFT, border=0)
         
         grid.Add(wx.StaticText(panel, label=""))  # Empty label for alignment
-        self.chk_register_entity = wx.CheckBox(panel, label="Register yahac as a Home Assistant entity (restart required)")
+        self.chk_register_entity = wx.CheckBox(panel, label="Register yahac as a Home Assistant entity using MQTT (restart required)")
         grid.Add(self.chk_register_entity, flag=wx.LEFT, border=0)
+
+        lbl_mqtt_url = wx.StaticText(panel, label="MQTT URL:")
+        self.txt_mqtt_url = wx.TextCtrl(panel, style=wx.TE_LEFT)
+        grid.Add(lbl_mqtt_url, flag=wx.ALIGN_CENTER_VERTICAL | wx.LEFT, border=10)
+        grid.Add(self.txt_mqtt_url, flag=wx.EXPAND | wx.RIGHT, border=10)
+        
+        lbl_mqtt_port = wx.StaticText(panel, label="MQTT Port:")
+        self.txt_mqtt_port = wx.TextCtrl(panel, style=wx.TE_LEFT)
+        grid.Add(lbl_mqtt_port, flag=wx.ALIGN_CENTER_VERTICAL | wx.LEFT, border=10)
+        grid.Add(self.txt_mqtt_port, flag=wx.EXPAND | wx.RIGHT, border=10)
+        
+        lbl_mqtt_user = wx.StaticText(panel, label="MQTT User:")
+        self.txt_mqtt_user = wx.TextCtrl(panel, style=wx.TE_LEFT)
+        grid.Add(lbl_mqtt_user, flag=wx.ALIGN_CENTER_VERTICAL | wx.LEFT, border=10)
+        grid.Add(self.txt_mqtt_user, flag=wx.EXPAND | wx.RIGHT, border=10)
+        
+        lbl_mqtt_password = wx.StaticText(panel, label="MQTT Password:")
+        self.txt_mqtt_password = wx.TextCtrl(panel, style=wx.TE_PASSWORD)
+        grid.Add(lbl_mqtt_password, flag=wx.ALIGN_CENTER_VERTICAL | wx.LEFT, border=10)
+        grid.Add(self.txt_mqtt_password, flag=wx.EXPAND | wx.RIGHT, border=10)
 
         # Buttons (span two columns)
         hbox_btn = wx.BoxSizer(wx.HORIZONTAL)
@@ -88,6 +108,10 @@ class ConfigFrame(wx.Frame):
         autostart = settings.load_value_from_json_file("autostart")
         confirm_state_change = settings.load_value_from_json_file('confirm_state_change')
         register_entity = settings.load_value_from_json_file('register_entity')
+        mqtt_host = settings.load_value_from_json_file("mqtt_host")
+        mqtt_port = settings.load_value_from_json_file("mqtt_port")
+        mqtt_user = settings.load_value_from_json_file("mqtt_user")
+        mqtt_password = settings.load_value_from_json_file("mqtt_password")
 
         self.txt_url.SetValue(url if url else "")
         self.txt_token.SetValue(token if token else "")
@@ -95,7 +119,11 @@ class ConfigFrame(wx.Frame):
         self.chk_autostart.SetValue(bool(autostart))
         self.chk_confirm_state_change.SetValue(bool(confirm_state_change))
         self.chk_register_entity.SetValue(bool(register_entity))
-
+        self.txt_mqtt_url.SetValue(mqtt_host if mqtt_host else "")
+        self.txt_mqtt_port.SetValue(str(mqtt_port) if mqtt_port else "")
+        self.txt_mqtt_user.SetValue(mqtt_user if mqtt_user else "")
+        self.txt_mqtt_password.SetValue(mqtt_password if mqtt_password else "")
+        
     def on_show_token(self, _event):
         current_value = self.txt_token.GetValue()
         if self.token_visible:
@@ -132,6 +160,10 @@ class ConfigFrame(wx.Frame):
         settings.save_config("autostart", autostart)
         settings.save_config('confirm_state_change', confirm_state_change)
         settings.save_config('register_entity', register_entity)
+        settings.save_config("mqtt_host", self.txt_mqtt_url.GetValue())
+        settings.save_config("mqtt_port", int(self.txt_mqtt_port.GetValue()) if self.txt_mqtt_port.GetValue().isdigit() else 0)
+        settings.save_config("mqtt_user", self.txt_mqtt_user.GetValue())
+        settings.save_config("mqtt_password", self.txt_mqtt_password.GetValue())
 
         wx.MessageBox("Settings saved.", "Save", wx.OK | wx.ICON_INFORMATION)
         self.Close()

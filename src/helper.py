@@ -14,6 +14,7 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import urllib3
+import socket
 import json
 import logging
 
@@ -23,6 +24,7 @@ RELEASES = 'https://github.com/dseichter/yahac/releases'
 WEBSITE = 'https://dseichter.github.io/yahac/'
 NAME = 'yahac'
 LICENCE = 'GPL-3.0'
+AUTHOR = 'Daniel Seichter'
 
 
 def check_for_new_release():
@@ -35,3 +37,11 @@ def check_for_new_release():
     except Exception as e:
         logging.error(f"Error checking for new release: {e}")
         return False
+
+def get_computer_name():
+    hostname = socket.gethostname()
+    # remove all non alphanumeric characters
+    hostname = "".join(c for c in hostname if c.isalnum())
+    # lowercase
+    hostname = hostname.lower()
+    return hostname
