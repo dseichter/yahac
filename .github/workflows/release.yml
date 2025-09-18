@@ -7,7 +7,7 @@ on:
 
 jobs:
 
-  build-binary:
+  build-windows:
       runs-on: windows-latest
       steps:
 
@@ -66,7 +66,7 @@ jobs:
           - name: Build Linux binary
             run: |
               . venv/bin/activate
-              pyinstaller --onefile --copy-metadata ha_mqtt_discoverablesrc/yahac.py -n yahac-ubuntu-24-04-${{ github.ref_name }}
+              pyinstaller --onefile --copy-metadata ha_mqtt_discoverable src/yahac.py -n yahac-ubuntu-24-04-${{ github.ref_name }}
 
           - name: Upload artifact
             uses: actions/upload-artifact@v4
