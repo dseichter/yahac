@@ -28,7 +28,7 @@ jobs:
             run: pip install -r src/requirements.txt
 
           - name: Build Windows binary
-            run: pyinstaller --onefile -w src/yahac.py -n yahac-${{ github.ref_name }}.exe --icon=icons/yahac.ico
+            run: pyinstaller --onefile --copy-metadata ha_mqtt_discoverable -w src/yahac.py -n yahac-${{ github.ref_name }}.exe --icon=icons/yahac.ico
 
           - name: Upload artifact
             uses: actions/upload-artifact@v4
@@ -66,7 +66,7 @@ jobs:
           - name: Build Linux binary
             run: |
               . venv/bin/activate
-              pyinstaller --onefile src/yahac.py -n yahac-ubuntu-24-04-${{ github.ref_name }}
+              pyinstaller --onefile --copy-metadata ha_mqtt_discoverablesrc/yahac.py -n yahac-ubuntu-24-04-${{ github.ref_name }}
 
           - name: Upload artifact
             uses: actions/upload-artifact@v4
@@ -104,7 +104,7 @@ jobs:
           - name: Build Linux binary
             run: |
               . venv/bin/activate
-              pyinstaller --onefile src/yahac.py -n yahac-ubuntu-25-04-${{ github.ref_name }}
+              pyinstaller --onefile --copy-metadata ha_mqtt_discoverable src/yahac.py -n yahac-ubuntu-25-04-${{ github.ref_name }}
 
           - name: Upload artifact
             uses: actions/upload-artifact@v4
@@ -142,7 +142,7 @@ jobs:
           - name: Build Linux binary
             run: |
               . venv/bin/activate
-              pyinstaller --onefile src/yahac.py -n yahac-archlinux-${{ github.ref_name }}
+              pyinstaller --onefile --copy-metadata ha_mqtt_discoverable src/yahac.py -n yahac-archlinux-${{ github.ref_name }}
 
           - name: Upload artifact
             uses: actions/upload-artifact@v4
