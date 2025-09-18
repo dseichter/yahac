@@ -31,6 +31,7 @@ nav:
   - Installation: installation.md
   - Configuration: configuration.md
   - Sensors: sensors.md
+  - MQTT: mqtt.md
   - Development: development.md
   - Compatibility: compatibility.md
 

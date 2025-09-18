@@ -1,8 +1,11 @@
 # Installation
 
-yahac itself does not need any additional libraries or components intstalled on your computer[^1]. Download the latest releases, place it into a directory of your choice and start.
+yahac itself does not need any additional libraries or components intstalled on your computer[^1]. Download the latest [release](https://github.com/dseichter/yahac/releases), place it into a directory of your choice and start.
 
 ## First time
+
+!!! info
+    You won't see any window appear, because yahac starts only as tray icon in your task bar :smile:.
 
 If you start yahac the first time, it will create within your users directory a subfolder `.yahac` and also creates the configuration file `config.json`.
 

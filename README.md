@@ -12,7 +12,13 @@ yahac - is a tool for Windows and Linux to show your most important entities of 
 
 ![yahac in tray Icon](docs/docs/assets/screenshots/yahac_traymenu_with_entities.png)
 
-You can configure as much as needed sensors and switches. As soon as you show the menu (right click on the yahac icon), the latest value of your entities will be collected and shown.
+## Features
+
+* Add sensors and get their current data
+* Show switches and turn them on/off with one click
+* Integrate your computer as a binary sensor into HA (MQTT)
+
+You can configure as much as needed sensors and switches. See the [📖 Documentation](https://dseichter.github.io/yahac/)
 
 > [!WARNING]  
 > Because of false positive in Windows Defender ([see #34](https://github.com/dseichter/yahac/issues/34)) take a look into the [compatibility](https://dseichter.github.io/yahac/compatibility/)
