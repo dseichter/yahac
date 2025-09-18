@@ -152,7 +152,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs: [build-binary, build-ubuntu-24-04, build-ubuntu-25-04, build-manjaro]
+    needs: [build-windows, build-ubuntu-24-04, build-ubuntu-25-04, build-manjaro]
     steps:
         - uses: actions/download-artifact@v5
           with:
