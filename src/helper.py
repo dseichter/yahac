@@ -18,7 +18,7 @@ import socket
 import json
 import logging
 
-VERSION = "v0.2.0"
+VERSION = "v0.2.1"
 UPDATEURL = 'https://api.github.com/repos/dseichter/yahac/releases/latest'
 RELEASES = 'https://github.com/dseichter/yahac/releases'
 WEBSITE = 'https://dseichter.github.io/yahac/'
