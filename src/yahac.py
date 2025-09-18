@@ -70,14 +70,6 @@ class YahacFrame(gui_mainframe.MainFrame):
     def on_timer(self, event):
         mqtt.publish_sensor_state(self.ha_helper, online=True)  # Set entity online after 5 seconds
 
-    def on_close(self, event):
-        # set entity offline, if enabled
-        if settings.load_value_from_json_file("register_entity"):
-            logger.info("Set entity state to offline on close.")
-            mqtt.publish_sensor_state(self.ha_helper, online=False)
-        # call parent close method
-        gui_mainframe.MainFrame.on_close(self, event)
-
 
 # mandatory in wx, create an app, False stands for not deteriction stdin/stdout
 # refer manual for details
