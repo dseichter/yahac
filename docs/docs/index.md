@@ -5,9 +5,17 @@ See current values/states of your sensors or turn on/off your switches. And ever
 
 ![yahac in tray Icon](assets/screenshots/yahac_traymenu_with_entities.png)
 
+## Features
+
+* Add sensors and get their current data
+* Show switches and turn them on/off with one click
+* Integrate your computer as a binary sensor into HA (MQTT)
+
 You can configure as much as needed sensors and switches. As soon as you show the menu (right click on the yahac icon), the latest value of your entities will be collected and shown.
 
 A full list of compatible and tested operating systems, can be found in the [compatibility](compatibility.md) overview.
+
+Get all new features and fixes by downloading the latest [yahac release](https://github.com/dseichter/yahac/releases).
 
 ## Start yahac
 

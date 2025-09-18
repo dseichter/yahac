@@ -21,7 +21,13 @@ import wx.adv
 import gui_mainframe
 import settings
 import helper
+import mqtt
 import webbrowser
+
+import logging_config  # Setup the logging  # noqa: F401
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class YahacFrame(gui_mainframe.MainFrame):
@@ -40,6 +46,29 @@ class YahacFrame(gui_mainframe.MainFrame):
                 )
                 if result == wx.YES:
                     webbrowser.open_new_tab(helper.RELEASES)
+
+
+        if settings.load_value_from_json_file("register_entity"):
+            # hack: before setting the entity online, set it offline first to be able to trigger the state change
+            logger.info("Get (or create) MQTT sensor.")
+            proceed = False
+            try:
+                self.ha_helper = mqtt.create_mqtt_sensor(helper.get_computer_name())
+                proceed = True
+            except Exception as e:
+                result = wx.MessageBox(
+                    f"Are your MQTT settings correct? Please check your configuration.\n\n{e}",
+                    "MQTT Error",
+                    wx.OK | wx.ICON_EXCLAMATION,
+                )
+            if proceed:
+                logger.info("Create timer and set entity state online.")
+                self.timer = wx.Timer(self)
+                self.Bind(wx.EVT_TIMER, self.on_timer, self.timer)
+                self.timer.Start(5000)  # Check every 5 seconds
+
+    def on_timer(self, event):
+        mqtt.publish_sensor_state(self.ha_helper, online=True)  # Set entity online after 5 seconds
 
 
 # mandatory in wx, create an app, False stands for not deteriction stdin/stdout

@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class ConfigFrame(wx.Frame):
     def __init__(self, parent):
-        super().__init__(parent, title="Settings", size=(400, 260))
+        super().__init__(parent, title="Settings", size=(550, 400))
         panel = wx.Panel(self)
 
         # Set frame icon
@@ -54,6 +54,30 @@ class ConfigFrame(wx.Frame):
         grid.Add(wx.StaticText(panel, label=""))  # Empty label for alignment
         self.chk_confirm_state_change = wx.CheckBox(panel, label="Ask for confirmation before toggling switch")
         grid.Add(self.chk_confirm_state_change, flag=wx.LEFT, border=0)
+        
+        grid.Add(wx.StaticText(panel, label=""))  # Empty label for alignment
+        self.chk_register_entity = wx.CheckBox(panel, label="Register yahac as a Home Assistant entity using MQTT (restart required)")
+        grid.Add(self.chk_register_entity, flag=wx.LEFT, border=0)
+
+        lbl_mqtt_host = wx.StaticText(panel, label="MQTT Host:")
+        self.txt_mqtt_host = wx.TextCtrl(panel, style=wx.TE_LEFT)
+        grid.Add(lbl_mqtt_host, flag=wx.ALIGN_CENTER_VERTICAL | wx.LEFT, border=10)
+        grid.Add(self.txt_mqtt_host, flag=wx.EXPAND | wx.RIGHT, border=10)
+
+        lbl_mqtt_port = wx.StaticText(panel, label="MQTT Port:")
+        self.txt_mqtt_port = wx.TextCtrl(panel, style=wx.TE_LEFT)
+        grid.Add(lbl_mqtt_port, flag=wx.ALIGN_CENTER_VERTICAL | wx.LEFT, border=10)
+        grid.Add(self.txt_mqtt_port, flag=wx.EXPAND | wx.RIGHT, border=10)
+        
+        lbl_mqtt_user = wx.StaticText(panel, label="MQTT User:")
+        self.txt_mqtt_user = wx.TextCtrl(panel, style=wx.TE_LEFT)
+        grid.Add(lbl_mqtt_user, flag=wx.ALIGN_CENTER_VERTICAL | wx.LEFT, border=10)
+        grid.Add(self.txt_mqtt_user, flag=wx.EXPAND | wx.RIGHT, border=10)
+        
+        lbl_mqtt_password = wx.StaticText(panel, label="MQTT Password:")
+        self.txt_mqtt_password = wx.TextCtrl(panel, style=wx.TE_PASSWORD)
+        grid.Add(lbl_mqtt_password, flag=wx.ALIGN_CENTER_VERTICAL | wx.LEFT, border=10)
+        grid.Add(self.txt_mqtt_password, flag=wx.EXPAND | wx.RIGHT, border=10)
 
         # Buttons (span two columns)
         hbox_btn = wx.BoxSizer(wx.HORIZONTAL)
@@ -83,13 +107,23 @@ class ConfigFrame(wx.Frame):
         checkupdate = settings.load_value_from_json_file("checkupdate")
         autostart = settings.load_value_from_json_file("autostart")
         confirm_state_change = settings.load_value_from_json_file('confirm_state_change')
+        register_entity = settings.load_value_from_json_file('register_entity')
+        mqtt_host = settings.load_value_from_json_file("mqtt_host")
+        mqtt_port = settings.load_value_from_json_file("mqtt_port")
+        mqtt_user = settings.load_value_from_json_file("mqtt_user")
+        mqtt_password = settings.load_value_from_json_file("mqtt_password")
 
         self.txt_url.SetValue(url if url else "")
         self.txt_token.SetValue(token if token else "")
         self.chk_checkupdate.SetValue(bool(checkupdate))
         self.chk_autostart.SetValue(bool(autostart))
         self.chk_confirm_state_change.SetValue(bool(confirm_state_change))
-
+        self.chk_register_entity.SetValue(bool(register_entity))
+        self.txt_mqtt_host.SetValue(mqtt_host if mqtt_host else "")
+        self.txt_mqtt_port.SetValue(str(mqtt_port) if mqtt_port else "")
+        self.txt_mqtt_user.SetValue(mqtt_user if mqtt_user else "")
+        self.txt_mqtt_password.SetValue(mqtt_password if mqtt_password else "")
+        
     def on_show_token(self, _event):
         current_value = self.txt_token.GetValue()
         if self.token_visible:
@@ -118,12 +152,18 @@ class ConfigFrame(wx.Frame):
         checkupdate = self.chk_checkupdate.GetValue()
         autostart = self.chk_autostart.GetValue()
         confirm_state_change = self.chk_confirm_state_change.GetValue()
+        register_entity = self.chk_register_entity.GetValue()
         # Save logic placeholder
         settings.save_config("url", url)
         settings.save_config("token", token)
         settings.save_config("checkupdate", checkupdate)
         settings.save_config("autostart", autostart)
         settings.save_config('confirm_state_change', confirm_state_change)
+        settings.save_config('register_entity', register_entity)
+        settings.save_config("mqtt_host", self.txt_mqtt_host.GetValue())
+        settings.save_config("mqtt_port", int(self.txt_mqtt_port.GetValue()) if self.txt_mqtt_port.GetValue().isdigit() else 0)
+        settings.save_config("mqtt_user", self.txt_mqtt_user.GetValue())
+        settings.save_config("mqtt_password", self.txt_mqtt_password.GetValue())
 
         wx.MessageBox("Settings saved.", "Save", wx.OK | wx.ICON_INFORMATION)
         self.Close()
