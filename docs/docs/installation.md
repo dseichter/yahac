@@ -1,6 +1,6 @@
 # Installation
 
-yahac itself does not need any additional libraries or components intstalled on your computer[^1]. Download the latest [release](https://github.com/dseichter/yahac/releases), place it into a directory of your choice and start.
+yahac itself does not need any additional libraries or components installed on your computer[^1]. Download the latest [release](https://github.com/dseichter/yahac/releases), place it into a directory of your choice and start.
 
 ## First time
 

@@ -5,6 +5,12 @@ See current values/states of your sensors or turn on/off your switches. And ever
 
 ![yahac in tray Icon](assets/screenshots/yahac_traymenu_with_entities.png)
 
+[![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/dseichter/yahac/total)](https://github.com/dseichter/yahac/releases)
+![GitHub License](https://img.shields.io/github/license/dseichter/yahac)
+[![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/dseichter/yahac)](https://github.com/dseichter/yahac/issues)
+[![GitHub Issues or Pull Requests](https://img.shields.io/github/issues-pr/dseichter/yahac)](https://github.com/dseichter/yahac/pulls)
+
+
 ## Features
 
 * Add sensors and get their current data
@@ -17,17 +23,6 @@ A full list of compatible and tested operating systems, can be found in the [com
 
 Get all new features and fixes by downloading the latest [yahac release](https://github.com/dseichter/yahac/releases).
 
-## Start yahac
-
-You won't see any window appear, because yahac starts only as tray icon in your task bar. Follow the [installation instruction](installation.md) if you start yahac the first time.
-
-### Check for updates
-
-Next to the list of your entities, you will find the possibility to check for updates.
-
-### Open Documentation
-
-This will open this documentation.
 
 ## Known issues
 
