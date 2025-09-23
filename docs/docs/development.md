@@ -2,15 +2,19 @@
 
 ## Start development
 
+I am using pyenv on my computers and virtual machines.
+
 Create and activate an environment by running the following command:
 
-```python -m venv .venv```
+```pyenv virtualenv 3.13.7 yahac-venv```
 
-```.venv/Scripts/activate```
+```pyenv activate yahac-venv```
 
 Install the required dependencies
 
 ```pip install -r src/requirements.txt```
+```pip install -r icons/requirements.txt```
+```pip install -r docs/requirements.txt```
 
 You can start the yahac by running the following command:
 
