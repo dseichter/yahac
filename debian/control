@@ -1,0 +1,13 @@
+Source: yahac
+Section: utils
+Priority: optional
+Maintainer: Daniel Seichter <daniel.seichter@dseichter.>
+Build-Depends: debhelper (>= 12)
+Standards-Version: 4.6.2
+Homepage: https://github.com/dseichter/yahac
+
+Package: yahac
+Architecture: amd64
+Depends: ${misc:Depends}
+Description: Yet Another Home Assistant Client (yahac)
+  Yahac displays Home Assistant sensors/actuators in the system tray, etc.

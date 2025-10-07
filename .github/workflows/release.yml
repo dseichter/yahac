@@ -184,3 +184,79 @@ jobs:
               yahac-ubuntu-25-04-${{ github.ref_name }}
               yahac-archlinux-${{ github.ref_name }}
               yahac-${{ github.ref_name }}.exe
+
+  build-deb-package-24:
+    needs: [deploy]
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:24.04
+    steps:
+      - uses: actions/download-artifact@v5
+        with:
+          name: yahac-ubuntu-24-04-${{ github.ref_name }}
+      
+      - name: Rename artifact to yahac
+        run: |
+          mv yahac-ubuntu-24-04-${{ github.ref_name }} yahac
+          chmod +x yahac
+
+      - name: Install packaging tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y debhelper devscripts build-essential fakeroot
+
+      - name: Prepare version & changelog
+        run: |
+          VERSION="${{ github.ref_name }}"
+          VERSION=${VERSION#v}
+          dch --create -v "${VERSION}-1" --package yahac "Generated automatically"
+
+      - name: Build .deb package
+        run: |
+          export DEBEMAIL="daniel.seichter@dseichter.de"
+          export DEBFULLNAME="Daniel Seichter"
+          dpkg-buildpackage -us -uc
+
+      - name: Upload .deb
+        uses: actions/upload-artifact@v4
+        with:
+          name: yahac-ubuntu-24-04-${{ github.ref_name }}.deb
+          path: ../*.deb
+
+  build-deb-package-25:
+    needs: [deploy]
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:25.04
+    steps:
+      - uses: actions/download-artifact@v5
+        with:
+          name: yahac-ubuntu-25-04-${{ github.ref_name }}
+      
+      - name: Rename artifact to yahac
+        run: |
+          mv yahac-ubuntu-25-04-${{ github.ref_name }} yahac
+          chmod +x yahac
+
+      - name: Install packaging tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y debhelper devscripts build-essential fakeroot
+
+      - name: Prepare version & changelog
+        run: |
+          VERSION="${{ github.ref_name }}"
+          VERSION=${VERSION#v}
+          dch --create -v "${VERSION}-1" --package yahac "Generated automatically"
+
+      - name: Build .deb package
+        run: |
+          export DEBEMAIL="daniel.seichter@dseichter.de"
+          export DEBFULLNAME="Daniel Seichter"
+          dpkg-buildpackage -us -uc
+
+      - name: Upload .deb
+        uses: actions/upload-artifact@v4
+        with:
+          name: yahac-ubuntu-25-04-${{ github.ref_name }}.deb
+          path: ../*.deb          
