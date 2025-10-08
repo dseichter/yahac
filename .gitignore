@@ -208,3 +208,13 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+
+# Debian temp build dirs
+debian/tmp/
+debian/*.debhelper.log
+debian/files
+debian/*.substvars
+debian/yahac/
+debian/.debhelper/generated
+debian/debhelper-build-stamp
