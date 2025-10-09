@@ -2,9 +2,12 @@
 
 Each yahac client can be integrated into the Homa Assistants' Automation. 
 
-If you have enabled MQTT, yahac automatically subscribes to the topic `yahac/<computername>/command`.
+If you have enabled MQTT, yahac automatically subscribes to the following topic:
 
-Replace the computername with your yahac client and adjust your payload.
+* `yahac/<computername>/command`
+* `yahac/<computername>/notify`
+
+Replace the computername with your yahac client and adjust your payload, see below.
 
 ## Example
 
@@ -28,16 +31,58 @@ actions:
       qos: "2"
       retain: false
       topic: yahac/<computername>/command
-      payload: "{\"run_script\": \"~/test_mqtt_script.sh\"}"
+      payload: "{\"command\": \"~/test_mqtt_script.sh\", \"data\": \"~Hello World\"}"
 mode: single
 ```
 
-You can provide any script you want to run on each yahac client. If your provided script should only run once, take care about QOS.
+You can provide any script you want to run on each yahac client. If your provided script should only run once, take care about *QOS*.
 
-## Supported commands
+## Supported topics and payloads
 
-### run_script
+Each topic has it's own individual parameters, you can use.
 
-This command will run the provided script/executable.
+### command
 
-Further commands I will add, if there is the need. 
+You can provide individual payloads. But please take care, you provide at least the command itself.
+The topic itself is defined with the schema `yahac/<computername>/command`.
+
+**Possible payloads**
+
+String:
+```bash
+~/test_mqtt_script.sh
+~/test_mqtt_script.sh param1 param2 ...
+```
+
+JSON:
+```JSON
+{"command": "~/test_mqtt_script.sh", "data": "Hello World"}
+{"command": "~/test_mqtt_script.sh", "data": {"parameter": "value", "another_parameter": "value", ...}}
+```
+
+!!! warning
+    You run your commands on your own risk. Please be carefull! Only one command can be provided!
+
+If you script or executable run fine, you have to check by your own. In the logs (set to loglevel info), you will find the output of the execution.
+
+### notify
+
+You can sent some information directly to yahac, which will shown as notification.
+The topic itself is defined with the schema `yahac/<computername>/notify`.
+
+**Possible payloads**
+
+String:
+
+```bash
+Hello from Home Assistant as a string.
+```
+
+JSON:
+
+```JSON
+{"message": "Hello World"}
+{"message": {"parameter": "value", "another_parameter": "value", ...}}
+```
+
+Providing an object instead of a string as value, it will be formated as JSON within the message.

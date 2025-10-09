@@ -62,35 +62,48 @@ def create_mqtt_sensor(computername: str):
     # Enable also a command listener
     def on_connect(client, userdata, flags, rc):
         logger.info(f"[MQTT] connected {rc}")
-        topic = f"yahac/{computername}/command"
-        client.subscribe(topic)
-        logger.info(f"[MQTT] subscribed: {topic}")
+        topics = [
+            f"yahac/{computername}/command",
+            f"yahac/{computername}/notify"
+        ]
+        for topic in topics:
+            client.subscribe(topic)
+            logger.info(f"[MQTT] subscribed: {topic}")
 
 
     def on_message(client, userdata, msg):
         payload = msg.payload.decode()
+        topic = msg.topic
         try:
-            # receive the command like {"open_browser": "value"}
             data = json.loads(payload)
-            logger.info(f"[MQTT] received command in JSON format: {data}")
-            command = list(data.keys())[0]  # Get the first key as command
-            payload = data[command]  # Get the associated value
-            handle_command_json(command, payload)  # If you want to process the JSON object
+            logger.info(f"[MQTT] received JSON on topic '{topic}': {data}")
+            handle_command_json(topic, data)
         except json.JSONDecodeError:
-            logger.warning(f"[MQTT] received command: {payload}. Handle as string.")
-            handle_command(payload)
+            logger.info(f"[MQTT] received string on topic '{topic}': {payload}")
+            handle_command_string(topic, payload)
 
-    def handle_command(command: str):
-        if command == "run_script":
-            logger.info("[YAHAC] command: run_script")
-        else:
-            logger.info(f"[YAHAC] Unsupported/unknown command: {command}")
 
-    def handle_command_json(command: str, payload: dict):
-        if command == "run_script":
-            logger.info(f"[YAHAC] command: run_script, payload '{payload}'")
+    def handle_command_json(topic: str, payload: dict):
+        if topic.endswith("/command"):
+            command = payload.get("command")
+            data = payload.get("data") # default is None, therefore, no additional parameters
+            logger.info(f"[YAHAC] topic 'command': {command}, data: {data}")
+        elif topic.endswith("/notify"):
+            content = payload.get("message")
+            logger.info(f"[YAHAC] topic 'notify': {content}")
         else:
-            logger.info(f"[YAHAC] Unsupported/unknown command: {command}")         
+            logger.warning(f"[YAHAC] Unknown/unhandled topic: {topic}")
+
+    def handle_command_string(topic: str, payload: str):
+        if topic.endswith("/command"):
+            command = payload
+            logger.info(f"[YAHAC] topic 'command': {command}")
+        elif topic.endswith("/notify"):
+            content = payload
+            logger.info(f"[YAHAC] topic 'notify': {content}")
+        else:
+            logger.warning(f"[YAHAC] Unknown/unhandled topic: {topic}")
+      
 
     # Start MQTT listener in background
     def start_mqtt_listener():
