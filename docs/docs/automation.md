@@ -71,7 +71,7 @@ You can sent some information directly to yahac, which will shown as notificatio
 The topic itself is defined with the schema `yahac/<computername>/notify`.
 
 ![yahac notification](assets/screenshots/yahac_notification.png)
-
+![yahac notification JSON](assets/screenshots/yahac_notification_json.png)
 
 **Possible payloads**
 

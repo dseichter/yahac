@@ -2,8 +2,7 @@ import logging
 import subprocess
 import json
 import os
-import wx
-import yahac
+import win11toast
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +41,13 @@ def process_notification(payload):
         payload (any): The notification data.
     """
     logger.info(f"Processing notification: {payload}")
+
+    # be able to show JSON payloads nicely formatted
+    try:
+        payload = json.dumps(payload, default=str, indent=2)
+    except (TypeError, ValueError):
+        payload = payload
+
     if os.name == "posix":
         subprocess.Popen(['notify-send', 'yahac', str(payload), '-t', '5000'])
     elif os.name == "nt":

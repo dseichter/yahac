@@ -33,3 +33,7 @@ There is a false positive alert after downloading the windows binary [#34](https
 
 ### GNOME
 GNOME does not support Tray Menu out of the box. There are serveral solutions to enable a tray menu within GNOME. I can't recommend any of them at the moment.
+
+### Windows sizes
+
+In some Desktop Environments the size of the windows, e.g. of the yahac settings, will not show with the exact values.
