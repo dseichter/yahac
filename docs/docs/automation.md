@@ -70,6 +70,9 @@ If you script or executable run fine, you have to check by your own. In the logs
 You can sent some information directly to yahac, which will shown as notification.
 The topic itself is defined with the schema `yahac/<computername>/notify`.
 
+![yahac notification](assets/screenshots/yahac_notification.png)
+
+
 **Possible payloads**
 
 String:

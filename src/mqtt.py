@@ -3,6 +3,7 @@ from ha_mqtt_discoverable.sensors import BinarySensor, BinarySensorInfo
 
 import helper
 import settings as yahac_settings
+import mqtt_topic
 
 import paho.mqtt.client as mqtt
 import threading
@@ -88,9 +89,11 @@ def create_mqtt_sensor(computername: str):
             command = payload.get("command")
             data = payload.get("data") # default is None, therefore, no additional parameters
             logger.info(f"[YAHAC] topic 'command': {command}, data: {data}")
+            mqtt_topic.process_command(command, data)
         elif topic.endswith("/notify"):
             content = payload.get("message")
             logger.info(f"[YAHAC] topic 'notify': {content}")
+            mqtt_topic.process_notification(content)
         else:
             logger.warning(f"[YAHAC] Unknown/unhandled topic: {topic}")
 
@@ -98,9 +101,11 @@ def create_mqtt_sensor(computername: str):
         if topic.endswith("/command"):
             command = payload
             logger.info(f"[YAHAC] topic 'command': {command}")
+            mqtt_topic.process_command(command, None)
         elif topic.endswith("/notify"):
             content = payload
             logger.info(f"[YAHAC] topic 'notify': {content}")
+            mqtt_topic.process_notification(content)
         else:
             logger.warning(f"[YAHAC] Unknown/unhandled topic: {topic}")
       

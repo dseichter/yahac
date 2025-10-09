@@ -1,7 +1,7 @@
 # yahac - Yet Another Home Assistant Client
 
 yahac - Yet Another Home Assistant Client - is a tool to show your most important entities of Home Assistant.
-See current values/states of your sensors or turn on/off your switches. And everything in the tray area.
+See current values/states of your sensors or turn on/off your switches. And everything in the tray area.  Run local commands or get notifications!
 
 ![yahac in tray Icon](assets/screenshots/yahac_traymenu_with_entities.png)
 
@@ -15,7 +15,9 @@ See current values/states of your sensors or turn on/off your switches. And ever
 
 * Add sensors and get their current data
 * Show switches and turn them on/off with one click
-* Integrate your computer as a binary sensor into HA (MQTT)
+* Integrate your computer as a binary sensor into Home Assistant (MQTT)
+* Receive and process MQTT commands and notifications (JSON supported)
+* Improved logging and diagnostics for troubleshooting
 
 You can configure as much as needed sensors and switches. As soon as you show the menu (right click on the yahac icon), the latest value of your entities will be collected and shown.
 
