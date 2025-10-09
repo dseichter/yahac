@@ -2,7 +2,6 @@ import logging
 import subprocess
 import json
 import os
-import win11toast
 
 logger = logging.getLogger(__name__)
 
