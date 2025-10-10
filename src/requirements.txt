@@ -4,4 +4,4 @@ urllib3==2.5.0
 pyinstaller==6.16.0
 pywin32==311; sys_platform != "linux"
 win11toast==0.36.2; sys_platform != "linux"
-ha_mqtt_discoverable==0.20.1
+ha_mqtt_discoverable==0.22.0
