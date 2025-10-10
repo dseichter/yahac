@@ -111,18 +111,20 @@ class TrayIcon(wx.adv.TaskBarIcon):
             entity_state = api.get_entity_state(entity_id)
             logger.info(f"Loaded sensor: {friendly_name} ({entity_id}) - {entity_type} - {entity_state}")
             if entity_type == "sensor":
-                sensor_item = menu.Append(wx.ID_ANY, f"{friendly_name} ({entity_state})", helpString=entity_id, kind=wx.ITEM_NORMAL)
                 sensor_icon = icons.sensors_24dp_1976d2_fill0_wght400_grad0_opsz24.GetBitmap()
+                sensor_item = wx.MenuItem(menu, wx.ID_ANY, f"{friendly_name} ({entity_state})", helpString=entity_id)
                 sensor_item.SetBitmap(sensor_icon)
+                menu.Append(sensor_item)
                 self.menu_id_map[sensor_item.GetId()] = sensor
                 self.Bind(wx.EVT_MENU, self.on_sensor_selected, id=sensor_item.GetId())
             if entity_type == "switch":
-                switch_item = menu.Append(wx.ID_ANY, f"{friendly_name} ({entity_state})", helpString=entity_id, kind=wx.ITEM_NORMAL)
                 if entity_state == "on":
                     switch_icon = icons.toggle_on_24dp_1976d2_fill0_wght400_grad0_opsz24.GetBitmap()
                 else:
                     switch_icon = icons.toggle_off_24dp_1976d2_fill0_wght400_grad0_opsz24.GetBitmap()
+                switch_item = wx.MenuItem(menu, wx.ID_ANY, f"{friendly_name} ({entity_state})", helpString=entity_id)
                 switch_item.SetBitmap(switch_icon)
+                menu.Append(switch_item)
                 self.menu_id_map[switch_item.GetId()] = sensor
                 self.Bind(wx.EVT_MENU, self.on_switch_selected, id=switch_item.GetId())
 

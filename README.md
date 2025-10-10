@@ -8,7 +8,7 @@
   <b><a href="https://dseichter.github.io/yahac/">📖 Documentation (GitHub Pages)</a></b>
 </p>
 
-yahac - is a tool for Windows and Linux to show your most important entities of Home Assistant. See current values/states of your sensors or turn on/off your switches. And everything in the tray area.
+yahac - is a tool for Windows and Linux to show your most important entities of Home Assistant. See current values/states of your sensors or turn on/off your switches. And everything in the tray area. Run local commands or get notifications!
 
 ![yahac in tray Icon](docs/docs/assets/screenshots/yahac_traymenu_with_entities.png)
 
@@ -16,7 +16,9 @@ yahac - is a tool for Windows and Linux to show your most important entities of 
 
 * Add sensors and get their current data
 * Show switches and turn them on/off with one click
-* Integrate your computer as a binary sensor into HA (MQTT)
+* Integrate your computer as a binary sensor into Home Assistant (MQTT)
+* Receive and process MQTT commands and notifications (JSON supported)
+* Improved logging and diagnostics for troubleshooting
 
 You can configure as much as needed sensors and switches. See the [📖 Documentation](https://dseichter.github.io/yahac/)
 
