@@ -21,8 +21,8 @@ Now you can choose to proceed with adding your first [sensors](sensors.md) or ma
 
 ![empty sensors](assets/screenshots/yahac_traymenu_empty.png)
 
-[^1]: The default installations of the Linux distributions did not requiere to install extra packages. See [compatibility](compatibility.md) for further information.
+[^1]: The default installations of the Linux distributions did not require to install extra packages. See [compatibility](compatibility.md) for further information.
 
 ## Notifications
 
-If notifications will not appear, check the logs. On Linux, please be sure, you have installed the package `notify-send` of your distribution.
+If notifications will not appear, check the logs. On Linux, please be sure, you have installed the package `notify-send` of your distribution. In most cases, this is already done.

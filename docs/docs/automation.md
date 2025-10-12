@@ -1,17 +1,17 @@
 # Automation
 
-Each yahac client can be integrated into the Homa Assistants' Automation. 
+Each yahac client can be integrated into the Home Assistants' Automation. 
 
 If you have enabled MQTT, yahac automatically subscribes to the following topic:
 
 * `yahac/<computername>/command`
 * `yahac/<computername>/notify`
 
-Replace the computername with your yahac client and adjust your payload, see below.
+Replace the computername with your yahac client name (be aware, that only lower-case without special characters) and adjust your payload, see below.
 
 ## Example
 
-This example automation will run test_mqtt_script.sh, located within my home directory, after the client is connected (startup of the yahac client).
+This example automation will run test_mqtt_script.sh, located within the home directory, after the client is connected (startup of the yahac client).
 
 ```YAML
 alias: yahac Test
@@ -63,7 +63,7 @@ JSON:
 !!! warning
     You run your commands on your own risk. Please be carefull! Only one command can be provided!
 
-If you script or executable run fine, you have to check by your own. In the logs (set to loglevel info), you will find the output of the execution.
+If your script or executable runs fine, you have to check by your own. In the logs (set to loglevel info), you will find the output of the execution itself, not the output the script.
 
 ### notify
 
@@ -78,14 +78,15 @@ The topic itself is defined with the schema `yahac/<computername>/notify`.
 String:
 
 ```bash
-Hello from Home Assistant as a string.
+Hello World as string!
 ```
 
 JSON:
 
 ```JSON
 {"message": "Hello World"}
-{"message": {"parameter": "value", "another_parameter": "value", ...}}
+{"message": {"parameter": "value", "another_parameter": "value"}}
 ```
 
 Providing an object instead of a string as value, it will be formated as JSON within the message.
+This will enable you to receive immediately an information.
