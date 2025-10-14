@@ -188,6 +188,11 @@ class ConfigFrame(wx.Frame):
         logger.info(f"Setting autostart to: {autostart}")
         app_name = "yahac"
         exe_path = sys.executable if getattr(sys, "frozen", False) else sys.argv[0]
+        # Validate and sanitize the executable path
+        exe_path = os.path.abspath(os.path.normpath(exe_path))
+        if not os.path.exists(exe_path) or ".." in exe_path:
+            logger.error(f"Invalid executable path: {exe_path}")
+            return
         if sys.platform.startswith("win"):
             
             startup_dir = os.path.join(os.environ["APPDATA"], "Microsoft", "Windows", "Start Menu", "Programs", "Startup")
