@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class ConfigFrame(wx.Frame):
     def __init__(self, parent):
-        super().__init__(parent, title="Settings", size=(550, 400))
+        super().__init__(parent, title="Settings", size=(580, 500))
         panel = wx.Panel(self)
 
         # Set frame icon
@@ -79,6 +79,15 @@ class ConfigFrame(wx.Frame):
         grid.Add(lbl_mqtt_password, flag=wx.ALIGN_CENTER_VERTICAL | wx.LEFT, border=10)
         grid.Add(self.txt_mqtt_password, flag=wx.EXPAND | wx.RIGHT, border=10)
 
+        # Log Level
+        lbl_log_level = wx.StaticText(panel, label="Log Level:")
+        self.cmb_log_level = wx.ComboBox(panel, style=wx.CB_DROPDOWN | wx.CB_READONLY)
+        self.cmb_log_level.Append("DEBUG")
+        self.cmb_log_level.Append("INFO")
+        self.cmb_log_level.Append("ERROR")
+        grid.Add(lbl_log_level, flag=wx.ALIGN_CENTER_VERTICAL | wx.LEFT, border=10)
+        grid.Add(self.cmb_log_level, flag=wx.EXPAND | wx.RIGHT, border=10)
+
         # Buttons (span two columns)
         hbox_btn = wx.BoxSizer(wx.HORIZONTAL)
         self.btn_test = wx.Button(panel, label="Test")
@@ -112,6 +121,7 @@ class ConfigFrame(wx.Frame):
         mqtt_port = settings.load_value_from_json_file("mqtt_port")
         mqtt_user = settings.load_value_from_json_file("mqtt_user")
         mqtt_password = settings.load_value_from_json_file("mqtt_password")
+        log_level = settings.load_value_from_json_file("loglevel")
 
         self.txt_url.SetValue(url if url else "")
         self.txt_token.SetValue(token if token else "")
@@ -123,6 +133,7 @@ class ConfigFrame(wx.Frame):
         self.txt_mqtt_port.SetValue(str(mqtt_port) if mqtt_port else "")
         self.txt_mqtt_user.SetValue(mqtt_user if mqtt_user else "")
         self.txt_mqtt_password.SetValue(mqtt_password if mqtt_password else "")
+        self.cmb_log_level.SetValue(log_level if log_level else "INFO")
         
     def on_show_token(self, _event):
         current_value = self.txt_token.GetValue()
@@ -164,6 +175,7 @@ class ConfigFrame(wx.Frame):
         settings.save_config("mqtt_port", int(self.txt_mqtt_port.GetValue()) if self.txt_mqtt_port.GetValue().isdigit() else 0)
         settings.save_config("mqtt_user", self.txt_mqtt_user.GetValue())
         settings.save_config("mqtt_password", self.txt_mqtt_password.GetValue())
+        settings.save_config("loglevel", self.cmb_log_level.GetValue())
 
         wx.MessageBox("Settings saved.", "Save", wx.OK | wx.ICON_INFORMATION)
         self.Close()

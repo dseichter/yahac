@@ -29,3 +29,37 @@ If you wish, that yahac will start automatically after you have logged in to you
 This option is only relevant for switches. If you want to change the state of a switch, you should be sometimes careful. Therefore, default true, this option will enable a small confirmation dialog, as soon as you click on the entry.
 
 ![Switch confirmation](assets/screenshots/yahac_traymenu_switch_confirmation.png).
+
+
+## MQTT
+
+You can register yahac as a MQTT device within your Home Assistant system.
+
+### Register yahac as MQTT
+
+If this checkbox is set, please be sure, you have filled out all the entries below.
+
+### MQTT Host
+
+Your DNS name or IP address of your MQTT broker.
+
+### MQTT Port
+
+The port, your service is listening.
+
+### MQTT User
+
+Username for mqtt. To increase security, you can create a new user within your MQTT.
+
+### MQTT Password
+
+Last but not least, provide the password.
+
+## Logging
+
+yahac writes per default the logs to /tmp/yahac.log. Since there are no sensitive data, the temp file is available within all operating systems, I kept this approach.
+
+### Loglevel
+
+Specify your loglevel, you want to run yahac. At the beginning, you might see potential configuration issues, so I recommend to set to **INFO**.
+Default is **ERROR**.
