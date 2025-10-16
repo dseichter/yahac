@@ -15,9 +15,10 @@ entities = api.list_states()
 # Create a list of entity IDs to select as sensors
 entity_list = []
 
-if isinstance(entities, list):
+if entities and isinstance(entities, list):
     for entity in entities:
-        entity_list.append(entity["entity_id"])
+        if isinstance(entity, dict) and "entity_id" in entity:
+            entity_list.append(entity["entity_id"])
 
 
 class SensorSelectorFrame(wx.Frame):

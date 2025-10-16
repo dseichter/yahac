@@ -26,8 +26,8 @@ def create_mqtt_sensor(computername: str):
     # Create MQTT settings
     try:
         mqtt_settings = Settings.MQTT(host=mqtt_host, port=mqtt_port, username=mqtt_user, password=mqtt_password)
-    except Exception as e:
-        raise Exception(f"Error creating MQTT settings: {e}")
+    except (ValueError, TypeError, ConnectionError) as e:
+        raise RuntimeError(f"Error creating MQTT settings: {e}") from e
 
     # Define the BinarySensorInfo
     sensor_info = BinarySensorInfo(
