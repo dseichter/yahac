@@ -154,6 +154,16 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-windows, build-ubuntu-24-04, build-ubuntu-25-04, build-manjaro]
     steps:
+        - name: Trigger Debian package build
+          uses: actions/github-script@v7
+          with:
+            script: |
+              github.rest.actions.createWorkflowDispatch({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: 'debian.yml',
+                ref: context.ref
+              })
         - uses: actions/download-artifact@v5
           with:
             name: yahac-ubuntu-24-04-${{ github.ref_name }}
