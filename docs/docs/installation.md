@@ -1,6 +1,39 @@
 # Installation
 
-yahac itself does not need any additional libraries or components installed on your computer[^1]. Download the latest [release](https://github.com/dseichter/yahac/releases), place it into a directory of your choice and start.
+YAHAC can be installed in multiple ways depending on your operating system and preferences.
+
+## Download Options
+
+### Standalone Binaries
+Download pre-built binaries from the latest [release](https://github.com/dseichter/yahac/releases):
+
+- **Windows**: `yahac-v*.exe` - No installation required
+- **Linux**: `yahac-ubuntu-*` or `yahac-archlinux-*` - Portable executables
+
+### Package Managers
+
+#### Debian/Ubuntu/Linux Mint
+```bash
+# Download .deb package from releases
+wget https://github.com/dseichter/yahac/releases/latest/download/yahac-debian-12-v*.deb
+sudo dpkg -i yahac-debian-12-v*.deb
+sudo apt-get install -f  # Fix dependencies if needed
+```
+
+#### Arch Linux/Manjaro
+```bash
+# Download .pkg.tar.zst package from releases
+wget https://github.com/dseichter/yahac/releases/latest/download/yahac-arch-v*.pkg.tar.zst
+sudo pacman -U yahac-arch-v*.pkg.tar.zst
+```
+
+#### Build from Source (Any Linux)
+```bash
+git clone https://github.com/dseichter/yahac.git
+cd yahac
+pip install -r src/requirements.txt
+python src/yahac.py
+```
 
 ## First time
 
@@ -21,8 +54,8 @@ Now you can choose to proceed with adding your first [sensors](sensors.md) or ma
 
 ![empty sensors](assets/screenshots/yahac_traymenu_empty.png)
 
-[^1]: The default installations of the Linux distributions did not require to install extra packages. See [compatibility](compatibility.md) for further information.
-
-## Notifications
-
-If notifications will not appear, check the logs. On Linux, please be sure, you have installed the package `notify-send` of your distribution. In most cases, this is already done.
+!!! note "Package vs Binary"
+    - **Packages (.deb/.pkg.tar.zst)**: Integrate with system, handle dependencies automatically, receive updates through package manager
+    - **Binaries**: Portable, no system integration, manual updates required
+    
+    See [compatibility](compatibility.md) for distribution-specific information.

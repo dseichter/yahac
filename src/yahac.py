@@ -71,10 +71,15 @@ class YahacFrame(gui_mainframe.MainFrame):
         mqtt.publish_sensor_state(self.ha_helper, online=True)  # Set entity online after 5 seconds
 
 
-# mandatory in wx, create an app, False stands for not deteriction stdin/stdout
-# refer manual for details
-if __name__ == "__main__":
+def main():
+    """Main entry point for the application."""
     app = wx.App(False)
     frame = YahacFrame()
     frame.Hide()  # Start hidden, only tray icon visible
     app.MainLoop()
+
+
+# mandatory in wx, create an app, False stands for not deteriction stdin/stdout
+# refer manual for details
+if __name__ == "__main__":
+    main()

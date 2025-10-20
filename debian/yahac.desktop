@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=YAHAC
+Comment=Yet Another Home Assistant Client
+Exec=yahac
+Icon=yahac
+Categories=Utility;Network;
+StartupNotify=false
+NoDisplay=true

@@ -24,11 +24,17 @@ jobs:
 
           - name: Install dependencies
             run: |
-              venv\Scripts\activate.bat
               pip install -r src/requirements.txt
-
+              pip install pyinstaller-versionfile
+              
+          - name: Update version info
+            run: |
+              $VERSION = "${{ github.ref_name }}" -replace '^v', ''
+              $VERSION_PARTS = $VERSION -split '\.' + @('0', '0', '0', '0')
+              (Get-Content version_info.py) -replace 'filevers=\(0, 3, 0, 0\)', "filevers=($($VERSION_PARTS[0]), $($VERSION_PARTS[1]), $($VERSION_PARTS[2]), $($VERSION_PARTS[3]))" -replace 'prodvers=\(0, 3, 0, 0\)', "prodvers=($($VERSION_PARTS[0]), $($VERSION_PARTS[1]), $($VERSION_PARTS[2]), $($VERSION_PARTS[3]))" -replace "u'FileVersion', u'0.3.0.0'", "u'FileVersion', u'$VERSION.0'" -replace "u'ProductVersion', u'0.3.0.0'", "u'ProductVersion', u'$VERSION.0'" | Set-Content version_info.py
+            shell: powershell
           - name: Build Windows binary
-            run: pyinstaller --onefile --copy-metadata ha_mqtt_discoverable -w src/yahac.py -n yahac-${{ github.ref_name }}.exe --icon=icons/yahac.ico
+            run: pyinstaller --onefile --copy-metadata ha_mqtt_discoverable -w src/yahac.py -n yahac-${{ github.ref_name }}.exe --icon=icons/yahac.ico --version-file=version_info.py --add-data "README.md;." --add-data "LICENSE;."
 
           - name: Upload artifact
             uses: actions/upload-artifact@v4
@@ -154,6 +160,27 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-windows, build-ubuntu-24-04, build-ubuntu-25-04, build-manjaro]
     steps:
+        - name: Trigger Debian package build
+          uses: actions/github-script@v7
+          with:
+            script: |
+              github.rest.actions.createWorkflowDispatch({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: 'debian.yml',
+                ref: context.ref
+              })
+              
+        - name: Trigger Arch package build
+          uses: actions/github-script@v7
+          with:
+            script: |
+              github.rest.actions.createWorkflowDispatch({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: 'arch.yml',
+                ref: context.ref
+              })
         - uses: actions/download-artifact@v5
           with:
             name: yahac-ubuntu-24-04-${{ github.ref_name }}
@@ -184,3 +211,79 @@ jobs:
               yahac-ubuntu-25-04-${{ github.ref_name }}
               yahac-archlinux-${{ github.ref_name }}
               yahac-${{ github.ref_name }}.exe
+
+  build-deb-package-24:
+    needs: [deploy]
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:24.04
+    steps:
+      - uses: actions/download-artifact@v5
+        with:
+          name: yahac-ubuntu-24-04-${{ github.ref_name }}
+      
+      - name: Rename artifact to yahac
+        run: |
+          mv yahac-ubuntu-24-04-${{ github.ref_name }} yahac
+          chmod +x yahac
+
+      - name: Install packaging tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y debhelper devscripts build-essential fakeroot
+
+      - name: Prepare version & changelog
+        run: |
+          VERSION="${{ github.ref_name }}"
+          VERSION=${VERSION#v}
+          dch --create -v "${VERSION}-1" --package yahac "Generated automatically"
+
+      - name: Build .deb package
+        run: |
+          export DEBEMAIL="daniel.seichter@dseichter.de"
+          export DEBFULLNAME="Daniel Seichter"
+          dpkg-buildpackage -us -uc
+
+      - name: Upload .deb
+        uses: actions/upload-artifact@v4
+        with:
+          name: yahac-ubuntu-24-04-${{ github.ref_name }}.deb
+          path: ../*.deb
+
+  build-deb-package-25:
+    needs: [deploy]
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:25.04
+    steps:
+      - uses: actions/download-artifact@v5
+        with:
+          name: yahac-ubuntu-25-04-${{ github.ref_name }}
+      
+      - name: Rename artifact to yahac
+        run: |
+          mv yahac-ubuntu-25-04-${{ github.ref_name }} yahac
+          chmod +x yahac
+
+      - name: Install packaging tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y debhelper devscripts build-essential fakeroot
+
+      - name: Prepare version & changelog
+        run: |
+          VERSION="${{ github.ref_name }}"
+          VERSION=${VERSION#v}
+          dch --create -v "${VERSION}-1" --package yahac "Generated automatically"
+
+      - name: Build .deb package
+        run: |
+          export DEBEMAIL="daniel.seichter@dseichter.de"
+          export DEBFULLNAME="Daniel Seichter"
+          dpkg-buildpackage -us -uc
+
+      - name: Upload .deb
+        uses: actions/upload-artifact@v4
+        with:
+          name: yahac-ubuntu-25-04-${{ github.ref_name }}.deb
+          path: ../*.deb          
