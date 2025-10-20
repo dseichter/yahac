@@ -1,6 +1,6 @@
 # MQTT
 
-The integration MQTT can be configured within the settings. 
+The integration of yahac with MQTT can be configured within the settings. 
 
 You need to enable the [MQTT Integration inside Home Assistant](https://www.home-assistant.io/integrations/mqtt/).
 
@@ -14,7 +14,7 @@ Using the Settings entry of the yahac menu, you will see again the configuration
 
 Provide all your relevant data and save. Don't forget to hit the checkbox to register yahac a entity into Home Assistant and restart yahac once.
 
-## MQTT Integration
+## MQTT integration
 
 During the startup, yahac will create (if not already done) a new MQTT integration. Within this integration, you will find all your yahac clients.
 

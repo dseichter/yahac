@@ -20,9 +20,7 @@ jobs:
               python-version: 3.13
 
           - name: Create and start virtual environment
-            run: |
-              python3 -m venv venv
-              venv\Scripts\activate.bat
+            run: python3 -m venv venv
 
           - name: Install dependencies
             run: |
@@ -35,7 +33,6 @@ jobs:
               $VERSION_PARTS = $VERSION -split '\.' + @('0', '0', '0', '0')
               (Get-Content version_info.py) -replace 'filevers=\(0, 3, 0, 0\)', "filevers=($($VERSION_PARTS[0]), $($VERSION_PARTS[1]), $($VERSION_PARTS[2]), $($VERSION_PARTS[3]))" -replace 'prodvers=\(0, 3, 0, 0\)', "prodvers=($($VERSION_PARTS[0]), $($VERSION_PARTS[1]), $($VERSION_PARTS[2]), $($VERSION_PARTS[3]))" -replace "u'FileVersion', u'0.3.0.0'", "u'FileVersion', u'$VERSION.0'" -replace "u'ProductVersion', u'0.3.0.0'", "u'ProductVersion', u'$VERSION.0'" | Set-Content version_info.py
             shell: powershell
-
           - name: Build Windows binary
             run: pyinstaller --onefile --copy-metadata ha_mqtt_discoverable -w src/yahac.py -n yahac-${{ github.ref_name }}.exe --icon=icons/yahac.ico --version-file=version_info.py --add-data "README.md;." --add-data "LICENSE;."
 

@@ -32,6 +32,7 @@ nav:
   - Configuration: configuration.md
   - Sensors: sensors.md
   - MQTT: mqtt.md
+  - Automation: automation.md
   - Development: development.md
   - Compatibility: compatibility.md
 

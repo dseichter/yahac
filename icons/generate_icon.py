@@ -29,8 +29,7 @@ for root, dirs, files in os.walk('.'):
             img2py.img2py(os.path.join(root, file), '../src/icons.py', append=append, imgName=file[:-4].lower(), icon=True, catalog=True, compressed=True)
             append = True
 
-# Open the PNG file
-img = Image.open("home_app_logo_24dp_1976D2_FILL0_wght400_GRAD0_opsz24.png")
-
-# Save as ICO (you can specify multiple sizes)
-img.save("yahac.ico", format="ICO", sizes=[(16,16), (32,32), (48,48), (64,64), (128,128), (256,256)])
+# Open the PNG file and save as ICO
+with Image.open("home_app_logo_24dp_1976D2_FILL0_wght400_GRAD0_opsz24.png") as img:
+    # Save as ICO (you can specify multiple sizes)
+    img.save("yahac.ico", format="ICO", sizes=[(16,16), (32,32), (48,48), (64,64), (128,128), (256,256)])
