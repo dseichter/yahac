@@ -1,0 +1,57 @@
+name: Build Arch Package
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-arch:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+    
+    steps:
+      - name: Install dependencies
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm base-devel git python python-build python-installer python-wheel
+
+      - name: Create build user
+        run: |
+          useradd -m builder
+          echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Update PKGBUILD version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          sed -i "s/pkgver=.*/pkgver=$VERSION/" PKGBUILD
+
+      - name: Build package
+        run: |
+          chown -R builder:builder .
+          sudo -u builder makepkg -sf --noconfirm
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: yahac-arch-${{ github.ref_name }}
+          path: "*.pkg.tar.zst"
+
+  release:
+    needs: build-arch
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v5
+        
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: "**/*.pkg.tar.zst"
+          generate_release_notes: true

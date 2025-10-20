@@ -164,6 +164,17 @@ jobs:
                 workflow_id: 'debian.yml',
                 ref: context.ref
               })
+              
+        - name: Trigger Arch package build
+          uses: actions/github-script@v7
+          with:
+            script: |
+              github.rest.actions.createWorkflowDispatch({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: 'arch.yml',
+                ref: context.ref
+              })
         - uses: actions/download-artifact@v5
           with:
             name: yahac-ubuntu-24-04-${{ github.ref_name }}
