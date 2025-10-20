@@ -20,12 +20,12 @@ jobs:
               python-version: 3.13
 
           - name: Create and start virtual environment
-            run: |
-              python3 -m venv venv
-              venv\Scripts\activate.bat
+            run: python3 -m venv venv
 
           - name: Install dependencies
-            run: pip install -r src/requirements.txt
+            run: |
+              venv\Scripts\activate.bat
+              pip install -r src/requirements.txt
 
           - name: Build Windows binary
             run: pyinstaller --onefile --copy-metadata ha_mqtt_discoverable -w src/yahac.py -n yahac-${{ github.ref_name }}.exe --icon=icons/yahac.ico

@@ -46,20 +46,19 @@ class TrayIcon(wx.adv.TaskBarIcon):
 
         # Check for update
         checkupdate_item = wx.MenuItem(menu, 5, "Check for update...", "Check for new version")
-        update_icon = icons.update_24dp_1976d2_fill0_wght400_grad0_opsz24.GetBitmap()
-        checkupdate_item.SetBitmap(update_icon)
+        checkupdate_icon = icons.update_24dp_1976d2_fill0_wght400_grad0_opsz24.GetBitmap()
+        checkupdate_item.SetBitmap(checkupdate_icon)
         menu.Append(checkupdate_item)
         self.Bind(wx.EVT_MENU, self.on_check_update, id=5)
 
         # Open Webpage/Repository/Documentation
         webpage_item = wx.MenuItem(menu, 6, "Open Documentation", "Open the project's webpage or repository")
-        update_icon = icons.globe_24dp_1976d2_fill0_wght400_grad0_opsz24.GetBitmap()
-        webpage_item.SetBitmap(update_icon)
+        webpage_icon = icons.globe_24dp_1976d2_fill0_wght400_grad0_opsz24.GetBitmap()
+        webpage_item.SetBitmap(webpage_icon)
         menu.Append(webpage_item)
         self.Bind(wx.EVT_MENU, self.on_webpage_open, id=6)
 
         menu.AppendSeparator()
-        # Settings menu item
         exit_item = wx.MenuItem(menu, 4, "Exit", "Exit the application")
         exit_icon = icons.logout_24dp_1976d2_fill0_wght400_grad0_opsz24.GetBitmap()
         exit_item.SetBitmap(exit_icon)
@@ -73,16 +72,19 @@ class TrayIcon(wx.adv.TaskBarIcon):
         self.PopupMenu(self.CreatePopupMenu())
 
     def on_sensors(self, event):
+        """Open the sensor selection dialog."""
         sensors_frame = gui_sensors.SensorSelectorFrame(self.frame)
         logger.info("Showing sensors dialog")
         sensors_frame.Show()
 
     def on_settings(self, event):
+        """Open the settings configuration dialog."""
         config_frame = gui_config.ConfigFrame(self.frame)
         logger.info("Showing settings dialog")
         config_frame.Show()
         
     def on_check_update(self, event):
+        """Check for application updates and prompt user to download if available."""
         if helper.check_for_new_release():
             result = wx.MessageBox(
                 "A new release is available.\nWould you like to open the download page?",
