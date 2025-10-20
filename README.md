@@ -17,8 +17,24 @@ yahac - is a tool for Windows and Linux to show your most important entities of 
 * Add sensors and get their current data
 * Show switches and turn them on/off with one click
 * Integrate your computer as a binary sensor into HA (MQTT)
+* Native packages for Debian/Ubuntu and Arch Linux
+* Portable binaries for Windows and Linux
 
-You can configure as much as needed sensors and switches. See the [📖 Documentation](https://dseichter.github.io/yahac/)
+## Installation
+
+### Package Managers (Recommended)
+```bash
+# Debian/Ubuntu/Mint
+sudo dpkg -i yahac-*.deb
+
+# Arch/Manjaro
+sudo pacman -U yahac-*.pkg.tar.zst
+```
+
+### Portable Binaries
+Download from [releases](https://github.com/dseichter/yahac/releases) and run directly.
+
+See the [📖 Documentation](https://dseichter.github.io/yahac/) for detailed installation instructions.
 
 > [!WARNING]  
 > Because of false positive in Windows Defender ([see #34](https://github.com/dseichter/yahac/issues/34)) take a look into the [compatibility](https://dseichter.github.io/yahac/compatibility/)
