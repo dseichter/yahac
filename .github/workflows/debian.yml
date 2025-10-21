@@ -33,6 +33,7 @@ jobs:
             VERSION=${VERSION#v}
             export DEBEMAIL="daniel.seichter@dseichter.de"
             export DEBFULLNAME="Daniel Seichter"
+            rm -f debian/compat
             dch -v "${VERSION}-1" "Release ${VERSION}"
           
       - name: Upload artifacts

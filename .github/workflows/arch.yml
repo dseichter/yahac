@@ -29,6 +29,8 @@ jobs:
           VERSION=${VERSION#v}
           VERSION=$(echo "$VERSION" | sed 's/[^0-9.]//g')
           sed -i "s/pkgver=.*/pkgver=$VERSION/" PKGBUILD
+          sed -i "s|source=(.*)|source=('.')|" PKGBUILD
+          sed -i "s/sha256sums=(.*)/sha256sums=('SKIP')/' PKGBUILD
 
       - name: Build package
         run: |
