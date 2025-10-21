@@ -28,7 +28,9 @@ jobs:
 
       - name: Update PKGBUILD version
         run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
+          VERSION=${GITHUB_REF#refs/tags/}
+          VERSION=${VERSION#v}
+          VERSION=$(echo "$VERSION" | sed 's/[^0-9.]//g')
           sed -i "s/pkgver=.*/pkgver=$VERSION/" PKGBUILD
 
       - name: Build package

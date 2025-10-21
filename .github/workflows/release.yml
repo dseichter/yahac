@@ -30,8 +30,10 @@ jobs:
           - name: Update version info
             run: |
               $VERSION = "${{ github.ref_name }}" -replace '^v', ''
-              $VERSION_PARTS = $VERSION -split '\.' + @('0', '0', '0', '0')
-              (Get-Content version_info.py) -replace 'filevers=\(0, 3, 0, 0\)', "filevers=($($VERSION_PARTS[0]), $($VERSION_PARTS[1]), $($VERSION_PARTS[2]), $($VERSION_PARTS[3]))" -replace 'prodvers=\(0, 3, 0, 0\)', "prodvers=($($VERSION_PARTS[0]), $($VERSION_PARTS[1]), $($VERSION_PARTS[2]), $($VERSION_PARTS[3]))" -replace "u'FileVersion', u'0.3.0.0'", "u'FileVersion', u'$VERSION.0'" -replace "u'ProductVersion', u'0.3.0.0'", "u'ProductVersion', u'$VERSION.0'" | Set-Content version_info.py
+              $NUMERIC_VERSION = $VERSION -replace '[^0-9.]', ''
+              $VERSION_PARTS = ($NUMERIC_VERSION -split '\.') + @('0', '0', '0', '0')
+              $VERSION_PARTS = $VERSION_PARTS[0..3] | ForEach-Object { if ($_ -eq '') { '0' } else { $_ } }
+              (Get-Content version_info.py) -replace 'filevers=\(0, 3, 0, 0\)', "filevers=($($VERSION_PARTS[0]), $($VERSION_PARTS[1]), $($VERSION_PARTS[2]), $($VERSION_PARTS[3]))" -replace 'prodvers=\(0, 3, 0, 0\)', "prodvers=($($VERSION_PARTS[0]), $($VERSION_PARTS[1]), $($VERSION_PARTS[2]), $($VERSION_PARTS[3]))" -replace "u'FileVersion', u'0.3.0.0'", "u'FileVersion', u'$NUMERIC_VERSION.0'" -replace "u'ProductVersion', u'0.3.0.0'", "u'ProductVersion', u'$NUMERIC_VERSION.0'" | Set-Content version_info.py
             shell: powershell
             
           - name: Build Windows binary
@@ -185,20 +187,4 @@ jobs:
           name: yahac-ubuntu-24-04-${{ github.ref_name }}.deb
           path: ../*.deb
 
-      - name: Prepare version & changelog
-        run: |
-          VERSION="${{ github.ref_name }}"
-          VERSION=${VERSION#v}
-          dch --create -v "${VERSION}-1" --package yahac "Generated automatically"
-
-      - name: Build .deb package
-        run: |
-          export DEBEMAIL="daniel.seichter@dseichter.de"
-          export DEBFULLNAME="Daniel Seichter"
-          dpkg-buildpackage -us -uc
-
-      - name: Upload .deb
-        uses: actions/upload-artifact@v4
-        with:
-          name: yahac-ubuntu-25-04-${{ github.ref_name }}.deb
-          path: ../*.deb          
+          
