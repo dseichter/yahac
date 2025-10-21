@@ -33,8 +33,9 @@ jobs:
               $VERSION_PARTS = $VERSION -split '\.' + @('0', '0', '0', '0')
               (Get-Content version_info.py) -replace 'filevers=\(0, 3, 0, 0\)', "filevers=($($VERSION_PARTS[0]), $($VERSION_PARTS[1]), $($VERSION_PARTS[2]), $($VERSION_PARTS[3]))" -replace 'prodvers=\(0, 3, 0, 0\)', "prodvers=($($VERSION_PARTS[0]), $($VERSION_PARTS[1]), $($VERSION_PARTS[2]), $($VERSION_PARTS[3]))" -replace "u'FileVersion', u'0.3.0.0'", "u'FileVersion', u'$VERSION.0'" -replace "u'ProductVersion', u'0.3.0.0'", "u'ProductVersion', u'$VERSION.0'" | Set-Content version_info.py
             shell: powershell
+            
           - name: Build Windows binary
-            run: pyinstaller --onefile --copy-metadata ha_mqtt_discoverable -w src/yahac.py -n yahac-${{ github.ref_name }}.exe --icon=icons/yahac.ico --version-file=version_info.py --add-data "README.md;." --add-data "LICENSE;."
+            run: pyinstaller --onefile --copy-metadata ha_mqtt_discoverable --strip --exclude-module tkinter --exclude-module matplotlib --exclude-module numpy -w src/yahac.py -n yahac-${{ github.ref_name }}.exe --icon=icons/yahac.ico --version-file=version_info.py --add-data "README.md;." --add-data "LICENSE;."
 
           - name: Upload artifact
             uses: actions/upload-artifact@v4
@@ -42,17 +43,26 @@ jobs:
                   name: yahac-${{ github.ref_name }}.exe
                   path: dist/yahac-${{ github.ref_name }}.exe   
 
-  build-ubuntu-24-04:
+  build-linux:
       runs-on: ubuntu-latest
+      strategy:
+        matrix:
+          include:
+            - container: ubuntu:24.04
+              name: ubuntu-24-04
+              install_cmd: "apt update && apt-get install build-essential libgtk-3-dev python3-venv python3-pip wget xz-utils -y"
+            - container: archlinux:latest
+              name: archlinux
+              install_cmd: "pacman -Syu --noconfirm && pacman -S --noconfirm base-devel gtk3 python-virtualenv python-pip wget xz"
       container:
-        image: ubuntu:24.04
+        image: ${{ matrix.container }}
       steps:
 
           - name: 'Checkout'
             uses: actions/checkout@v5
 
           - name: Install dependencies
-            run: apt update && apt-get install build-essential libgtk-3-dev python3-venv python3-pip -y
+            run: ${{ matrix.install_cmd }}
 
           - name: Set up Python
             uses: actions/setup-python@v6
@@ -72,93 +82,17 @@ jobs:
           - name: Build Linux binary
             run: |
               . venv/bin/activate
-              pyinstaller --onefile --copy-metadata ha_mqtt_discoverable src/yahac.py -n yahac-ubuntu-24-04-${{ github.ref_name }}
+              pyinstaller --onefile --copy-metadata ha_mqtt_discoverable --strip --exclude-module tkinter --exclude-module matplotlib --exclude-module numpy src/yahac.py -n yahac-${{ matrix.name }}-${{ github.ref_name }}
 
           - name: Upload artifact
             uses: actions/upload-artifact@v4
             with:
-              name: yahac-ubuntu-24-04-${{ github.ref_name }}
-              path: dist/yahac-ubuntu-24-04-${{ github.ref_name }}
-
-  build-ubuntu-25-04:
-      runs-on: ubuntu-latest
-      container:
-        image: ubuntu:25.04
-      steps:
-
-          - name: 'Checkout'
-            uses: actions/checkout@v5
-
-          - name: Install dependencies
-            run: apt update && apt-get install build-essential libgtk-3-dev python3-venv python3-pip -y
-
-          - name: Set up Python
-            uses: actions/setup-python@v6
-            with:
-              python-version: 3.13
-
-          - name: Create and start virtual environment
-            run: |
-              python3 -m venv venv
-              . venv/bin/activate
-
-          - name: Install dependencies
-            run: |
-              . venv/bin/activate
-              pip install -r src/requirements.txt
-
-          - name: Build Linux binary
-            run: |
-              . venv/bin/activate
-              pyinstaller --onefile --copy-metadata ha_mqtt_discoverable src/yahac.py -n yahac-ubuntu-25-04-${{ github.ref_name }}
-
-          - name: Upload artifact
-            uses: actions/upload-artifact@v4
-            with:
-              name: yahac-ubuntu-25-04-${{ github.ref_name }}
-              path: dist/yahac-ubuntu-25-04-${{ github.ref_name }}
-
-  build-manjaro:
-      runs-on: ubuntu-latest
-      container:
-        image: archlinux:latest
-      steps:
-
-          - name: 'Checkout'
-            uses: actions/checkout@v5
-
-          - name: Install dependencies
-            run: pacman -Syu --noconfirm && pacman -S --noconfirm base-devel gtk3 python-virtualenv python-pip
-
-          - name: Set up Python
-            uses: actions/setup-python@v6
-            with:
-              python-version: 3.13
-
-          - name: Create and start virtual environment
-            run: |
-              python3 -m venv venv
-              . venv/bin/activate
-
-          - name: Install dependencies
-            run: |
-              . venv/bin/activate
-              pip install -r src/requirements.txt
-
-          - name: Build Linux binary
-            run: |
-              . venv/bin/activate
-              pyinstaller --onefile --copy-metadata ha_mqtt_discoverable src/yahac.py -n yahac-archlinux-${{ github.ref_name }}
-
-          - name: Upload artifact
-            uses: actions/upload-artifact@v4
-            with:
-              name: yahac-archlinux-${{ github.ref_name }}
-              path: dist/yahac-archlinux-${{ github.ref_name }}
+              name: yahac-${{ matrix.name }}-${{ github.ref_name }}
+              path: dist/yahac-${{ matrix.name }}-${{ github.ref_name }}
 
   deploy:
     runs-on: ubuntu-latest
-    needs: [build-windows, build-ubuntu-24-04, build-ubuntu-25-04, build-manjaro]
+    needs: [build-windows, build-linux]
     steps:
         - name: Trigger Debian package build
           uses: actions/github-script@v7
@@ -181,13 +115,10 @@ jobs:
                 workflow_id: 'arch.yml',
                 ref: context.ref
               })
+              
         - uses: actions/download-artifact@v5
           with:
             name: yahac-ubuntu-24-04-${{ github.ref_name }}
-        
-        - uses: actions/download-artifact@v5
-          with:
-            name: yahac-ubuntu-25-04-${{ github.ref_name }}
 
         - uses: actions/download-artifact@v5
           with:
@@ -208,16 +139,18 @@ jobs:
             generate_release_notes: true
             files: |
               yahac-ubuntu-24-04-${{ github.ref_name }}
-              yahac-ubuntu-25-04-${{ github.ref_name }}
               yahac-archlinux-${{ github.ref_name }}
               yahac-${{ github.ref_name }}.exe
 
-  build-deb-package-24:
+  build-deb-package:
     needs: [deploy]
     runs-on: ubuntu-latest
     container:
       image: ubuntu:24.04
     steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v5
+        
       - uses: actions/download-artifact@v5
         with:
           name: yahac-ubuntu-24-04-${{ github.ref_name }}
@@ -229,13 +162,15 @@ jobs:
 
       - name: Install packaging tools
         run: |
-          sudo apt-get update
-          sudo apt-get install -y debhelper devscripts build-essential fakeroot
+          apt-get update
+          apt-get install -y debhelper devscripts build-essential fakeroot
 
       - name: Prepare version & changelog
         run: |
           VERSION="${{ github.ref_name }}"
           VERSION=${VERSION#v}
+          export DEBEMAIL="daniel.seichter@dseichter.de"
+          export DEBFULLNAME="Daniel Seichter"
           dch --create -v "${VERSION}-1" --package yahac "Generated automatically"
 
       - name: Build .deb package
@@ -249,26 +184,6 @@ jobs:
         with:
           name: yahac-ubuntu-24-04-${{ github.ref_name }}.deb
           path: ../*.deb
-
-  build-deb-package-25:
-    needs: [deploy]
-    runs-on: ubuntu-latest
-    container:
-      image: ubuntu:25.04
-    steps:
-      - uses: actions/download-artifact@v5
-        with:
-          name: yahac-ubuntu-25-04-${{ github.ref_name }}
-      
-      - name: Rename artifact to yahac
-        run: |
-          mv yahac-ubuntu-25-04-${{ github.ref_name }} yahac
-          chmod +x yahac
-
-      - name: Install packaging tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y debhelper devscripts build-essential fakeroot
 
       - name: Prepare version & changelog
         run: |
