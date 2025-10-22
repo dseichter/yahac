@@ -38,6 +38,8 @@ jobs:
           
       - name: Rename .deb file
         run: |
+          sudo chown -R $USER:$USER debian/artifacts
+          sudo chmod -R 755 debian/artifacts
           cd debian/artifacts
           for file in *.deb; do
             if [ -f "$file" ]; then

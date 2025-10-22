@@ -26,17 +26,18 @@ jobs:
       - name: Update PKGBUILD version
         run: |
           echo "GITHUB_REF: $GITHUB_REF"
-          VERSION=${GITHUB_REF#refs/tags/}
-          echo "After removing refs/tags/: $VERSION"
-          VERSION=${VERSION#v}
-          echo "After removing v prefix: $VERSION"
-          VERSION=$(echo "$VERSION" | sed 's/-[^0-9].*//' | sed 's/[^0-9.]//g')
-          echo "Final VERSION: $VERSION"
-          if [ -z "$VERSION" ]; then
-            echo "Error: VERSION is empty"
+          FULL_TAG=${GITHUB_REF#refs/tags/}
+          echo "Full tag: $FULL_TAG"
+          VERSION=${FULL_TAG#v}
+          echo "Version with suffix: $VERSION"
+          NUMERIC_VERSION=$(echo "$VERSION" | sed 's/-[^0-9].*//' | sed 's/[^0-9.]//g')
+          echo "Numeric version: $NUMERIC_VERSION"
+          if [ -z "$NUMERIC_VERSION" ]; then
+            echo "Error: NUMERIC_VERSION is empty"
             exit 1
           fi
-          sed -i "s/pkgver=.*/pkgver=$VERSION/" PKGBUILD
+          sed -i "s/pkgver=.*/pkgver=$NUMERIC_VERSION/" PKGBUILD
+          sed -i "s|archive/v\$pkgver\.tar\.gz|archive/$FULL_TAG.tar.gz|" PKGBUILD
           cat PKGBUILD
 
       - name: Build package
