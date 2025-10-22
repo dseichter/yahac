@@ -8,4 +8,5 @@ export PYBUILD_NAME=yahac
 
 override_dh_auto_install:
 	dh_auto_install
-	install -D -m 755 src/yahac.py debian/yahac/usr/bin/yahac
+	# Install the built script into debian/tmp so dh_install can pick it up
+	install -D -m 755 src/yahac.py debian/tmp/usr/bin/yahac
