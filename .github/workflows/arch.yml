@@ -25,12 +25,19 @@ jobs:
 
       - name: Update PKGBUILD version
         run: |
+          echo "GITHUB_REF: $GITHUB_REF"
           VERSION=${GITHUB_REF#refs/tags/}
+          echo "After removing refs/tags/: $VERSION"
           VERSION=${VERSION#v}
-          VERSION=$(echo "$VERSION" | sed 's/[^0-9.]//g')
+          echo "After removing v prefix: $VERSION"
+          VERSION=$(echo "$VERSION" | sed 's/-[^0-9].*//' | sed 's/[^0-9.]//g')
+          echo "Final VERSION: $VERSION"
+          if [ -z "$VERSION" ]; then
+            echo "Error: VERSION is empty"
+            exit 1
+          fi
           sed -i "s/pkgver=.*/pkgver=$VERSION/" PKGBUILD
-          sed -i "s|source=(.*)|source=(\"$pkgname-$pkgver.tar.gz::https://github.com/dseichter/yahac/archive/v$pkgver.tar.gz\")|" PKGBUILD
-          sed -i "s/sha256sums=(.*)/sha256sums=('SKIP')/" PKGBUILD
+          cat PKGBUILD
 
       - name: Build package
         run: |

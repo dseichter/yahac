@@ -36,6 +36,16 @@ jobs:
             rm -f debian/compat
             dch -v "${VERSION}-1" "Release ${VERSION}"
           
+      - name: Rename .deb file
+        run: |
+          cd debian/artifacts
+          for file in *.deb; do
+            if [ -f "$file" ]; then
+              newname=$(echo "$file" | sed "s/_amd64\.deb$/_${{ matrix.distro.name }}-${{ matrix.distro.version }}_amd64.deb/")
+              mv "$file" "$newname"
+            fi
+          done
+          
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
