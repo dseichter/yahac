@@ -23,11 +23,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
         
-      - name: Download Ubuntu binary
-        uses: actions/download-artifact@v5
-        with:
-          name: yahac-ubuntu-24-04-${{ github.event.inputs.version || github.ref_name }}
-          path: .
+      - name: Download Ubuntu binary from release
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            FULL_TAG="${{ github.event.inputs.version }}"
+          else
+            FULL_TAG=${GITHUB_REF#refs/tags/}
+          fi
+          
+          if [ -z "$FULL_TAG" ] || [ "$FULL_TAG" = "refs/heads/main" ]; then
+            echo "Error: No valid version found. FULL_TAG='$FULL_TAG'"
+            echo "Please provide a version input or run from a tag"
+            exit 1
+          fi
+          
+          BINARY_URL="https://github.com/dseichter/yahac/releases/download/$FULL_TAG/yahac-ubuntu-24-04-$FULL_TAG"
+          echo "Downloading binary from: $BINARY_URL"
+          wget "$BINARY_URL" -O yahac-binary
+          chmod +x yahac-binary
 
       - name: Build Debian package for ${{ matrix.distro.name }} ${{ matrix.distro.version }}
         uses: jtdor/build-deb-action@v1
@@ -49,9 +62,7 @@ jobs:
             export DEBFULLNAME="Daniel Seichter"
             rm -f debian/compat
             mkdir -p debian/tmp/usr/bin
-            BINARY_NAME="yahac-ubuntu-24-04-${{ github.event.inputs.version || github.ref_name }}"
-            chmod +x "$BINARY_NAME"
-            cp "$BINARY_NAME" debian/tmp/usr/bin/yahac
+            cp yahac-binary debian/tmp/usr/bin/yahac
             dch -v "${VERSION}-1" "Release ${VERSION}"
           
       - name: Rename .deb file
