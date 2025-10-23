@@ -18,7 +18,7 @@ jobs:
       - name: Install dependencies
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm base-devel git python python-build python-installer python-wheel
+          pacman -S --noconfirm base-devel git python python-build python-installer python-wheel wget
 
       - name: Create build user
         run: |
