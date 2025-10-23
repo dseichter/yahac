@@ -1,10 +1,12 @@
 name: Build Debian Packages
 
 on:
-  push:
-    tags:
-      - 'v*'
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build (e.g., v0.3.1-beta7)'
+        required: false
+        type: string
 
 jobs:
   build-debian:
@@ -13,12 +15,32 @@ jobs:
       matrix:
         distro:
           - { name: "debian", version: "12", codename: "bookworm" }
+          - { name: "debian", version: "13", codename: "trixie" }
           - { name: "ubuntu", version: "22.04", codename: "jammy" }
           - { name: "ubuntu", version: "24.04", codename: "noble" }
     
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+        
+      - name: Download Ubuntu binary from release
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            FULL_TAG="${{ github.event.inputs.version }}"
+          else
+            FULL_TAG=${GITHUB_REF#refs/tags/}
+          fi
+          
+          if [ -z "$FULL_TAG" ] || [ "$FULL_TAG" = "refs/heads/main" ]; then
+            echo "Error: No valid version found. FULL_TAG='$FULL_TAG'"
+            echo "Please provide a version input or run from a tag"
+            exit 1
+          fi
+          
+          BINARY_URL="https://github.com/dseichter/yahac/releases/download/$FULL_TAG/yahac-ubuntu-24-04-$FULL_TAG"
+          echo "Downloading binary from: $BINARY_URL"
+          wget "$BINARY_URL" -O yahac-binary
+          chmod +x yahac-binary
 
       - name: Build Debian package for ${{ matrix.distro.name }} ${{ matrix.distro.version }}
         uses: jtdor/build-deb-action@v1
@@ -29,12 +51,36 @@ jobs:
           buildpackage-opts: --build=binary --no-sign
           before-build-hook: |
             apt-get update
-            apt-get install -y python3-dev python3-setuptools python3-wxgtk4.0-dev || apt-get install -y python3-dev python3-setuptools python3-wxgtk-4.0-dev
+            apt-get install -y devscripts
+            if [ -n "${{ github.event.inputs.version }}" ]; then
+              FULL_TAG="${{ github.event.inputs.version }}"
+            else
+              FULL_TAG=${GITHUB_REF#refs/tags/}
+            fi
+            VERSION=${FULL_TAG#v}
+            export DEBEMAIL="daniel.seichter@dseichter.de"
+            export DEBFULLNAME="Daniel Seichter"
+            rm -f debian/compat
+            mkdir -p debian/tmp/usr/bin
+            cp yahac-binary debian/tmp/usr/bin/yahac
+            dch -v "${VERSION}-1" "Release ${VERSION}"
+          
+      - name: Rename .deb file
+        run: |
+          sudo chown -R $USER:$USER debian/artifacts
+          sudo chmod -R 755 debian/artifacts
+          cd debian/artifacts
+          for file in *.deb; do
+            if [ -f "$file" ]; then
+              newname=$(echo "$file" | sed "s/_amd64\.deb$/_${{ matrix.distro.name }}-${{ matrix.distro.version }}_amd64.deb/")
+              mv "$file" "$newname"
+            fi
+          done
           
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: yahac-${{ matrix.distro.name }}-${{ matrix.distro.version }}-${{ github.ref_name }}
+          name: yahac-${{ matrix.distro.name }}-${{ matrix.distro.version }}-${{ github.event.inputs.version || github.ref_name }}
           path: debian/artifacts/*.deb
 
   release:

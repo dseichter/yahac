@@ -1,10 +1,12 @@
 name: Build Arch Package
 
 on:
-  push:
-    tags:
-      - 'v*'
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build (e.g., v0.3.1-beta7)'
+        required: false
+        type: string
 
 jobs:
   build-arch:
@@ -16,7 +18,7 @@ jobs:
       - name: Install dependencies
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm base-devel git python python-build python-installer python-wheel
+          pacman -S --noconfirm base-devel git python python-build python-installer python-wheel wget
 
       - name: Create build user
         run: |
@@ -26,11 +28,77 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Update PKGBUILD version
+      - name: Download binary and update PKGBUILD
         run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
-          sed -i "s/pkgver=.*/pkgver=$VERSION/" PKGBUILD
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            FULL_TAG="${{ github.event.inputs.version }}"
+            echo "Using manual version: $FULL_TAG"
+          else
+            FULL_TAG=${GITHUB_REF#refs/tags/}
+            echo "Using tag version: $FULL_TAG"
+          fi
+          
+          if [ -z "$FULL_TAG" ] || [ "$FULL_TAG" = "refs/heads/main" ]; then
+            echo "Error: No valid version found. FULL_TAG='$FULL_TAG'"
+            echo "Please provide a version input or run from a tag"
+            exit 1
+          fi
+          
+          VERSION=${FULL_TAG#v}
+          echo "Version with suffix: $VERSION"
+          NUMERIC_VERSION=$(echo "$VERSION" | sed 's/-[^0-9].*//' | sed 's/[^0-9.]//g')
+          echo "Numeric version: $NUMERIC_VERSION"
+          
+          if [ -z "$NUMERIC_VERSION" ]; then
+            echo "Error: NUMERIC_VERSION is empty after processing '$VERSION'"
+            exit 1
+          fi
+          
+          # Download binary from GitHub releases
+          BINARY_URL="https://github.com/dseichter/yahac/releases/download/$FULL_TAG/yahac-archlinux-$FULL_TAG"
+          echo "Downloading binary from: $BINARY_URL"
+          wget "$BINARY_URL" -O yahac-binary
+          chmod +x yahac-binary
+          
+          # Update PKGBUILD to use local binary
+          sed -i "s/pkgver=.*/pkgver=$NUMERIC_VERSION/" PKGBUILD
+          sed -i "s|source=(.*)|source=('yahac-binary')|" PKGBUILD
+          sed -i "s/sha256sums=(.*)/sha256sums=('SKIP')/" PKGBUILD
+          cat PKGBUILD
 
+      - name: Update PKGBUILD for binary packaging
+        run: |
+          # Create a new PKGBUILD for binary packaging
+          cat > PKGBUILD << 'EOF'
+          pkgname=yahac
+          pkgver=PLACEHOLDER_VERSION
+          pkgrel=1
+          pkgdesc="Yet Another Home Assistant Client - Desktop tray application for Home Assistant"
+          arch=('x86_64')
+          url="https://github.com/dseichter/yahac"
+          license=('GPL3')
+          depends=()
+          source=('yahac-binary')
+          sha256sums=('SKIP')
+          
+          package() {
+              install -Dm755 yahac-binary "$pkgdir/usr/bin/yahac"
+              install -Dm644 debian/yahac.desktop "$pkgdir/usr/share/applications/yahac.desktop" || true
+              install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md" || true
+              install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE" || true
+          }
+          EOF
+          
+          # Update version in PKGBUILD
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            FULL_TAG="${{ github.event.inputs.version }}"
+          else
+            FULL_TAG=${GITHUB_REF#refs/tags/}
+          fi
+          VERSION=${FULL_TAG#v}
+          NUMERIC_VERSION=$(echo "$VERSION" | sed 's/-[^0-9].*//' | sed 's/[^0-9.]//g')
+          sed -i "s/PLACEHOLDER_VERSION/$NUMERIC_VERSION/" PKGBUILD
+          
       - name: Build package
         run: |
           chown -R builder:builder .
@@ -39,7 +107,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: yahac-arch-${{ github.ref_name }}
+          name: yahac-arch-${{ github.event.inputs.version || github.ref_name }}
           path: "*.pkg.tar.zst"
 
   release:
