@@ -4,9 +4,13 @@ export DH_VERBOSE=1
 export PYBUILD_NAME=yahac
 
 %:
-	dh $@ --with python3 --buildsystem=pybuild
+	dh $@
+
+override_dh_auto_build:
+	# Skip build, using pre-built binary
 
 override_dh_auto_install:
-	# Skip Python build, binary is already provided
+	# Install the binary that was copied by before-build-hook
 	mkdir -p debian/tmp/usr/bin
-	# Binary will be copied by before-build-hook
+	test -f debian/tmp/usr/bin/yahac || cp yahac-binary debian/tmp/usr/bin/yahac
+	chmod +x debian/tmp/usr/bin/yahac
