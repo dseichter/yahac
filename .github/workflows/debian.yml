@@ -2,6 +2,11 @@ name: Build Debian Packages
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build (e.g., v0.3.1-beta7)'
+        required: false
+        type: string
 
 jobs:
   build-debian:
@@ -21,7 +26,7 @@ jobs:
       - name: Download Ubuntu binary
         uses: actions/download-artifact@v5
         with:
-          name: yahac-ubuntu-24-04-${{ github.ref_name }}
+          name: yahac-ubuntu-24-04-${{ github.event.inputs.version || github.ref_name }}
           path: .
 
       - name: Build Debian package for ${{ matrix.distro.name }} ${{ matrix.distro.version }}
@@ -34,13 +39,19 @@ jobs:
           before-build-hook: |
             apt-get update
             apt-get install -y devscripts
-            VERSION=${GITHUB_REF#refs/tags/}
-            VERSION=${VERSION#v}
+            if [ -n "${{ github.event.inputs.version }}" ]; then
+              FULL_TAG="${{ github.event.inputs.version }}"
+            else
+              FULL_TAG=${GITHUB_REF#refs/tags/}
+            fi
+            VERSION=${FULL_TAG#v}
             export DEBEMAIL="daniel.seichter@dseichter.de"
             export DEBFULLNAME="Daniel Seichter"
             rm -f debian/compat
-            chmod +x yahac-ubuntu-24-04-${{ github.ref_name }}
-            cp yahac-ubuntu-24-04-${{ github.ref_name }} debian/tmp/usr/bin/yahac
+            mkdir -p debian/tmp/usr/bin
+            BINARY_NAME="yahac-ubuntu-24-04-${{ github.event.inputs.version || github.ref_name }}"
+            chmod +x "$BINARY_NAME"
+            cp "$BINARY_NAME" debian/tmp/usr/bin/yahac
             dch -v "${VERSION}-1" "Release ${VERSION}"
           
       - name: Rename .deb file
@@ -58,7 +69,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: yahac-${{ matrix.distro.name }}-${{ matrix.distro.version }}-${{ github.ref_name }}
+          name: yahac-${{ matrix.distro.name }}-${{ matrix.distro.version }}-${{ github.event.inputs.version || github.ref_name }}
           path: debian/artifacts/*.deb
 
   release:

@@ -2,6 +2,11 @@ name: Build Arch Package
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build (e.g., v0.3.1-beta7)'
+        required: false
+        type: string
 
 jobs:
   build-arch:
@@ -25,9 +30,13 @@ jobs:
 
       - name: Update PKGBUILD version
         run: |
-          echo "GITHUB_REF: $GITHUB_REF"
-          FULL_TAG=${GITHUB_REF#refs/tags/}
-          echo "Full tag: $FULL_TAG"
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            FULL_TAG="${{ github.event.inputs.version }}"
+            echo "Using manual version: $FULL_TAG"
+          else
+            FULL_TAG=${GITHUB_REF#refs/tags/}
+            echo "Using tag version: $FULL_TAG"
+          fi
           VERSION=${FULL_TAG#v}
           echo "Version with suffix: $VERSION"
           NUMERIC_VERSION=$(echo "$VERSION" | sed 's/-[^0-9].*//' | sed 's/[^0-9.]//g')
@@ -49,7 +58,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: yahac-arch-${{ github.ref_name }}
+          name: yahac-arch-${{ github.event.inputs.version || github.ref_name }}
           path: "*.pkg.tar.zst"
 
   release:
