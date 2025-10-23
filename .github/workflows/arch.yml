@@ -38,6 +38,7 @@ jobs:
           fi
           sed -i "s/pkgver=.*/pkgver=$NUMERIC_VERSION/" PKGBUILD
           sed -i "s|archive/v\$pkgver\.tar\.gz|archive/$FULL_TAG.tar.gz|" PKGBUILD
+          sed -i "s/\$pkgname-\$pkgver/$pkgname-$VERSION/g" PKGBUILD
           cat PKGBUILD
 
       - name: Build package

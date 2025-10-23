@@ -17,6 +17,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+        
+      - name: Download Ubuntu binary
+        uses: actions/download-artifact@v5
+        with:
+          name: yahac-ubuntu-24-04-${{ github.ref_name }}
+          path: .
 
       - name: Build Debian package for ${{ matrix.distro.name }} ${{ matrix.distro.version }}
         uses: jtdor/build-deb-action@v1
@@ -27,13 +33,14 @@ jobs:
           buildpackage-opts: --build=binary --no-sign
           before-build-hook: |
             apt-get update
-            apt-get install -y python3-dev python3-setuptools devscripts
-            apt-get install -y python3-wxgtk4.0-dev || apt-get install -y python3-wxgtk-4.0-dev || apt-get install -y libwxgtk3.2-dev || apt-get install -y libwxgtk3.0-gtk3-dev
+            apt-get install -y devscripts
             VERSION=${GITHUB_REF#refs/tags/}
             VERSION=${VERSION#v}
             export DEBEMAIL="daniel.seichter@dseichter.de"
             export DEBFULLNAME="Daniel Seichter"
             rm -f debian/compat
+            chmod +x yahac-ubuntu-24-04-${{ github.ref_name }}
+            cp yahac-ubuntu-24-04-${{ github.ref_name }} debian/tmp/usr/bin/yahac
             dch -v "${VERSION}-1" "Release ${VERSION}"
           
       - name: Rename .deb file

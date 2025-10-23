@@ -7,6 +7,6 @@ export PYBUILD_NAME=yahac
 	dh $@ --with python3 --buildsystem=pybuild
 
 override_dh_auto_install:
-	dh_auto_install
-	# Install the built script into debian/tmp so dh_install can pick it up
-	install -D -m 755 src/yahac.py debian/tmp/usr/bin/yahac
+	# Skip Python build, binary is already provided
+	mkdir -p debian/tmp/usr/bin
+	# Binary will be copied by before-build-hook
