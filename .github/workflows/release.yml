@@ -40,7 +40,7 @@ jobs:
             run: pyinstaller --onefile --copy-metadata ha_mqtt_discoverable --strip --exclude-module tkinter --exclude-module matplotlib --exclude-module numpy -w src/yahac.py -n yahac-${{ github.ref_name }}.exe --icon=icons/yahac.ico --version-file=version_info.py --add-data "README.md;." --add-data "LICENSE;."
 
           - name: Upload artifact
-            uses: actions/upload-artifact@v4
+            uses: actions/upload-artifact@v5
             with:
                   name: yahac-${{ github.ref_name }}.exe
                   path: dist/yahac-${{ github.ref_name }}.exe   
@@ -87,7 +87,7 @@ jobs:
               pyinstaller --onefile --copy-metadata ha_mqtt_discoverable --strip --exclude-module tkinter --exclude-module matplotlib --exclude-module numpy src/yahac.py -n yahac-${{ matrix.name }}-${{ github.ref_name }}
 
           - name: Upload artifact
-            uses: actions/upload-artifact@v4
+            uses: actions/upload-artifact@v5
             with:
               name: yahac-${{ matrix.name }}-${{ github.ref_name }}
               path: dist/yahac-${{ matrix.name }}-${{ github.ref_name }}
