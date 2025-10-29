@@ -118,15 +118,15 @@ jobs:
                 ref: context.ref
               })
               
-        - uses: actions/download-artifact@v5
+        - uses: actions/download-artifact@v6
           with:
             name: yahac-ubuntu-24-04-${{ github.ref_name }}
 
-        - uses: actions/download-artifact@v5
+        - uses: actions/download-artifact@v6
           with:
             name: yahac-${{ github.ref_name }}.exe
 
-        - uses: actions/download-artifact@v5
+        - uses: actions/download-artifact@v6
           with:
             name: yahac-archlinux-${{ github.ref_name }}
 
