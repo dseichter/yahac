@@ -1,6 +1,10 @@
-wxPython==4.2.4
+PySide6>=6.6.0
 urllib3==2.5.0
 pyinstaller==6.16.0
-pywin32==311; sys_platform != "linux"
-win11toast==0.36.2; sys_platform != "linux"
+pywin32==311; sys_platform == "win32"
+win11toast==0.36.2; sys_platform == "win32"
 ha_mqtt_discoverable==0.22.1
+
+# Linux system dependencies (install via package manager):
+# Ubuntu/Debian: sudo apt install libxcb-xinerama0 libxcb-cursor0 libxkbcommon-x11-0
+# Arch Linux: sudo pacman -S libxcb libxkbcommon-x11

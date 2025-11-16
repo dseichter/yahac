@@ -1,157 +1,194 @@
-import wx
+from PySide6.QtWidgets import QSystemTrayIcon, QMenu, QMessageBox, QApplication
+from PySide6.QtCore import QObject
+from PySide6.QtGui import QIcon, QPixmap, QAction
 
-import wx.adv
 import gui_config
 import gui_sensors
 import settings
 import helper
 import webbrowser
 import api
-import icons
+import icons as icons
 
 import logging_config  # Setup the logging  # noqa: F401
 import logging
 
 logger = logging.getLogger(__name__)
 
-class TrayIcon(wx.adv.TaskBarIcon):
-    def __init__(self, frame):
-        super().__init__()
-        self.frame = frame
-        icon = icons.home_app_logo_24dp_1976d2_fill0_wght400_grad0_opsz24.GetIcon()
-        self.SetIcon(icon, "YAHAC")
-        self.Bind(wx.adv.EVT_TASKBAR_RIGHT_UP, self.on_menu)
+
+class TrayIcon(QSystemTrayIcon):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.parent = parent
         
-        # Build the mapping of the sensors, to be used for interactive elements, like switches
+        # Set tray icon
+        icon = icons.get_icon('home_app_logo_24dp_1976d2_fill0_wght400_grad0_opsz24')
+        self.setIcon(icon)
+        self.setToolTip("YAHAC")
+        
+        # Create context menu
+        self.create_menu()
+        
+        # Show tray icon
+        self.show()
+        
+        # Connect signals
+        self.activated.connect(self.on_tray_activated)
+        
+        # Build the mapping of the sensors for interactive elements
         self.menu_id_map = {}
 
-    def CreatePopupMenu(self):
-        menu = wx.Menu()
-        menu.Append(1, f"{helper.NAME} {helper.VERSION}", kind=wx.ITEM_NORMAL)
-        menu.AppendSeparator()
-        # Dynamic generation of sensor/switch - start
-        self.load_sensors(menu)
-        # Dynamic generation of sensor/switch - end
-        menu.AppendSeparator()
-        # Sensors menu item
-        sensors_item = wx.MenuItem(menu, 2, "Sensors", "Manage your sensors")
-        sensors_icon = icons.database_24dp_1976d2_fill0_wght400_grad0_opsz24.GetBitmap()
-        sensors_item.SetBitmap(sensors_icon)
-        menu.Append(sensors_item)
-        # Settings menu item
-        settings_item = wx.MenuItem(menu, 3, "Settings", "Configure connection to your Home Assistant")
-        settings_icon = icons.settings_24dp_1976d2_fill0_wght400_grad0_opsz24.GetBitmap()
-        settings_item.SetBitmap(settings_icon)
-        menu.Append(settings_item)
-
-        # Check for update
-        checkupdate_item = wx.MenuItem(menu, 5, "Check for update...", "Check for new version")
-        checkupdate_icon = icons.update_24dp_1976d2_fill0_wght400_grad0_opsz24.GetBitmap()
-        checkupdate_item.SetBitmap(checkupdate_icon)
-        menu.Append(checkupdate_item)
-        self.Bind(wx.EVT_MENU, self.on_check_update, id=5)
-
-        # Open Webpage/Repository/Documentation
-        webpage_item = wx.MenuItem(menu, 6, "Open Documentation", "Open the project's webpage or repository")
-        webpage_icon = icons.globe_24dp_1976d2_fill0_wght400_grad0_opsz24.GetBitmap()
-        webpage_item.SetBitmap(webpage_icon)
-        menu.Append(webpage_item)
-        self.Bind(wx.EVT_MENU, self.on_webpage_open, id=6)
-
-        menu.AppendSeparator()
-        exit_item = wx.MenuItem(menu, 4, "Exit", "Exit the application")
-        exit_icon = icons.logout_24dp_1976d2_fill0_wght400_grad0_opsz24.GetBitmap()
-        exit_item.SetBitmap(exit_icon)
-        menu.Append(exit_item)
-        self.Bind(wx.EVT_MENU, self.on_sensors, id=2)
-        self.Bind(wx.EVT_MENU, self.on_settings, id=3)
-        self.Bind(wx.EVT_MENU, self.on_exit, id=4)
-        return menu
-
-    def on_menu(self, event):
-        self.PopupMenu(self.CreatePopupMenu())
-
-    def on_sensors(self, event):
-        """Open the sensor selection dialog."""
-        sensors_frame = gui_sensors.SensorSelectorFrame(self.frame)
-        logger.info("Showing sensors dialog")
-        sensors_frame.Show()
-
-    def on_settings(self, event):
-        """Open the settings configuration dialog."""
-        config_frame = gui_config.ConfigFrame(self.frame)
-        logger.info("Showing settings dialog")
-        config_frame.Show()
+    def create_menu(self):
+        menu = QMenu()
         
-    def on_check_update(self, event):
+        # Title
+        title_action = QAction(f"{helper.NAME} {helper.VERSION}", self)
+        title_action.setEnabled(False)
+        menu.addAction(title_action)
+        menu.addSeparator()
+        
+        # Dynamic sensors/switches
+        self.load_sensors(menu)
+        menu.addSeparator()
+        
+        # Sensors menu item
+        sensors_action = QAction("Sensors", self)
+        sensors_action.setIcon(icons.get_icon('database_24dp_1976d2_fill0_wght400_grad0_opsz24'))
+        sensors_action.setToolTip("Manage your sensors")
+        sensors_action.triggered.connect(self.on_sensors)
+        menu.addAction(sensors_action)
+        
+        # Settings menu item
+        settings_action = QAction("Settings", self)
+        settings_action.setIcon(icons.get_icon('settings_24dp_1976d2_fill0_wght400_grad0_opsz24'))
+        settings_action.setToolTip("Configure connection to your Home Assistant")
+        settings_action.triggered.connect(self.on_settings)
+        menu.addAction(settings_action)
+        
+        # Check for update
+        update_action = QAction("Check for update...", self)
+        update_action.setIcon(icons.get_icon('update_24dp_1976d2_fill0_wght400_grad0_opsz24'))
+        update_action.setToolTip("Check for new version")
+        update_action.triggered.connect(self.on_check_update)
+        menu.addAction(update_action)
+        
+        # Open Documentation
+        docs_action = QAction("Open Documentation", self)
+        docs_action.setIcon(icons.get_icon('globe_24dp_1976d2_fill0_wght400_grad0_opsz24'))
+        docs_action.setToolTip("Open the project's webpage or repository")
+        docs_action.triggered.connect(self.on_webpage_open)
+        menu.addAction(docs_action)
+        
+        menu.addSeparator()
+        
+        # Exit
+        exit_action = QAction("Exit", self)
+        exit_action.setIcon(icons.get_icon('logout_24dp_1976d2_fill0_wght400_grad0_opsz24'))
+        exit_action.setToolTip("Exit the application")
+        exit_action.triggered.connect(self.on_exit)
+        menu.addAction(exit_action)
+        
+        self.setContextMenu(menu)
+
+    def on_tray_activated(self, reason):
+        if reason == QSystemTrayIcon.Context:
+            # Refresh menu before showing
+            self.create_menu()
+
+    def on_sensors(self):
+        """Open the sensor selection dialog."""
+        sensors_dialog = gui_sensors.SensorSelectorDialog(self.parent)
+        logger.info("Showing sensors dialog")
+        sensors_dialog.show()
+
+    def on_settings(self):
+        """Open the settings configuration dialog."""
+        config_dialog = gui_config.ConfigDialog(self.parent)
+        logger.info("Showing settings dialog")
+        config_dialog.show()
+
+    def on_check_update(self):
         """Check for application updates and prompt user to download if available."""
         if helper.check_for_new_release():
-            result = wx.MessageBox(
-                "A new release is available.\nWould you like to open the download page?",
+            reply = QMessageBox.question(
+                self.parent,
                 "Update available",
-                wx.YES_NO | wx.ICON_INFORMATION,
+                "A new release is available.\nWould you like to open the download page?",
+                QMessageBox.Yes | QMessageBox.No
             )
-            if result == wx.YES:
+            if reply == QMessageBox.Yes:
                 webbrowser.open_new_tab(helper.RELEASES)
         else:
-            wx.MessageBox("No new release available.", "No update", wx.OK | wx.ICON_INFORMATION)
+            QMessageBox.information(
+                self.parent,
+                "No update",
+                "No new release available."
+            )
 
-    def on_webpage_open(self, event):
+    def on_webpage_open(self):
         webbrowser.open_new_tab(helper.WEBSITE)
 
-    def on_exit(self, event):
-        wx.CallAfter(self.frame.Close)
+    def on_exit(self):
+        self.parent.close()
+        QApplication.instance().quit()
 
     def load_sensors(self, menu):
         sensors = settings.load_value_from_json_file("entities")
         if not sensors:
             return
+            
         for sensor in sensors:
             entity_id = sensor.get("entity_id", "")
             friendly_name = sensor.get("friendly_name", entity_id)
             entity_type = sensor.get("type", "switch")
             entity_state = api.get_entity_state(entity_id)
             logger.info(f"Loaded sensor: {friendly_name} ({entity_id}) - {entity_type} - {entity_state}")
+            
             if entity_type == "sensor":
-                sensor_icon = icons.sensors_24dp_1976d2_fill0_wght400_grad0_opsz24.GetBitmap()
-                sensor_item = wx.MenuItem(menu, wx.ID_ANY, f"{friendly_name} ({entity_state})", helpString=entity_id)
-                sensor_item.SetBitmap(sensor_icon)
-                menu.Append(sensor_item)
-                self.menu_id_map[sensor_item.GetId()] = sensor
-                self.Bind(wx.EVT_MENU, self.on_sensor_selected, id=sensor_item.GetId())
-            if entity_type == "switch":
+                action = QAction(f"{friendly_name} ({entity_state})", self)
+                action.setIcon(icons.get_icon('sensors_24dp_1976d2_fill0_wght400_grad0_opsz24'))
+                action.setToolTip(entity_id)
+                action.triggered.connect(lambda checked, s=sensor: self.on_sensor_selected(s))
+                menu.addAction(action)
+                
+            elif entity_type == "switch":
+                action = QAction(f"{friendly_name} ({entity_state})", self)
                 if entity_state == "on":
-                    switch_icon = icons.toggle_on_24dp_1976d2_fill0_wght400_grad0_opsz24.GetBitmap()
+                    action.setIcon(icons.get_icon('toggle_on_24dp_1976d2_fill0_wght400_grad0_opsz24'))
                 else:
-                    switch_icon = icons.toggle_off_24dp_1976d2_fill0_wght400_grad0_opsz24.GetBitmap()
-                switch_item = wx.MenuItem(menu, wx.ID_ANY, f"{friendly_name} ({entity_state})", helpString=entity_id)
-                switch_item.SetBitmap(switch_icon)
-                menu.Append(switch_item)
-                self.menu_id_map[switch_item.GetId()] = sensor
-                self.Bind(wx.EVT_MENU, self.on_switch_selected, id=switch_item.GetId())
+                    action.setIcon(icons.get_icon('toggle_off_24dp_1976d2_fill0_wght400_grad0_opsz24'))
+                action.setToolTip(entity_id)
+                action.triggered.connect(lambda checked, s=sensor: self.on_switch_selected(s))
+                menu.addAction(action)
 
-    def on_sensor_selected(self, event):
-        sensor = self.menu_id_map.get(event.GetId())
+    def on_sensor_selected(self, sensor):
         if sensor:
             logger.info(f"Sensor selected: {sensor['friendly_name']} ({sensor['entity_id']})")
 
-    def on_switch_selected(self, event):
-        switch = self.menu_id_map.get(event.GetId())
+    def on_switch_selected(self, switch):
         if switch:
             current_state = api.get_entity_state(switch['entity_id'])
-
             new_state = "off" if current_state == "on" else "on"
+            
             confirm_state_change = settings.load_value_from_json_file("confirm_state_change")
             if confirm_state_change:
-                confirmation = wx.MessageBox(f"Toggle {switch['friendly_name']} from {current_state} to {new_state}?", "Confirm", wx.YES_NO | wx.ICON_QUESTION)
-                if confirmation == wx.YES:
+                reply = QMessageBox.question(
+                    self.parent,
+                    "Confirm",
+                    f"Toggle {switch['friendly_name']} from {current_state} to {new_state}?",
+                    QMessageBox.Yes | QMessageBox.No
+                )
+                if reply == QMessageBox.Yes:
                     confirm_state_change = False
 
-            # only, if confirm_state_change is False
             if not confirm_state_change:
                 success = api.set_entity_switch_state(switch['entity_id'], new_state)
                 if success:
                     logger.info(f"Switch {switch['friendly_name']} ({switch['entity_id']}) set to {new_state.upper()}")
                 else:
-                    wx.MessageBox(f"Failed to set {switch['friendly_name']} ({switch['entity_id']}) to {new_state.upper()}", "Error", wx.OK | wx.ICON_ERROR)
+                    QMessageBox.critical(
+                        self.parent,
+                        "Error",
+                        f"Failed to set {switch['friendly_name']} ({switch['entity_id']}) to {new_state.upper()}"
+                    )
                     logger.info(f"Failed to set switch {switch['friendly_name']} ({switch['entity_id']}) to {new_state.upper()}")
