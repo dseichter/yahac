@@ -14,23 +14,35 @@ def process_command(command, payload):
     """
     logger.info(f"Processing command: {command}, payload: {payload}")
 
-    if not os.path.isfile(command):
-        logger.error(f"[YAHAC] Topic command, error: Command not found: {command}")
+    # First, handle known logical commands
+    if command == "run_script":
+        logger.info(f"Running script with payload: {payload}")
+        # Implement script execution here if desired
+        return
+    if command == "message_box":
+        logger.info(f"Showing message box: {payload}")
+        # Integrate with GUI to show message boxes if needed
         return
 
-    if payload is None and ' ' in command:
-        # split command into list for subprocess, if parameters are given in the command string
-        command_parts = command.split(' ')
-        command = command_parts[0]
-        payload = command_parts[1:]
-        
-    # run the command as subprocess, but do not block the main thread
-    if payload is None:
-        subprocess.Popen([command])
-    elif isinstance(payload, list):
-        subprocess.Popen([command] + payload)
-    else:
-        subprocess.Popen([command, json.dumps(payload, default=str)])
+    # If the command looks like an executable path, try to run it
+    if os.path.isfile(command):
+        # If payload is None and command contains parameters, split them
+        if payload is None and ' ' in command:
+            command_parts = command.split(' ')
+            command = command_parts[0]
+            payload = command_parts[1:]
+
+        # run the command as subprocess, but do not block the main thread
+        if payload is None:
+            subprocess.Popen([command])
+        elif isinstance(payload, list):
+            subprocess.Popen([command] + payload)
+        else:
+            subprocess.Popen([command, json.dumps(payload, default=str)])
+        return
+
+    # Unknown command
+    logger.warning(f"Unknown command: {command}")
 
 
 def process_notification(payload):

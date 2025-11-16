@@ -19,7 +19,7 @@ import json
 import logging
 from packaging import version
 
-VERSION = "v0.3.1"
+VERSION = "v0.3.2"
 UPDATEURL = 'https://api.github.com/repos/dseichter/yahac/releases'
 RELEASES = 'https://github.com/dseichter/yahac/releases'
 WEBSITE = 'https://dseichter.github.io/yahac/'
