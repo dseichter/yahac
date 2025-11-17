@@ -41,7 +41,8 @@ jobs:
           - name: Build Windows binary
             run: |
               . venv\Scripts\Activate.ps1
-              pyinstaller --onefile -w -n yahac-${{ github.ref_name }} --icon=icons/yahac.ico --version-file=version_info.py --add-data "README.md;." --add-data "LICENSE;." yahac.spec
+              pyinstaller yahac.spec
+              ren dist\yahac.exe yahac-${{ github.ref_name }}.exe
             shell: powershell
 
           - name: Upload artifact
@@ -89,7 +90,8 @@ jobs:
           - name: Build Linux binary
             run: |
               . venv/bin/activate
-              pyinstaller --onefile -n yahac-${{ matrix.name }}-${{ github.ref_name }} yahac.spec
+              pyinstaller yahac.spec
+              mv dist/yahac yahac-${{ matrix.name }}-${{ github.ref_name }}
 
           - name: Upload artifact
             uses: actions/upload-artifact@v5

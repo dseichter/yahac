@@ -2,7 +2,9 @@
 from PyInstaller.utils.hooks import copy_metadata
 
 datas = []
+datas += copy_metadata('PySide6')
 datas += copy_metadata('ha_mqtt_discoverable')
+datas += [('README.md', '.'), ('LICENSE', '.')]
 
 
 a = Analysis(
