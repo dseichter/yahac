@@ -34,6 +34,8 @@ MANIFEST
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
 *.spec
+# Exception: yahac.spec is the production spec file and should be tracked
+!yahac.spec
 
 # Installer logs
 pip-log.txt
