@@ -23,7 +23,6 @@ class ConfigDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Settings")
-        self.setWindowIcon(icons.get_icon('settings_24dp_1976d2_fill0_wght400_grad0_opsz24'))
         
         self.token_visible = False
         self.setup_ui()
@@ -109,6 +108,9 @@ class ConfigDialog(QDialog):
         button_layout.addWidget(self.btn_cancel)
         
         layout.addLayout(button_layout)
+        
+        # Set window icon after UI is set up
+        self.setWindowIcon(icons.get_icon('settings_24dp_1976d2_fill0_wght400_grad0_opsz24'))
 
     def load_settings(self):
         url = settings.load_value_from_json_file("url")

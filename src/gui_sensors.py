@@ -18,7 +18,6 @@ class SensorSelectorDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Select Entity")
-        self.setWindowIcon(icons.get_icon('database_24dp_1976d2_fill0_wght400_grad0_opsz24'))
         
         self.selected_entities = {}
         self.entity_types = {}
@@ -79,6 +78,9 @@ class SensorSelectorDialog(QDialog):
         button_layout.addWidget(self.btn_remove)
         
         layout.addLayout(button_layout)
+        
+        # Set window icon after UI is set up
+        self.setWindowIcon(icons.get_icon('database_24dp_1976d2_fill0_wght400_grad0_opsz24'))
 
     def on_add_entity(self):
         entity_id = self.combobox.currentText()
