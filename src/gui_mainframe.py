@@ -18,6 +18,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("YAHAC")
         self.resize(300, 200)
+        self.move_to_center()
         self.hide()  # Start hidden, only tray icon visible
         
         # Set window icon
@@ -41,7 +42,15 @@ class MainWindow(QMainWindow):
             )
             config_dialog = gui_config.ConfigDialog(self)
             logger.info("Showing settings dialog")
-            config_dialog.show()
+            config_dialog.exec()
+
+    def move_to_center(self):
+        """Center the window on the screen"""
+        screen_rect = self.screen().geometry()
+        window_rect = self.frameGeometry()
+        x = (screen_rect.width() - window_rect.width()) // 2
+        y = (screen_rect.height() - window_rect.height()) // 2
+        self.move(max(x, 0), max(y, 0))
 
     def closeEvent(self, event):
         # Hide to tray instead of closing

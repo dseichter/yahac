@@ -99,13 +99,13 @@ class TrayIcon(QSystemTrayIcon):
         """Open the sensor selection dialog."""
         sensors_dialog = gui_sensors.SensorSelectorDialog(self.parent)
         logger.info("Showing sensors dialog")
-        sensors_dialog.show()
+        sensors_dialog.exec()
 
     def on_settings(self):
         """Open the settings configuration dialog."""
         config_dialog = gui_config.ConfigDialog(self.parent)
         logger.info("Showing settings dialog")
-        config_dialog.show()
+        config_dialog.exec()
 
     def on_check_update(self):
         """Check for application updates and prompt user to download if available."""

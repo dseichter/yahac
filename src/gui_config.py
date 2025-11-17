@@ -29,24 +29,6 @@ class ConfigDialog(QDialog):
         self.token_visible = False
         self.setup_ui()
         self.load_settings()
-        self.move_to_center()
-    
-    def move_to_center(self):
-        """Center the dialog on the screen"""
-        if self.parent():
-            # Center relative to parent window
-            parent_rect = self.parent().frameGeometry()
-            dialog_rect = self.frameGeometry()
-            x = parent_rect.x() + (parent_rect.width() - dialog_rect.width()) // 2
-            y = parent_rect.y() + (parent_rect.height() - dialog_rect.height()) // 2
-            self.move(max(x, 0), max(y, 0))
-        else:
-            # Center on screen if no parent
-            screen_rect = self.screen().geometry()
-            dialog_rect = self.frameGeometry()
-            x = (screen_rect.width() - dialog_rect.width()) // 2
-            y = (screen_rect.height() - dialog_rect.height()) // 2
-            self.move(x, y)
 
     def setup_ui(self):
         layout = QVBoxLayout(self)
