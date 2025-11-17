@@ -55,12 +55,6 @@ class TrayIcon(QSystemTrayIcon):
         self.load_sensors(menu)
         menu.addSeparator()
         
-        # Reload sensors
-        reload_action = QAction("Reload Sensors", self)
-        reload_action.setToolTip("Reload configured sensors and switches")
-        reload_action.triggered.connect(self.on_reload_sensors)
-        menu.addAction(reload_action)
-        
         # Sensors menu item
         sensors_action = QAction("Sensors", self)
         sensors_action.setIcon(icons.get_icon('database_24dp_1976d2_fill0_wght400_grad0_opsz24'))

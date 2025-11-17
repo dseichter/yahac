@@ -137,7 +137,8 @@ class SensorSelectorDialog(QDialog):
         
         # Save to settings
         settings.save_config("entities", selected)
-        QMessageBox.information(self, "Saved", "Selection saved!")
+        logger.info("Entities saved successfully")
+        self.accept()  # Close dialog and return to parent
 
     def on_remove_selected(self):
         current_row = self.selected_table.currentRow()
