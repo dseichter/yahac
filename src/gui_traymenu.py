@@ -55,6 +55,12 @@ class TrayIcon(QSystemTrayIcon):
         self.load_sensors(menu)
         menu.addSeparator()
         
+        # Reload sensors
+        reload_action = QAction("Reload Sensors", self)
+        reload_action.setToolTip("Reload configured sensors and switches")
+        reload_action.triggered.connect(self.on_reload_sensors)
+        menu.addAction(reload_action)
+        
         # Sensors menu item
         sensors_action = QAction("Sensors", self)
         sensors_action.setIcon(icons.get_icon('database_24dp_1976d2_fill0_wght400_grad0_opsz24'))
@@ -100,12 +106,15 @@ class TrayIcon(QSystemTrayIcon):
             self.create_menu()
 
     def on_sensors(self):
-        """Open the sensor selection dialog."""
+        """Open the sensor selection dialog and reload sensors after closing."""
         if self.sensors_dialog is None or not self.sensors_dialog.isVisible():
             self.sensors_dialog = gui_sensors.SensorSelectorDialog(self.parent)
             logger.info("Showing sensors dialog")
             self.sensors_dialog.exec()
             self.sensors_dialog = None
+            # Reload menu after sensor dialog closes
+            logger.info("Reloading sensors after dialog close")
+            self.create_menu()
         else:
             logger.info("Sensors dialog already open")
             self.sensors_dialog.raise_()
