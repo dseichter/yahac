@@ -33,7 +33,8 @@ jobs:
               $VERSION = "${{ github.ref_name }}" -replace '^v', ''
               $NUMERIC_VERSION = $VERSION -replace '[^0-9.]', ''
               $VERSION_PARTS = ($NUMERIC_VERSION -split '\.') + @('0', '0', '0', '0')
-              $VERSION_PARTS = $VERSION_PARTS[0..3] | ForEach-Object { if ($_ -eq '') { '0' } else { $_ } }
+              # Convert to integers to remove leading zeros
+              $VERSION_PARTS = $VERSION_PARTS[0..3] | ForEach-Object { [int]($_ -replace '^$', '0') }
               (Get-Content version_info.py) -replace 'filevers=\(0, 3, 0, 0\)', "filevers=($($VERSION_PARTS[0]), $($VERSION_PARTS[1]), $($VERSION_PARTS[2]), $($VERSION_PARTS[3]))" -replace 'prodvers=\(0, 3, 0, 0\)', "prodvers=($($VERSION_PARTS[0]), $($VERSION_PARTS[1]), $($VERSION_PARTS[2]), $($VERSION_PARTS[3]))" -replace "u'FileVersion', u'0.3.0.0'", "u'FileVersion', u'$NUMERIC_VERSION.0'" -replace "u'ProductVersion', u'0.3.0.0'", "u'ProductVersion', u'$NUMERIC_VERSION.0'" | Set-Content version_info.py
             shell: powershell
             
