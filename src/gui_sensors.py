@@ -18,7 +18,6 @@ class SensorSelectorDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Select Entity")
-        self.resize(550, 350)
         self.setWindowIcon(icons.get_icon('database_24dp_1976d2_fill0_wght400_grad0_opsz24'))
         
         self.selected_entities = {}
@@ -35,6 +34,7 @@ class SensorSelectorDialog(QDialog):
         
         self.setup_ui()
         self.load_selected_entities()
+        self.adjustSize()
 
     def setup_ui(self):
         layout = QVBoxLayout(self)

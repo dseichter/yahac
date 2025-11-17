@@ -23,12 +23,12 @@ class ConfigDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Settings")
-        self.resize(580, 500)
         self.setWindowIcon(icons.get_icon('settings_24dp_1976d2_fill0_wght400_grad0_opsz24'))
         
         self.token_visible = False
         self.setup_ui()
         self.load_settings()
+        self.adjustSize()
 
     def setup_ui(self):
         layout = QVBoxLayout(self)
