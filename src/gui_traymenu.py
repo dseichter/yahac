@@ -21,6 +21,10 @@ class TrayIcon(QSystemTrayIcon):
         super().__init__(parent)
         self.parent = parent
         
+        # Store references to open dialogs
+        self.sensors_dialog = None
+        self.config_dialog = None
+        
         # Set tray icon
         icon = icons.get_icon('home_app_logo_24dp_1976d2_fill0_wght400_grad0_opsz24')
         self.setIcon(icon)
@@ -97,15 +101,27 @@ class TrayIcon(QSystemTrayIcon):
 
     def on_sensors(self):
         """Open the sensor selection dialog."""
-        sensors_dialog = gui_sensors.SensorSelectorDialog(self.parent)
-        logger.info("Showing sensors dialog")
-        sensors_dialog.exec()
+        if self.sensors_dialog is None or not self.sensors_dialog.isVisible():
+            self.sensors_dialog = gui_sensors.SensorSelectorDialog(self.parent)
+            logger.info("Showing sensors dialog")
+            self.sensors_dialog.exec()
+            self.sensors_dialog = None
+        else:
+            logger.info("Sensors dialog already open")
+            self.sensors_dialog.raise_()
+            self.sensors_dialog.activateWindow()
 
     def on_settings(self):
         """Open the settings configuration dialog."""
-        config_dialog = gui_config.ConfigDialog(self.parent)
-        logger.info("Showing settings dialog")
-        config_dialog.exec()
+        if self.config_dialog is None or not self.config_dialog.isVisible():
+            self.config_dialog = gui_config.ConfigDialog(self.parent)
+            logger.info("Showing settings dialog")
+            self.config_dialog.exec()
+            self.config_dialog = None
+        else:
+            logger.info("Settings dialog already open")
+            self.config_dialog.raise_()
+            self.config_dialog.activateWindow()
 
     def on_check_update(self):
         """Check for application updates and prompt user to download if available."""
