@@ -42,14 +42,14 @@ jobs:
             run: |
               . venv\Scripts\Activate.ps1
               pyinstaller yahac.spec
-              ren dist\yahac.exe yahac-${{ github.ref_name }}.exe
+              move dist\yahac.exe yahac-${{ github.ref_name }}.exe
             shell: powershell
 
           - name: Upload artifact
             uses: actions/upload-artifact@v5
             with:
                   name: yahac-${{ github.ref_name }}.exe
-                  path: dist/yahac-${{ github.ref_name }}.exe   
+                  path: yahac-${{ github.ref_name }}.exe   
 
   build-linux:
       runs-on: ubuntu-latest
@@ -97,7 +97,7 @@ jobs:
             uses: actions/upload-artifact@v5
             with:
               name: yahac-${{ matrix.name }}-${{ github.ref_name }}
-              path: dist/yahac-${{ matrix.name }}-${{ github.ref_name }}
+              path: yahac-${{ matrix.name }}-${{ github.ref_name }}
 
   deploy:
     runs-on: ubuntu-latest
