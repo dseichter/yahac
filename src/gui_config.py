@@ -4,7 +4,6 @@ from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QGridLayout,
                                QLabel, QLineEdit, QPushButton, QCheckBox, QComboBox,
                                QMessageBox)
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QIcon
 
 import settings
 import api

@@ -1,6 +1,4 @@
 from PySide6.QtWidgets import QMainWindow, QMessageBox
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QIcon
 
 import gui_traymenu
 import gui_config

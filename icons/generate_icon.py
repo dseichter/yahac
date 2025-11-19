@@ -96,7 +96,7 @@ def generate_ico():
         with Image.open(logo_file) as img:
             # Save as ICO with multiple sizes
             img.save("yahac.ico", format="ICO", sizes=[(16,16), (32,32), (48,48), (64,64), (128,128), (256,256)])
-            print(f"✓ Generated yahac.ico")
+            print("✓ Generated yahac.ico")
     else:
         print(f"Warning: {logo_file} not found, skipping ICO generation")
 

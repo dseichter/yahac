@@ -14,9 +14,8 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import sys
-from PySide6.QtWidgets import QApplication, QSystemTrayIcon, QMessageBox
+from PySide6.QtWidgets import QApplication, QMessageBox
 from PySide6.QtCore import QTimer
-from PySide6.QtGui import QIcon
 
 import gui_mainframe
 import settings
