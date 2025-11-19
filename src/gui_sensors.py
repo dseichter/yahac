@@ -1,145 +1,169 @@
-import wx
+from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLabel, 
+                               QComboBox, QPushButton, QTableWidget, QTableWidgetItem,
+                               QMessageBox, QInputDialog, QHeaderView)
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QIcon
 
 import api
 import settings
-import icons
+import icons as icons
 
 import logging_config  # Setup the logging  # noqa: F401
 import logging
 
 logger = logging.getLogger(__name__)
 
-selected_entities = {}  # key: entity_id, value: friendly_name
-entities = api.list_states()
 
-# Create a list of entity IDs to select as sensors
-entity_list = []
-
-if entities and isinstance(entities, list):
-    for entity in entities:
-        if isinstance(entity, dict) and "entity_id" in entity:
-            entity_list.append(entity["entity_id"])
-
-
-class SensorSelectorFrame(wx.Frame):
-    def __init__(self, parent):
-        super().__init__(parent, title="Select Entity", size=(550, 350), pos=(100, 100))
-        self.Centre(wx.BOTH)
-        self.Centre(direction=wx.VERTICAL)
-        panel = wx.Panel(self)
-
-        vbox = wx.BoxSizer(wx.VERTICAL)
-
-        # Set frame icon
-        frame_icon = wx.Icon(icons.database_24dp_1976d2_fill0_wght400_grad0_opsz24.GetIcon())
-        self.SetIcon(frame_icon)
-
-        label = wx.StaticText(panel, label="Choose an entity:")
-        vbox.Add(label, flag=wx.LEFT | wx.TOP, border=10)
-
-        self.combobox = wx.ComboBox(panel, choices=entity_list, style=wx.CB_DROPDOWN | wx.CB_SORT)
-        vbox.Add(self.combobox, flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, border=10)
-
-        # Add button to select entity
-        self.btn_add = wx.Button(panel, label="Add Entity")
-        vbox.Add(self.btn_add, flag=wx.LEFT | wx.RIGHT | wx.TOP, border=10)
-        self.btn_add.Bind(wx.EVT_BUTTON, self.on_add_entity)
-
-        # Table to show selected entities
-        self.selected_table = wx.ListCtrl(panel, style=wx.LC_REPORT | wx.BORDER_SUNKEN)
-        self.selected_table.InsertColumn(0, "Entity ID", width=200)
-        self.selected_table.InsertColumn(1, "Friendly Name", width=180)
-        self.selected_table.InsertColumn(2, "Type", width=90)
-
-        vbox.Add(self.selected_table, flag=wx.EXPAND | wx.ALL, border=10, proportion=1)
-
-        # Save button
-        hbox_btns = wx.BoxSizer(wx.HORIZONTAL)
-        self.btn_save = wx.Button(panel, label="Save Selection")
-        self.btn_remove = wx.Button(panel, label="Remove Selected")
-        hbox_btns.Add(self.btn_save, flag=wx.RIGHT, border=5)
-        hbox_btns.Add(self.btn_remove)
-        vbox.Add(hbox_btns, flag=wx.ALIGN_RIGHT | wx.ALL, border=10)
-        self.btn_save.Bind(wx.EVT_BUTTON, self.on_save_selection)
-        self.btn_remove.Bind(wx.EVT_BUTTON, self.on_remove_selected)
-
-        panel.SetSizer(vbox)
-
-        # Enable typing/searching in the combobox
-        self.combobox.Bind(wx.EVT_TEXT, self.on_search)
-
-        # Store type selection for each entity
+class SensorSelectorDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Select Entity")
+        
+        self.selected_entities = {}
         self.entity_types = {}
-
-        # Bind table click for type selection
-        self.selected_table.Bind(wx.EVT_LIST_ITEM_SELECTED, self.on_table_select)
-
-        # Load previously saved entities
+        
+        # Get entities from API
+        self.entities = api.list_states()
+        self.entity_list = []
+        
+        if self.entities and isinstance(self.entities, list):
+            for entity in self.entities:
+                if isinstance(entity, dict) and "entity_id" in entity:
+                    self.entity_list.append(entity["entity_id"])
+        
+        self.setup_ui()
         self.load_selected_entities()
+        self.adjustSize()
 
-    def on_search(self, event):
-        # Optionally, implement live filtering here
-        pass
+    def setup_ui(self):
+        layout = QVBoxLayout(self)
+        
+        # Entity selection
+        layout.addWidget(QLabel("Choose an entity:"))
+        
+        self.combobox = QComboBox()
+        self.combobox.addItems(sorted(self.entity_list))
+        self.combobox.setEditable(True)
+        layout.addWidget(self.combobox)
+        
+        # Add button
+        self.btn_add = QPushButton("Add Entity")
+        self.btn_add.clicked.connect(self.on_add_entity)
+        layout.addWidget(self.btn_add)
+        
+        # Table for selected entities
+        self.selected_table = QTableWidget()
+        self.selected_table.setColumnCount(3)
+        self.selected_table.setHorizontalHeaderLabels(["Entity ID", "Friendly Name", "Type"])
+        
+        # Set column widths
+        header = self.selected_table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(1, QHeaderView.Stretch)
+        header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
+        
+        self.selected_table.cellDoubleClicked.connect(self.on_table_double_click)
+        layout.addWidget(self.selected_table)
+        
+        # Buttons
+        button_layout = QHBoxLayout()
+        self.btn_save = QPushButton("Save Selection")
+        self.btn_remove = QPushButton("Remove Selected")
+        
+        self.btn_save.clicked.connect(self.on_save_selection)
+        self.btn_remove.clicked.connect(self.on_remove_selected)
+        
+        button_layout.addStretch()
+        button_layout.addWidget(self.btn_save)
+        button_layout.addWidget(self.btn_remove)
+        
+        layout.addLayout(button_layout)
+        
+        # Set window icon after UI is set up
+        self.setWindowIcon(icons.get_icon('database_24dp_1976d2_fill0_wght400_grad0_opsz24'))
 
-    def on_add_entity(self, event):
-        entity_id = self.combobox.GetValue()
+    def on_add_entity(self):
+        entity_id = self.combobox.currentText()
+        if not entity_id:
+            return
+            
         # Find friendly name from entities
         friendly_name = entity_id
-        for entity in entities:
+        for entity in self.entities:
             if entity["entity_id"] == entity_id:
                 friendly_name = entity.get("attributes", {}).get("friendly_name", entity_id)
                 break
-        if entity_id and entity_id not in selected_entities:
-            selected_entities[entity_id] = friendly_name
-            index = self.selected_table.InsertItem(self.selected_table.GetItemCount(), entity_id)
-            self.selected_table.SetItem(index, 1, friendly_name)
+        
+        if entity_id and entity_id not in self.selected_entities:
+            self.selected_entities[entity_id] = friendly_name
+            
+            # Add to table
+            row = self.selected_table.rowCount()
+            self.selected_table.insertRow(row)
+            self.selected_table.setItem(row, 0, QTableWidgetItem(entity_id))
+            self.selected_table.setItem(row, 1, QTableWidgetItem(friendly_name))
+            self.selected_table.setItem(row, 2, QTableWidgetItem("sensor"))
+            
             # Default type is 'sensor'
-            self.selected_table.SetItem(index, 2, "sensor")
             self.entity_types[entity_id] = "sensor"
 
-    def on_table_select(self, event):
-        index = event.GetIndex()
-        entity_id = self.selected_table.GetItemText(index)
-        current_type = self.entity_types.get(entity_id, "sensor")
-        dlg = wx.SingleChoiceDialog(self, "Select type for entity:", "Entity Type", ["sensor", "switch"], wx.CHOICEDLG_STYLE)
-        dlg.SetSelection(0 if current_type == "sensor" else 1)
-        if dlg.ShowModal() == wx.ID_OK:
-            selected_type = dlg.GetStringSelection()
-            self.selected_table.SetItem(index, 2, selected_type)
-            self.entity_types[entity_id] = selected_type
-        dlg.Destroy()
+    def on_table_double_click(self, row, column):
+        if column == 2:  # Type column
+            entity_id = self.selected_table.item(row, 0).text()
+            current_type = self.entity_types.get(entity_id, "sensor")
+            
+            types = ["sensor", "switch"]
+            selected_type, ok = QInputDialog.getItem(
+                self, "Entity Type", "Select type for entity:", 
+                types, types.index(current_type), False
+            )
+            
+            if ok:
+                self.selected_table.setItem(row, 2, QTableWidgetItem(selected_type))
+                self.entity_types[entity_id] = selected_type
 
-    def on_save_selection(self, event):
+    def on_save_selection(self):
         # Gather selected entities and types
         selected = []
-        for idx in range(self.selected_table.GetItemCount()):
-            entity_id = self.selected_table.GetItemText(idx)
-            friendly_name = self.selected_table.GetItem(idx, 1).GetText()
-            entity_type = self.selected_table.GetItem(idx, 2).GetText()
-            selected.append({"entity_id": entity_id, "friendly_name": friendly_name, "type": entity_type})
+        for row in range(self.selected_table.rowCount()):
+            entity_id = self.selected_table.item(row, 0).text()
+            friendly_name = self.selected_table.item(row, 1).text()
+            entity_type = self.selected_table.item(row, 2).text()
+            selected.append({
+                "entity_id": entity_id, 
+                "friendly_name": friendly_name, 
+                "type": entity_type
+            })
+        
         # Save to settings
         settings.save_config("entities", selected)
-        wx.MessageBox("Selection saved!", "Saved", wx.OK | wx.ICON_INFORMATION)
+        logger.info("Entities saved successfully")
+        self.accept()  # Close dialog and return to parent
 
-    def on_remove_selected(self, event):
-        selected_idx = self.selected_table.GetFirstSelected()
-        while selected_idx != -1:
-            entity_id = self.selected_table.GetItemText(selected_idx)
-            self.selected_table.DeleteItem(selected_idx)
+    def on_remove_selected(self):
+        current_row = self.selected_table.currentRow()
+        if current_row >= 0:
+            entity_id = self.selected_table.item(current_row, 0).text()
+            self.selected_table.removeRow(current_row)
             self.entity_types.pop(entity_id, None)
-            selected_entities.pop(entity_id, None)
-            selected_idx = self.selected_table.GetFirstSelected()
+            self.selected_entities.pop(entity_id, None)
 
     def load_selected_entities(self):
         # Load from settings
         selected = settings.load_value_from_json_file("entities")
         if not selected:
             return
+            
         for item in selected:
             entity_id = item.get("entity_id", "")
             friendly_name = item.get("friendly_name", entity_id)
             entity_type = item.get("type", "sensor")
-            index = self.selected_table.InsertItem(self.selected_table.GetItemCount(), entity_id)
-            self.selected_table.SetItem(index, 1, friendly_name)
-            self.selected_table.SetItem(index, 2, entity_type)
+            
+            row = self.selected_table.rowCount()
+            self.selected_table.insertRow(row)
+            self.selected_table.setItem(row, 0, QTableWidgetItem(entity_id))
+            self.selected_table.setItem(row, 1, QTableWidgetItem(friendly_name))
+            self.selected_table.setItem(row, 2, QTableWidgetItem(entity_type))
+            
             self.entity_types[entity_id] = entity_type
+            self.selected_entities[entity_id] = friendly_name

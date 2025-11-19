@@ -16,11 +16,13 @@ setup(
     package_dir={"": "src"},
     python_requires=">=3.8",
     install_requires=[
-        "wxPython>=4.2.0",
+        "PySide6>=6.6.0",
         "urllib3>=2.0.0",
         "paho-mqtt>=1.6.0",
         "packaging>=21.0",
         "ha-mqtt-discoverable>=0.22.0",
+        "pywin32>=311; sys_platform == 'win32'",
+        "win11toast>=0.36.2; sys_platform == 'win32'",
     ],
     entry_points={
         "console_scripts": [

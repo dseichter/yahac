@@ -13,11 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-# importing wx files
-import wx
-import wx.adv
+import sys
+from PySide6.QtWidgets import QApplication, QSystemTrayIcon, QMessageBox
+from PySide6.QtCore import QTimer
+from PySide6.QtGui import QIcon
 
-# import the newly created GUI file
 import gui_mainframe
 import settings
 import helper
@@ -30,56 +30,51 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class YahacFrame(gui_mainframe.MainFrame):
-    # constructor
-    def __init__(self):
-        # initialize parent class
-        gui_mainframe.MainFrame.__init__(self)
+class YahacApp(QApplication):
+    def __init__(self, argv):
+        super().__init__(argv)
+        self.setQuitOnLastWindowClosed(False)
+        
         settings.create_config()
+        
         # Check for update if enabled
         if settings.load_value_from_json_file("checkupdate"):
             if helper.check_for_new_release():
-                result = wx.MessageBox(
-                    "A new release is available.\nWould you like to open the download page?",
+                reply = QMessageBox.question(
+                    None,
                     "Update available",
-                    wx.YES_NO | wx.ICON_INFORMATION,
+                    "A new release is available.\nWould you like to open the download page?",
+                    QMessageBox.Yes | QMessageBox.No
                 )
-                if result == wx.YES:
+                if reply == QMessageBox.Yes:
                     webbrowser.open_new_tab(helper.RELEASES)
 
-
+        self.main_window = gui_mainframe.MainWindow()
+        
         if settings.load_value_from_json_file("register_entity"):
-            # hack: before setting the entity online, set it offline first to be able to trigger the state change
             logger.info("Get (or create) MQTT sensor.")
-            proceed = False
             try:
                 self.ha_helper = mqtt.create_mqtt_sensor(helper.get_computer_name())
-                proceed = True
-            except Exception as e:
-                result = wx.MessageBox(
-                    f"Are your MQTT settings correct? Please check your configuration.\n\n{e}",
-                    "MQTT Error",
-                    wx.OK | wx.ICON_EXCLAMATION,
-                )
-            if proceed:
                 logger.info("Create timer and set entity state online.")
-                self.timer = wx.Timer(self)
-                self.Bind(wx.EVT_TIMER, self.on_timer, self.timer)
-                self.timer.Start(5000)  # Check every 5 seconds
+                self.timer = QTimer()
+                self.timer.timeout.connect(self.on_timer)
+                self.timer.start(5000)  # Check every 5 seconds
+            except Exception as e:
+                QMessageBox.critical(
+                    None,
+                    "MQTT Error",
+                    f"Are your MQTT settings correct? Please check your configuration.\n\n{e}"
+                )
 
-    def on_timer(self, event):
-        mqtt.publish_sensor_state(self.ha_helper, online=True)  # Set entity online after 5 seconds
+    def on_timer(self):
+        mqtt.publish_sensor_state(self.ha_helper, online=True)
 
 
 def main():
     """Main entry point for the application."""
-    app = wx.App(False)
-    frame = YahacFrame()
-    frame.Hide()  # Start hidden, only tray icon visible
-    app.MainLoop()
+    app = YahacApp(sys.argv)
+    sys.exit(app.exec())
 
 
-# mandatory in wx, create an app, False stands for not deteriction stdin/stdout
-# refer manual for details
 if __name__ == "__main__":
     main()

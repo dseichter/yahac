@@ -1,12 +1,16 @@
 # Development
 
+## GUI Framework
+
+yahac uses **PySide6** (Qt bindings for Python) for cross-platform GUI development. This provides native look and feel on Windows and Linux while maintaining code compatibility across platforms.
+
 ## Start development
 
 I am using pyenv on my computers and virtual machines.
 
 Create and activate an environment by running the following command:
 
-```pyenv virtualenv 3.13.7 yahac-venv```
+```pyenv virtualenv 3.12 yahac-venv```
 
 ```pyenv activate yahac-venv```
 
@@ -19,6 +23,27 @@ Install the required dependencies
 You can start the yahac by running the following command:
 
 ```cd src && python yahac.py```
+
+## Icon Management
+
+Icons are stored as PNG files in the `icons/` directory and are automatically converted to base64-encoded data embedded in `src/icons.py`. This approach ensures icons are included in the binary without external file dependencies.
+
+### Adding or Updating Icons
+
+1. Place your PNG files (from [Google Material Symbols](https://fonts.google.com/icons)) in the `icons/` directory
+2. Run the icon generator:
+   ```bash
+   python icons/generate_icon.py
+   ```
+3. This generates `src/icons.py` with base64-encoded icon data
+4. Icons are accessed in code via `icons.get_icon('icon_name')`
+
+### Icon Guidelines
+
+- Use [Google Material Symbols](https://fonts.google.com/icons) as the icon source
+- Base color: `#1976D2`
+- Export as PNG 24dp size
+- Keep the original filename for easy identification
 
 ## Testing
 

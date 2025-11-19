@@ -34,6 +34,8 @@ There is a false positive alert after downloading the windows binary [#34](https
 ### GNOME
 GNOME does not support Tray Menu out of the box. There are serveral solutions to enable a tray menu within GNOME. I can't recommend any of them at the moment.
 
-### Windows sizes
+### Window/Dialog Sizing
 
-In some Desktop Environments the size of the windows, e.g. of the yahac settings, will not show with the exact values.
+yahac uses PySide6 (Qt) for cross-platform GUI rendering. On some desktop environments, dialog and window sizes may not render at the exact specified dimensions due to platform-specific theme and font rendering differences. The application will automatically size windows to fit their content.
+
+```
