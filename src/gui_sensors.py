@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLabel, 
                                QComboBox, QPushButton, QTableWidget, QTableWidgetItem,
-                               QInputDialog, QHeaderView, QLineEdit, QMessageBox)
+                               QInputDialog, QHeaderView, QLineEdit)
 
 import api
 import settings
