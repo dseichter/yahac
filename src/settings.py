@@ -55,6 +55,8 @@ def create_config():
         data['entities'] = []
     if 'confirm_state_change' not in data:
         data['confirm_state_change'] = True
+    if 'group_threshold' not in data:
+        data['group_threshold'] = 5
 
     with open(CONFIGFILE, 'w') as f:
         json.dump(data, f, indent=4, sort_keys=True)
