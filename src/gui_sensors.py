@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLabel, 
                                QComboBox, QPushButton, QTableWidget, QTableWidgetItem,
-                               QInputDialog, QHeaderView)
+                               QInputDialog, QHeaderView, QLineEdit, QMessageBox)
 
 import api
 import settings
@@ -31,6 +31,23 @@ class SensorSelectorDialog(QDialog):
         
         self.setup_ui()
         self.load_selected_entities()
+    
+    def filter_entities(self, text=None):
+        """Filter entity list based on search text and domain"""
+        self.combobox.clear()
+        
+        # Get current filters
+        search_text = self.search_box.text().lower()
+        domain = self.domain_filter.currentText()
+        
+        # Apply filters
+        filtered = self.entity_list
+        if domain != 'All':
+            filtered = [e for e in filtered if e.startswith(domain + '.')]
+        if search_text:
+            filtered = [e for e in filtered if search_text in e.lower()]
+        
+        self.combobox.addItems(sorted(filtered))
         self.adjustSize()
 
     def setup_ui(self):
@@ -38,6 +55,22 @@ class SensorSelectorDialog(QDialog):
         
         # Entity selection
         layout.addWidget(QLabel("Choose an entity:"))
+        
+        # Domain filter
+        filter_layout = QHBoxLayout()
+        filter_layout.addWidget(QLabel("Domain:"))
+        self.domain_filter = QComboBox()
+        domains = ['All'] + sorted(set(e.split('.')[0] for e in self.entity_list))
+        self.domain_filter.addItems(domains)
+        self.domain_filter.currentTextChanged.connect(self.filter_entities)
+        filter_layout.addWidget(self.domain_filter)
+        layout.addLayout(filter_layout)
+        
+        # Search/filter box
+        self.search_box = QLineEdit()
+        self.search_box.setPlaceholderText("Search entities...")
+        self.search_box.textChanged.connect(self.filter_entities)
+        layout.addWidget(self.search_box)
         
         self.combobox = QComboBox()
         self.combobox.addItems(sorted(self.entity_list))
