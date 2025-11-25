@@ -220,3 +220,6 @@ debian/*.substvars
 debian/yahac/
 debian/.debhelper/generated
 debian/debhelper-build-stamp
+
+# ignore vscode settings
+.vscode

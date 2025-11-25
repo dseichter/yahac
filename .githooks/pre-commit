@@ -1,0 +1,12 @@
+#!/bin/bash
+# Pre-commit hook to sync version and dependencies
+
+python3 sync_version.py
+
+if [ $? -eq 0 ]; then
+    git add setup.py PKGBUILD
+    echo "✓ Version and dependencies synced"
+else
+    echo "✗ Failed to sync version and dependencies"
+    exit 1
+fi
