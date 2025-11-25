@@ -48,9 +48,12 @@ def update_setup_py(version, deps):
     for name, (ver, condition) in deps.items():
         if name == 'pyinstaller':  # Skip build-only deps
             continue
-        dep_str = f'"{name}>={ver}"'
         if condition:
+            # Replace double quotes with single quotes in condition
+            condition = condition.replace('"', "'")
             dep_str = f'"{name}>={ver}; {condition}"'
+        else:
+            dep_str = f'"{name}>={ver}"'
         install_requires.append(dep_str)
     
     # Update install_requires
