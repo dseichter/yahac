@@ -59,6 +59,10 @@ Last but not least, provide the password.
 
 yahac writes per default the logs to /tmp/yahac.log. Since there are no sensitive data, the temp file is available within all operating systems, I kept this approach.
 
+## Group entities threshold
+
+Using this value to specify, when the tray menu should start with grouping by sensors, switches, etc. This enables a more clean view, if you have added a lot of entities. Default is 5.
+
 ### Loglevel
 
 Specify your loglevel, you want to run yahac. At the beginning, you might see potential configuration issues, so I recommend to set to **INFO**.

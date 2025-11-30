@@ -89,6 +89,13 @@ class ConfigDialog(QDialog):
         self.cmb_log_level.addItems(["DEBUG", "INFO", "ERROR"])
         grid.addWidget(self.cmb_log_level, 10, 1)
         
+        # Entity grouping threshold
+        grid.addWidget(QLabel("Group entities threshold:"), 11, 0)
+        self.txt_group_threshold = QLineEdit()
+        self.txt_group_threshold.setPlaceholderText("5")
+        self.txt_group_threshold.setToolTip("Minimum entities before grouping into submenus (0 = always group)")
+        grid.addWidget(self.txt_group_threshold, 11, 1)
+        
         layout.addLayout(grid)
         
         # Buttons
@@ -123,6 +130,7 @@ class ConfigDialog(QDialog):
         mqtt_user = settings.load_value_from_json_file("mqtt_user")
         mqtt_password = settings.load_value_from_json_file("mqtt_password")
         log_level = settings.load_value_from_json_file("loglevel")
+        group_threshold = settings.load_value_from_json_file("group_threshold")
 
         self.txt_url.setText(url if url else "")
         self.txt_token.setText(token if token else "")
@@ -135,6 +143,7 @@ class ConfigDialog(QDialog):
         self.txt_mqtt_user.setText(mqtt_user if mqtt_user else "")
         self.txt_mqtt_password.setText(mqtt_password if mqtt_password else "")
         self.cmb_log_level.setCurrentText(log_level if log_level else "INFO")
+        self.txt_group_threshold.setText(str(group_threshold) if group_threshold else "5")
 
     def on_show_token(self):
         if self.token_visible:
@@ -178,6 +187,10 @@ class ConfigDialog(QDialog):
         settings.save_config("mqtt_user", self.txt_mqtt_user.text())
         settings.save_config("mqtt_password", self.txt_mqtt_password.text())
         settings.save_config("loglevel", self.cmb_log_level.currentText())
+        
+        group_threshold_text = self.txt_group_threshold.text()
+        group_threshold = int(group_threshold_text) if group_threshold_text.isdigit() else 5
+        settings.save_config("group_threshold", group_threshold)
 
         QMessageBox.information(self, "Save", "Settings saved.")
         self.accept()

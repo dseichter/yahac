@@ -154,30 +154,56 @@ class TrayIcon(QSystemTrayIcon):
         sensors = settings.load_value_from_json_file("entities")
         if not sensors:
             return
-            
+        
+        # Group entities by domain
+        groups = {}
         for sensor in sensors:
             entity_id = sensor.get("entity_id", "")
-            friendly_name = sensor.get("friendly_name", entity_id)
-            entity_type = sensor.get("type", "switch")
-            entity_state = api.get_entity_state(entity_id)
-            logger.info(f"Loaded sensor: {friendly_name} ({entity_id}) - {entity_type} - {entity_state}")
+            domain = entity_id.split('.')[0] if '.' in entity_id else 'other'
+            if domain not in groups:
+                groups[domain] = []
+            groups[domain].append(sensor)
+        
+        # Create submenus based on configured threshold
+        group_threshold = settings.load_value_from_json_file("group_threshold")
+        if group_threshold is None:
+            group_threshold = 5
+        else:
+            group_threshold = int(group_threshold)
+        use_submenus = len(sensors) > group_threshold
+        
+        for domain, entities in sorted(groups.items()):
+            if use_submenus and len(groups) > 1:
+                # Create submenu for this domain
+                submenu = QMenu(domain.capitalize(), menu)
+                menu.addMenu(submenu)
+                target_menu = submenu
+            else:
+                target_menu = menu
             
-            if entity_type == "sensor":
-                action = QAction(f"{friendly_name} ({entity_state})", self)
-                action.setIcon(icons.get_icon('sensors_24dp_1976d2_fill0_wght400_grad0_opsz24'))
-                action.setToolTip(entity_id)
-                action.triggered.connect(lambda checked, s=sensor: self.on_sensor_selected(s))
-                menu.addAction(action)
+            for sensor in entities:
+                entity_id = sensor.get("entity_id", "")
+                friendly_name = sensor.get("friendly_name", entity_id)
+                entity_type = sensor.get("type", "switch")
+                entity_state = api.get_entity_state(entity_id)
+                logger.info(f"Loaded sensor: {friendly_name} ({entity_id}) - {entity_type} - {entity_state}")
                 
-            elif entity_type == "switch":
-                action = QAction(f"{friendly_name} ({entity_state})", self)
-                if entity_state == "on":
-                    action.setIcon(icons.get_icon('toggle_on_24dp_1976d2_fill0_wght400_grad0_opsz24'))
-                else:
-                    action.setIcon(icons.get_icon('toggle_off_24dp_1976d2_fill0_wght400_grad0_opsz24'))
-                action.setToolTip(entity_id)
-                action.triggered.connect(lambda checked, s=sensor: self.on_switch_selected(s))
-                menu.addAction(action)
+                if entity_type == "sensor":
+                    action = QAction(f"{friendly_name} ({entity_state})", self)
+                    action.setIcon(icons.get_icon('sensors_24dp_1976d2_fill0_wght400_grad0_opsz24'))
+                    action.setToolTip(entity_id)
+                    action.triggered.connect(lambda checked, s=sensor: self.on_sensor_selected(s))
+                    target_menu.addAction(action)
+                    
+                elif entity_type == "switch":
+                    action = QAction(f"{friendly_name} ({entity_state})", self)
+                    if entity_state == "on":
+                        action.setIcon(icons.get_icon('toggle_on_24dp_1976d2_fill0_wght400_grad0_opsz24'))
+                    else:
+                        action.setIcon(icons.get_icon('toggle_off_24dp_1976d2_fill0_wght400_grad0_opsz24'))
+                    action.setToolTip(entity_id)
+                    action.triggered.connect(lambda checked, s=sensor: self.on_switch_selected(s))
+                    target_menu.addAction(action)
 
     def on_sensor_selected(self, sensor):
         if sensor:
