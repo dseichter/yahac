@@ -122,4 +122,3 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: "**/*.pkg.tar.zst"
-          generate_release_notes: true
