@@ -103,17 +103,17 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-windows, build-linux]
     steps:
-        - uses: actions/download-artifact@v6
+        - uses: actions/download-artifact@v7
           with:
             name: yahac-ubuntu-24-04-${{ github.ref_name }}
             path: .
 
-        - uses: actions/download-artifact@v6
+        - uses: actions/download-artifact@v7
           with:
             name: yahac-${{ github.ref_name }}.exe
             path: .
 
-        - uses: actions/download-artifact@v6
+        - uses: actions/download-artifact@v7
           with:
             name: yahac-archlinux-${{ github.ref_name }}
             path: .
