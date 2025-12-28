@@ -17,7 +17,7 @@ setup(
     python_requires=">=3.8",
     install_requires=[
         "PySide6>=6.10.1",
-        "urllib3>=2.5.0",
+        "urllib3>=2.6.2",
         "paho-mqtt>=2.1.0",
         "pywin32>=311; sys_platform == 'win32'",
         "win11toast>=0.36.2; sys_platform == 'win32'",

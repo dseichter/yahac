@@ -1,5 +1,7 @@
 # YAHAC - Yet Another Home Assistant Client
 
+**Desktop system tray client for Home Assistant** - Monitor sensors and control switches directly from your desktop. Cross-platform support for Windows and Linux with native packaging.
+
 <p align="center">
   <img src="icons/home_app_logo_48dp_1976D2_FILL0_wght400_GRAD0_opsz48.png" alt="YAHAC Logo"/>
 </p>
@@ -11,12 +13,17 @@
 </p>
 
 <p align="center">
-  <b><a href="https://dseichter.github.io/yahac/">📖 Documentation</a></b> •
-  <b><a href="https://github.com/dseichter/yahac/releases">⬇️ Downloads</a></b> •
-  <b><a href="https://github.com/dseichter/yahac/issues">🐛 Issues</a></b>
+  <b><a href="https://dseichter.github.io/yahac/">Documentation</a></b> •
+  <b><a href="https://github.com/dseichter/yahac/releases">Downloads</a></b> •
+  <b><a href="https://github.com/dseichter/yahac/issues">Issues</a></b>
 </p>
 
-**Desktop system tray client for Home Assistant** - Monitor sensors and control switches directly from your desktop. Cross-platform support for Windows and Linux with native packaging.
+![ruff](https://github.com/dseichter/yahac/actions/workflows/ruff.yml/badge.svg)
+![bandit](https://github.com/dseichter/yahac/actions/workflows/bandit.yml/badge.svg)
+![trivy](https://github.com/dseichter/yahac/actions/workflows/trivy.yml/badge.svg)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=dseichter_yahac&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=dseichter_yahac)
+
+---
 
 ![yahac in tray Icon](docs/docs/assets/screenshots/yahac_traymenu_with_entities.png)
 
