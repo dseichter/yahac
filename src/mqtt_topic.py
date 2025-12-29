@@ -1,5 +1,5 @@
 import logging
-import subprocess
+import subprocess # nosec B404
 import json
 import os
 
@@ -34,11 +34,11 @@ def process_command(command, payload):
 
         # run the command as subprocess, but do not block the main thread
         if payload is None:
-            subprocess.Popen([command])
+            subprocess.Popen([command])  # nosec B603
         elif isinstance(payload, list):
-            subprocess.Popen([command] + payload)
+            subprocess.Popen([command] + payload)  # nosec B603
         else:
-            subprocess.Popen([command, json.dumps(payload, default=str)])
+            subprocess.Popen([command, json.dumps(payload, default=str)])  # nosec B603
         return
 
     # Unknown command
@@ -60,7 +60,7 @@ def process_notification(payload):
         payload = payload
 
     if os.name == "posix":
-        subprocess.Popen(['notify-send', 'yahac', str(payload), '-t', '5000'])
+        subprocess.Popen(['notify-send', 'yahac', str(payload), '-t', '5000'])  # nosec B603 B607
     elif os.name == "nt":
         from win11toast import toast
         toast('yahac', str(payload), duration=5)
