@@ -63,6 +63,18 @@ JSON:
 !!! warning
     You run your commands on your own risk. Please be carefull! Only one command can be provided!
 
+!!! danger "Security Warning"
+    **Command Execution Risk**: YAHAC executes commands received via MQTT without validation. Anyone with access to your MQTT broker can run arbitrary executables on your computer with your user privileges.
+    
+    **Recommendations**:
+    
+    - Secure your MQTT broker with strong authentication
+    - Use TLS/SSL encryption for MQTT connections
+    - Restrict MQTT topic permissions to trusted users only
+    - Consider using a dedicated user account with limited privileges for YAHAC
+    - Monitor MQTT logs for suspicious activity
+    - Only enable MQTT integration if you trust all users with broker access
+
 If your script or executable runs fine, you have to check by your own. In the logs (set to loglevel info), you will find the output of the execution itself, not the output the script.
 
 ### notify

@@ -6,6 +6,9 @@ You need to enable the [MQTT Integration inside Home Assistant](https://www.home
 
 As soon as you have enabled the MQTT integration, you can proceed with the MQTT setup of yahac.
 
+!!! danger "Security Notice"
+    MQTT integration allows remote command execution on your computer. Ensure your MQTT broker is properly secured with authentication and encryption. See [Automation Security](automation.md#command) for details.
+
 ## Configuration
 
 Using the Settings entry of the yahac menu, you will see again the configuration window.
