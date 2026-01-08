@@ -120,12 +120,20 @@ String:
 Hello World as string!
 ```
 
+String (with secure string). The parameter itself will be not shown in the notification.
+
+
+```bash
+Hello World as string! --securestring=abcd1234
+```
+
 JSON:
 
 ```JSON
 {"message": "Hello World"}
-{"message": {"parameter": "value", "another_parameter": "value"}}
+{"message": {"parameter": "value", "another_parameter": "value"}},
+{"message": "Hello World", "securestring": "abcd1234"}
 ```
 
 Providing an object instead of a string as value, it will be formated as JSON within the message.
-This will enable you to receive immediately an information.
+This will enable you to receive immediately an information. The securestring will not be shown in the notification itself.
