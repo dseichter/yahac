@@ -15,13 +15,14 @@
 
 import sys
 from PySide6.QtWidgets import QApplication, QMessageBox
-from PySide6.QtCore import QTimer
+from PySide6.QtCore import QTimer, QThread
 
 import gui_mainframe
 import settings
 import helper
 import mqtt
 import webbrowser
+import threading
 
 import logging_config  # Setup the logging  # noqa: F401
 import logging
@@ -66,7 +67,9 @@ class YahacApp(QApplication):
                 )
 
     def on_timer(self):
-        mqtt.publish_sensor_state(self.ha_helper, online=True)
+        # Run MQTT publish in a separate thread to avoid blocking the GUI
+        thread = threading.Thread(target=mqtt.publish_sensor_state, args=(self.ha_helper, True), daemon=True)
+        thread.start()
 
 
 def main():
