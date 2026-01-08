@@ -15,7 +15,7 @@
 
 import sys
 from PySide6.QtWidgets import QApplication, QMessageBox
-from PySide6.QtCore import QTimer, QThread
+from PySide6.QtCore import QTimer
 
 import gui_mainframe
 import settings

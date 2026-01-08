@@ -1,6 +1,5 @@
 from PySide6.QtWidgets import QSystemTrayIcon, QMenu, QMessageBox, QApplication
 from PySide6.QtGui import QAction, QCursor
-from PySide6.QtCore import QPoint
 
 import gui_config
 import gui_sensors
