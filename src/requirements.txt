@@ -1,5 +1,5 @@
 PySide6==6.10.1
-urllib3==2.6.2
+urllib3==2.6.3
 paho-mqtt==2.1.0
 pyinstaller==6.17.0
 pywin32==311; sys_platform == "win32"
