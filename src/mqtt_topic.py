@@ -2,10 +2,11 @@ import logging
 import subprocess # nosec B404
 import json
 import os
+import settings
 
 logger = logging.getLogger(__name__)
 
-def process_command(command, payload):
+def process_command(command, payload, secstring):
     """
     Handle a command received via MQTT.
     Args:
@@ -13,6 +14,17 @@ def process_command(command, payload):
         payload (any): The associated value or parameters.
     """
     logger.info(f"Processing command: {command}, payload: {payload}")
+
+    # check, if securestring is used (enabled) and it is included in payload
+    securestring_use = bool(settings.load_value_from_json_file("securestring_use"))
+    securestring = settings.load_value_from_json_file("securestring")
+
+    if securestring_use and securestring:
+        if securestring == secstring or securestring in str(command):
+            logger.info("Securestring is correct, executing command.")
+        else:
+            logger.warning("Securestring is incorrect, command not executed.")
+            return
 
     # First, handle known logical commands
     if command == "run_script":
@@ -45,13 +57,24 @@ def process_command(command, payload):
     logger.warning(f"Unknown command: {command}")
 
 
-def process_notification(payload):
+def process_notification(payload, secstring):
     """
     Handle a notification received via MQTT.
     Args:
         payload (any): The notification data.
     """
     logger.info(f"Processing notification: {payload}")
+
+    # check, if securestring is used (enabled) and it is included in payload
+    securestring_use = bool(settings.load_value_from_json_file("securestring_use"))
+    securestring = settings.load_value_from_json_file("securestring")
+
+    if securestring_use and securestring:
+        if securestring == secstring:
+            logger.info("Securestring is correct, executing command.")
+        else:
+            logger.warning("Securestring is incorrect, command not executed.")
+            return
 
     # be able to show JSON payloads nicely formatted
     try:

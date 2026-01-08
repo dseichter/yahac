@@ -35,6 +35,30 @@ actions:
 mode: single
 ```
 
+### With Securestring
+
+```YAML
+alias: yahac Test
+description: ""
+triggers:
+  - type: connected
+    device_id: 908faa2294da1c3e0c063a366d08de8f
+    entity_id: e4635fbad32b512e3c84d9f0f12a53c6
+    domain: binary_sensor
+    trigger: device
+conditions: []
+actions:
+  - action: mqtt.publish
+    metadata: {}
+    data:
+      evaluate_payload: false
+      qos: "2"
+      retain: false
+      topic: yahac/<computername>/command
+      payload: "{\"command\": \"test.sh\", \"securestring\":\"abcd1234\"}"
+mode: single
+```
+
 You can provide any script you want to run on each yahac client. If your provided script should only run once, take care about *QOS*.
 
 ## Supported topics and payloads
@@ -52,16 +76,19 @@ String:
 ```bash
 ~/test_mqtt_script.sh
 ~/test_mqtt_script.sh param1 param2 ...
+~/test_mqtt_script.sh param1 param2 --securestring=abcd1234...
 ```
 
 JSON:
 ```JSON
 {"command": "~/test_mqtt_script.sh", "data": "Hello World"}
 {"command": "~/test_mqtt_script.sh", "data": {"parameter": "value", "another_parameter": "value", ...}}
+{"command": "~/test_mqtt_script.sh", "securestring": "abcd1234", "data": {"parameter": "value", "another_parameter": "value", ...}}
 ```
 
 !!! warning
     You run your commands on your own risk. Please be carefull! Only one command can be provided!
+    The **securestring** increases the level of security. See examples above with securestring within the payload.
 
 !!! danger "Security Warning"
     **Command Execution Risk**: YAHAC executes commands received via MQTT without validation. Anyone with access to your MQTT broker can run arbitrary executables on your computer with your user privileges.
