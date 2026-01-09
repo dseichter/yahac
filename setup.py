@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="yahac",
-    version="0.4.1",
+    version="0.4.2",
     description="Yet Another Home Assistant Client",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
