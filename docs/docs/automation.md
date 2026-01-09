@@ -72,6 +72,8 @@ The topic itself is defined with the schema `yahac/<computername>/command`.
 
 **Possible payloads**
 
+If securestring is provided, it will not passed th the command itself.
+
 String:
 ```bash
 ~/test_mqtt_script.sh
