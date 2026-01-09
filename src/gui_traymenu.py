@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import QSystemTrayIcon, QMenu, QMessageBox, QApplication
 from PySide6.QtGui import QAction, QCursor
+from PySide6.QtCore import QTimer
 
 import gui_config
 import gui_sensors
@@ -95,10 +96,13 @@ class TrayIcon(QSystemTrayIcon):
 
     def on_tray_activated(self, reason):
         if reason == QSystemTrayIcon.Trigger:
-            # Show the stored context menu at cursor position, offset upward
             pos = QCursor.pos()
-            pos.setY(pos.y() - 300)  # Move menu up by 300 pixels
-            self.context_menu.popup(pos)
+            pos.setY(pos.y() - 300)
+            QTimer.singleShot(50, lambda: self._show_menu(pos))
+    
+    def _show_menu(self, pos):
+        self.context_menu.popup(pos)
+        QCursor.setPos(pos.x(), pos.y() - 10)
 
     def on_sensors(self):
         """Open the sensor selection dialog and reload sensors after closing."""
