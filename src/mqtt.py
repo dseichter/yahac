@@ -1,3 +1,18 @@
+# Copyright (c) 2025-2026 Daniel Seichter
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <https://www.gnu.org/licenses/>.
+
 from ha_mqtt_discoverable import Settings
 from ha_mqtt_discoverable.sensors import BinarySensor, BinarySensorInfo
 
@@ -87,25 +102,34 @@ def create_mqtt_sensor(computername: str):
     def handle_command_json(topic: str, payload: dict):
         if topic.endswith("/command"):
             command = payload.get("command")
+            securestring = payload.get("securestring")
             data = payload.get("data") # default is None, therefore, no additional parameters
             logger.info(f"[YAHAC] topic 'command': {command}, data: {data}")
-            mqtt_topic.process_command(command, data)
+            mqtt_topic.process_command(command, data, securestring)
         elif topic.endswith("/notify"):
             content = payload.get("message")
+            securestring = payload.get("securestring")
             logger.info(f"[YAHAC] topic 'notify': {content}")
-            mqtt_topic.process_notification(content)
+            mqtt_topic.process_notification(content, securestring)
         else:
             logger.warning(f"[YAHAC] Unknown/unhandled topic: {topic}")
 
     def handle_command_string(topic: str, payload: str):
         if topic.endswith("/command"):
-            command = payload
+            # read --securestring=<value>, if available and extract it
+            command = payload.split("--securestring=")[0].strip()
+            securestring = None
+            if len(payload.split("--securestring=")) > 1:
+                securestring = payload.split("--securestring=")[1].strip()
             logger.info(f"[YAHAC] topic 'command': {command}")
-            mqtt_topic.process_command(command, None)
+            mqtt_topic.process_command(command, None, securestring)
         elif topic.endswith("/notify"):
-            content = payload
+            content = payload.split("--securestring=")[0].strip()
+            securestring = None
+            if len(payload.split("--securestring=")) > 1:
+                securestring = payload.split("--securestring=")[1].strip()
             logger.info(f"[YAHAC] topic 'notify': {content}")
-            mqtt_topic.process_notification(content)
+            mqtt_topic.process_notification(content, securestring)
         else:
             logger.warning(f"[YAHAC] Unknown/unhandled topic: {topic}")
       

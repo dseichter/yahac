@@ -19,7 +19,7 @@ VSVersionInfo(
         StringStruct(u'FileDescription', u'Yet Another Home Assistant Client'),
         StringStruct(u'FileVersion', u'0.3.0.0'),
         StringStruct(u'InternalName', u'yahac'),
-        StringStruct(u'LegalCopyright', u'Copyright (C) 2025 Daniel Seichter. Licensed under GPL-3.0'),
+        StringStruct(u'LegalCopyright', u'Copyright (C) 2025-2026 Daniel Seichter. Licensed under GPL-3.0'),
         StringStruct(u'OriginalFilename', u'yahac.exe'),
         StringStruct(u'ProductName', u'YAHAC'),
         StringStruct(u'ProductVersion', u'0.3.0.0'),

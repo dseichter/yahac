@@ -67,3 +67,7 @@ Default is **ERROR**.
 ## Group entities threshold
 
 Using this value to specify, when the tray menu should start with grouping by sensors, switches, etc. This enables a more clean view, if you have added a lot of entities. Default is 5.
+
+## Secure String
+
+The secure string is like an API key. If you provide a string here and enabled it, every incoming payload needs to match. Otherwise the command won't be executed.

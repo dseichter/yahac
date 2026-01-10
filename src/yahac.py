@@ -1,4 +1,4 @@
-# Copyright (c) 2025 Daniel Seichter
+# Copyright (c) 2025-2026 Daniel Seichter
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ import settings
 import helper
 import mqtt
 import webbrowser
+import threading
 
 import logging_config  # Setup the logging  # noqa: F401
 import logging
@@ -66,7 +67,9 @@ class YahacApp(QApplication):
                 )
 
     def on_timer(self):
-        mqtt.publish_sensor_state(self.ha_helper, online=True)
+        # Run MQTT publish in a separate thread to avoid blocking the GUI
+        thread = threading.Thread(target=mqtt.publish_sensor_state, args=(self.ha_helper, True), daemon=True)
+        thread.start()
 
 
 def main():

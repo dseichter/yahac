@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="yahac",
-    version="0.4.1",
+    version="0.4.2",
     description="Yet Another Home Assistant Client",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
@@ -17,7 +17,7 @@ setup(
     python_requires=">=3.8",
     install_requires=[
         "PySide6>=6.10.1",
-        "urllib3>=2.6.2",
+        "urllib3>=2.6.3",
         "paho-mqtt>=2.1.0",
         "pywin32>=311; sys_platform == 'win32'",
         "win11toast>=0.36.2; sys_platform == 'win32'",

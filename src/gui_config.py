@@ -1,3 +1,18 @@
+# Copyright (c) 2025-2026 Daniel Seichter
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <https://www.gnu.org/licenses/>.
+
 import os
 import sys
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QGridLayout, 
@@ -24,6 +39,7 @@ class ConfigDialog(QDialog):
         self.setWindowTitle("Settings")
         
         self.token_visible = False
+        self.securestring_visible = False
         self.setup_ui()
         self.load_settings()
         self.adjustSize()
@@ -95,6 +111,22 @@ class ConfigDialog(QDialog):
         self.txt_group_threshold.setPlaceholderText("5")
         self.txt_group_threshold.setToolTip("Minimum entities before grouping into submenus (0 = always group)")
         grid.addWidget(self.txt_group_threshold, 11, 1)
+
+        # Use securestring
+        self.chk_securestring_use = QCheckBox("Use securestring? (has to be included in each payload)")
+        grid.addWidget(self.chk_securestring_use, 12, 1)
+
+        # Securestring with show/hide button
+        grid.addWidget(QLabel("Securestring:"), 13, 0)
+        securestring_layout = QHBoxLayout()
+        self.txt_securestring = QLineEdit()
+        self.txt_securestring.setEchoMode(QLineEdit.Password)
+        self.btn_show_securestring = QPushButton("Show")
+        self.btn_show_securestring.setFixedWidth(60)
+        self.btn_show_securestring.clicked.connect(self.on_show_securestring)
+        securestring_layout.addWidget(self.txt_securestring)
+        securestring_layout.addWidget(self.btn_show_securestring)
+        grid.addLayout(securestring_layout, 13, 1)
         
         layout.addLayout(grid)
         
@@ -131,6 +163,8 @@ class ConfigDialog(QDialog):
         mqtt_password = settings.load_value_from_json_file("mqtt_password")
         log_level = settings.load_value_from_json_file("loglevel")
         group_threshold = settings.load_value_from_json_file("group_threshold")
+        securestring_use = settings.load_value_from_json_file("securestring_use")
+        securestring = settings.load_value_from_json_file("securestring")
 
         self.txt_url.setText(url if url else "")
         self.txt_token.setText(token if token else "")
@@ -144,6 +178,8 @@ class ConfigDialog(QDialog):
         self.txt_mqtt_password.setText(mqtt_password if mqtt_password else "")
         self.cmb_log_level.setCurrentText(log_level if log_level else "INFO")
         self.txt_group_threshold.setText(str(group_threshold) if group_threshold else "5")
+        self.chk_securestring_use.setChecked(bool(securestring_use))
+        self.txt_securestring.setText(securestring if securestring else "")
 
     def on_show_token(self):
         if self.token_visible:
@@ -154,6 +190,16 @@ class ConfigDialog(QDialog):
             self.txt_token.setEchoMode(QLineEdit.Normal)
             self.btn_show_token.setText("Hide")
             self.token_visible = True
+
+    def on_show_securestring(self):
+        if self.securestring_visible:
+            self.txt_securestring.setEchoMode(QLineEdit.Password)
+            self.btn_show_securestring.setText("Show")
+            self.securestring_visible = False
+        else:
+            self.txt_securestring.setEchoMode(QLineEdit.Normal)
+            self.btn_show_securestring.setText("Hide")
+            self.securestring_visible = True
 
     def on_test(self):
         url = self.txt_url.text()
@@ -191,6 +237,10 @@ class ConfigDialog(QDialog):
         group_threshold_text = self.txt_group_threshold.text()
         group_threshold = int(group_threshold_text) if group_threshold_text.isdigit() else 5
         settings.save_config("group_threshold", group_threshold)
+
+        securestring_use = self.chk_securestring_use.isChecked()
+        settings.save_config("securestring_use", securestring_use)
+        settings.save_config("securestring", self.txt_securestring.text())
 
         QMessageBox.information(self, "Save", "Settings saved.")
         self.accept()

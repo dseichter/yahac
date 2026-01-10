@@ -1,5 +1,21 @@
+# Copyright (c) 2025-2026 Daniel Seichter
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <https://www.gnu.org/licenses/>.
+
 from PySide6.QtWidgets import QSystemTrayIcon, QMenu, QMessageBox, QApplication
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QCursor
+from PySide6.QtCore import QTimer
 
 import gui_config
 import gui_sensors
@@ -23,6 +39,7 @@ class TrayIcon(QSystemTrayIcon):
         # Store references to open dialogs
         self.sensors_dialog = None
         self.config_dialog = None
+        self.context_menu = None
         
         # Set tray icon
         icon = icons.get_icon('home_app_logo_24dp_1976d2_fill0_wght400_grad0_opsz24')
@@ -43,6 +60,7 @@ class TrayIcon(QSystemTrayIcon):
 
     def create_menu(self):
         menu = QMenu()
+        self.context_menu = menu
         
         # Title
         title_action = QAction(f"{helper.NAME} {helper.VERSION}", self)
@@ -90,13 +108,16 @@ class TrayIcon(QSystemTrayIcon):
         exit_action.setToolTip("Exit the application")
         exit_action.triggered.connect(self.on_exit)
         menu.addAction(exit_action)
-        
-        self.setContextMenu(menu)
 
     def on_tray_activated(self, reason):
-        if reason == QSystemTrayIcon.Context:
-            # Refresh menu before showing
-            self.create_menu()
+        if reason == QSystemTrayIcon.Trigger:
+            pos = QCursor.pos()
+            pos.setY(pos.y() - 300)
+            QTimer.singleShot(50, lambda: self._show_menu(pos))
+    
+    def _show_menu(self, pos):
+        self.context_menu.popup(pos)
+        QCursor.setPos(pos.x(), pos.y() - 10)
 
     def on_sensors(self):
         """Open the sensor selection dialog and reload sensors after closing."""

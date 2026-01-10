@@ -1,4 +1,4 @@
-# Copyright (c) 2025 Daniel Seichter
+# Copyright (c) 2025-2026 Daniel Seichter
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ import json
 import logging
 from packaging import version
 
-VERSION = "v0.4.1"
+VERSION = "v0.4.2"
 UPDATEURL = 'https://api.github.com/repos/dseichter/yahac/releases'
 RELEASES = 'https://github.com/dseichter/yahac/releases'
 WEBSITE = 'https://dseichter.github.io/yahac/'
