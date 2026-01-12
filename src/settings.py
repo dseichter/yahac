@@ -20,8 +20,15 @@ import os
 CONFIGFILE = os.path.join(os.path.expanduser('~'), '.yahac', 'config.json')
 os.makedirs(os.path.dirname(CONFIGFILE), exist_ok=True)
 
-# load value from json file with given key
 def load_value_from_json_file(key):
+    """Load value from configuration file by key.
+    
+    Args:
+        key: Configuration key
+        
+    Returns:
+        Value from config or empty string if not found
+    """
     with open(CONFIGFILE, "r") as f:
         data = json.load(f)
 
@@ -32,7 +39,7 @@ def load_value_from_json_file(key):
 
 
 def create_config():
-    # create the config file if it does not exist
+    """Create configuration file with default values if missing."""
     try:
         with open(CONFIGFILE, 'r') as f:
             data = json.load(f)
@@ -63,11 +70,22 @@ def create_config():
 
 
 def read_config():
+    """Read entire configuration file.
+    
+    Returns:
+        dict: Configuration dictionary
+    """
     with open(CONFIGFILE, 'r') as f:
         return json.load(f)
 
 
 def save_config(key, value):
+    """Save key-value pair to configuration file.
+    
+    Args:
+        key: Configuration key
+        value: Configuration value
+    """
     with open(CONFIGFILE, 'r') as f:
         data = json.load(f)
         data[key] = value

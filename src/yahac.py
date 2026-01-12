@@ -31,6 +31,11 @@ logger = logging.getLogger(__name__)
 
 
 class YahacApp(QApplication):
+    """Main application class handling initialization and MQTT integration.
+    
+    Args:
+        argv: Command line arguments
+    """
     def __init__(self, argv):
         super().__init__(argv)
         self.setQuitOnLastWindowClosed(False)
@@ -67,6 +72,7 @@ class YahacApp(QApplication):
                 )
 
     def on_timer(self):
+        """Publish MQTT sensor state periodically."""
         # Run MQTT publish in a separate thread to avoid blocking the GUI
         thread = threading.Thread(target=mqtt.publish_sensor_state, args=(self.ha_helper, True), daemon=True)
         thread.start()

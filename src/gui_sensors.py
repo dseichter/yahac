@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 class SensorSelectorDialog(QDialog):
+    """Dialog for selecting and managing Home Assistant entities."""
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Select Entity")
@@ -48,7 +49,11 @@ class SensorSelectorDialog(QDialog):
         self.load_selected_entities()
     
     def filter_entities(self, text=None):
-        """Filter entity list based on search text and domain"""
+        """Filter entity list based on search text and domain.
+        
+        Args:
+            text: Search text (optional)
+        """
         self.combobox.clear()
         
         # Get current filters
@@ -66,6 +71,7 @@ class SensorSelectorDialog(QDialog):
         self.adjustSize()
 
     def setup_ui(self):
+        """Initialize UI components."""
         layout = QVBoxLayout(self)
         
         # Entity selection
@@ -129,6 +135,7 @@ class SensorSelectorDialog(QDialog):
         self.setWindowIcon(icons.get_icon('database_24dp_1976d2_fill0_wght400_grad0_opsz24'))
 
     def on_add_entity(self):
+        """Add selected entity to the list."""
         entity_id = self.combobox.currentText()
         if not entity_id:
             return
@@ -154,6 +161,12 @@ class SensorSelectorDialog(QDialog):
             self.entity_types[entity_id] = "sensor"
 
     def on_table_double_click(self, row, column):
+        """Handle double-click to change entity type.
+        
+        Args:
+            row: Table row index
+            column: Table column index
+        """
         if column == 2:  # Type column
             entity_id = self.selected_table.item(row, 0).text()
             current_type = self.entity_types.get(entity_id, "sensor")
@@ -169,6 +182,7 @@ class SensorSelectorDialog(QDialog):
                 self.entity_types[entity_id] = selected_type
 
     def on_save_selection(self):
+        """Save selected entities to configuration."""
         # Gather selected entities and types
         selected = []
         for row in range(self.selected_table.rowCount()):
@@ -187,6 +201,7 @@ class SensorSelectorDialog(QDialog):
         self.accept()  # Close dialog and return to parent
 
     def on_remove_selected(self):
+        """Remove selected entity from the list."""
         current_row = self.selected_table.currentRow()
         if current_row >= 0:
             entity_id = self.selected_table.item(current_row, 0).text()
@@ -195,6 +210,7 @@ class SensorSelectorDialog(QDialog):
             self.selected_entities.pop(entity_id, None)
 
     def load_selected_entities(self):
+        """Load previously saved entities."""
         # Load from settings
         selected = settings.load_value_from_json_file("entities")
         if not selected:

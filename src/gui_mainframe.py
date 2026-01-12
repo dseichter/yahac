@@ -27,6 +27,7 @@ logger = logging.getLogger(__name__)
 
 
 class MainWindow(QMainWindow):
+    """Main application window with system tray integration."""
     def __init__(self):
         super().__init__()
         self.setWindowTitle("YAHAC")
@@ -66,6 +67,11 @@ class MainWindow(QMainWindow):
         self.move(max(x, 0), max(y, 0))
 
     def closeEvent(self, event):
+        """Handle window close event by minimizing to tray.
+        
+        Args:
+            event: QCloseEvent
+        """
         # Hide to tray instead of closing
         event.ignore()
         self.hide()

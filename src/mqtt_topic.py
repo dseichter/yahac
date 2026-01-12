@@ -22,11 +22,12 @@ import settings
 logger = logging.getLogger(__name__)
 
 def process_command(command, payload, secstring):
-    """
-    Handle a command received via MQTT.
+    """Handle command received via MQTT with optional securestring validation.
+    
     Args:
-        command (str): The command name.
-        payload (any): The associated value or parameters.
+        command: Command to execute
+        payload: Command parameters
+        secstring: Security string for validation
     """
     logger.info(f"Processing command: {command}, payload: {payload}")
 
@@ -73,10 +74,11 @@ def process_command(command, payload, secstring):
 
 
 def process_notification(payload, secstring):
-    """
-    Handle a notification received via MQTT.
+    """Handle notification received via MQTT with optional securestring validation.
+    
     Args:
-        payload (any): The notification data.
+        payload: Notification content
+        secstring: Security string for validation
     """
     logger.info(f"Processing notification: {payload}")
 
