@@ -20,7 +20,7 @@ setup(
         "urllib3>=2.6.3",
         "paho-mqtt>=2.1.0",
         "pywin32>=311; sys_platform == 'win32'",
-        "win11toast>=0.36.2; sys_platform == 'win32'",
+        "win11toast>=0.36.3; sys_platform == 'win32'",
         "ha_mqtt_discoverable>=0.23.0",
     ],
     entry_points={
