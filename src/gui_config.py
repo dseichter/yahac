@@ -34,6 +34,7 @@ logger = logging.getLogger(__name__)
 
 
 class ConfigDialog(QDialog):
+    """Settings dialog for Home Assistant connection and application configuration."""
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Settings")
@@ -45,6 +46,7 @@ class ConfigDialog(QDialog):
         self.adjustSize()
 
     def setup_ui(self):
+        """Initialize UI components."""
         layout = QVBoxLayout(self)
         
         # Create grid layout for form fields
@@ -151,6 +153,7 @@ class ConfigDialog(QDialog):
         self.setWindowIcon(icons.get_icon('settings_24dp_1976d2_fill0_wght400_grad0_opsz24'))
 
     def load_settings(self):
+        """Load saved settings from configuration file."""
         url = settings.load_value_from_json_file("url")
         token = settings.load_value_from_json_file("token")
         checkupdate = settings.load_value_from_json_file("checkupdate")
@@ -182,6 +185,7 @@ class ConfigDialog(QDialog):
         self.txt_securestring.setText(securestring if securestring else "")
 
     def on_show_token(self):
+        """Toggle token visibility."""
         if self.token_visible:
             self.txt_token.setEchoMode(QLineEdit.Password)
             self.btn_show_token.setText("Show")
@@ -192,6 +196,7 @@ class ConfigDialog(QDialog):
             self.token_visible = True
 
     def on_show_securestring(self):
+        """Toggle securestring visibility."""
         if self.securestring_visible:
             self.txt_securestring.setEchoMode(QLineEdit.Password)
             self.btn_show_securestring.setText("Show")
@@ -202,6 +207,7 @@ class ConfigDialog(QDialog):
             self.securestring_visible = True
 
     def on_test(self):
+        """Test Home Assistant connection."""
         url = self.txt_url.text()
         token = self.txt_token.text()
         if url and token:
@@ -211,6 +217,7 @@ class ConfigDialog(QDialog):
             QMessageBox.warning(self, "Test", "Please provide both URL and Token.")
 
     def on_save(self):
+        """Save configuration settings."""
         url = self.txt_url.text()
         token = self.txt_token.text()
         checkupdate = self.chk_checkupdate.isChecked()
@@ -246,6 +253,11 @@ class ConfigDialog(QDialog):
         self.accept()
 
     def set_autostart(self, state):
+        """Configure application autostart.
+        
+        Args:
+            state: Qt.Checked or Qt.Unchecked
+        """
         autostart = state == Qt.Checked
         logger.info(f"Setting autostart to: {autostart}")
         app_name = "yahac"

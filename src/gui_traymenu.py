@@ -32,6 +32,7 @@ logger = logging.getLogger(__name__)
 
 
 class TrayIcon(QSystemTrayIcon):
+    """System tray icon with context menu for entity control."""
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
@@ -59,6 +60,7 @@ class TrayIcon(QSystemTrayIcon):
         self.menu_id_map = {}
 
     def create_menu(self):
+        """Create context menu with entities and settings."""
         menu = QMenu()
         self.context_menu = menu
         
@@ -110,12 +112,22 @@ class TrayIcon(QSystemTrayIcon):
         menu.addAction(exit_action)
 
     def on_tray_activated(self, reason):
+        """Handle tray icon click events.
+        
+        Args:
+            reason: Activation reason (Trigger, DoubleClick, etc.)
+        """
         if reason == QSystemTrayIcon.Trigger:
             pos = QCursor.pos()
             pos.setY(pos.y() - 300)
             QTimer.singleShot(50, lambda: self._show_menu(pos))
     
     def _show_menu(self, pos):
+        """Display menu and reposition cursor to prevent accidental clicks.
+        
+        Args:
+            pos: Menu position (QPoint)
+        """
         self.context_menu.popup(pos)
         QCursor.setPos(pos.x(), pos.y() - 10)
 
@@ -165,13 +177,20 @@ class TrayIcon(QSystemTrayIcon):
             )
 
     def on_webpage_open(self):
+        """Open project documentation in browser."""
         webbrowser.open_new_tab(helper.WEBSITE)
 
     def on_exit(self):
+        """Exit application."""
         self.parent.close()
         QApplication.instance().quit()
 
     def load_sensors(self, menu):
+        """Load and display configured entities in menu.
+        
+        Args:
+            menu: QMenu to populate
+        """
         sensors = settings.load_value_from_json_file("entities")
         if not sensors:
             return
@@ -227,10 +246,20 @@ class TrayIcon(QSystemTrayIcon):
                     target_menu.addAction(action)
 
     def on_sensor_selected(self, sensor):
+        """Handle sensor selection.
+        
+        Args:
+            sensor: Sensor entity dict
+        """
         if sensor:
             logger.info(f"Sensor selected: {sensor['friendly_name']} ({sensor['entity_id']})")
 
     def on_switch_selected(self, switch):
+        """Handle switch toggle with optional confirmation.
+        
+        Args:
+            switch: Switch entity dict
+        """
         if switch:
             current_state = api.get_entity_state(switch['entity_id'])
             new_state = "off" if current_state == "on" else "on"

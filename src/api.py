@@ -34,6 +34,15 @@ headers = {"Authorization": f"Bearer {TOKEN}", "User-Agent": f"{helper.NAME}/{he
 
 
 def check_connection(url, token):
+    """Check Home Assistant API connection with provided credentials.
+    
+    Args:
+        url: Home Assistant URL
+        token: Authentication token
+        
+    Returns:
+        str: Status message
+    """
     url = f"{url}/api/"
     headers = {"Authorization": f"Bearer {token}", "User-Agent": f"{helper.NAME}/{helper.VERSION}"}
     try:
@@ -47,6 +56,11 @@ def check_connection(url, token):
 
 
 def check_api_status():
+    """Check if Home Assistant API is accessible.
+    
+    Returns:
+        str: API status message
+    """
     url = f"{URL}/api/"
     try:
         response = http.request("GET", url, headers=headers)
@@ -59,6 +73,11 @@ def check_api_status():
 
 
 def list_states():
+    """Retrieve all entity states from Home Assistant.
+    
+    Returns:
+        list: Entity states or error message
+    """
     url = f"{URL}/api/states"
     try:
         response = http.request("GET", url, headers=headers)
@@ -71,6 +90,14 @@ def list_states():
 
 
 def get_entity_state(entity_id):
+    """Get current state of a specific entity.
+    
+    Args:
+        entity_id: Entity identifier
+        
+    Returns:
+        str: Entity state with unit or error message
+    """
     url = f"{URL}/api/states/{entity_id}"
     try:
         response = http.request("GET", url, headers=headers)
@@ -86,6 +113,15 @@ def get_entity_state(entity_id):
 
 
 def set_entity_switch_state(entity_id, state):
+    """Toggle switch entity state.
+    
+    Args:
+        entity_id: Entity identifier
+        state: Target state ('on' or 'off')
+        
+    Returns:
+        bool: True if successful, False otherwise
+    """
     url = f"{URL}/api/services/switch/turn_{state}"
     payload = {"entity_id": entity_id}
     try:

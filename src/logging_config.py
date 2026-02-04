@@ -18,6 +18,7 @@ import settings
 
 
 def setup_logging():
+    """Configure application logging with file handler."""
 
     settings.create_config()
     log_file = settings.load_value_from_json_file("logfilename")

@@ -29,6 +29,11 @@ AUTHOR = 'Daniel Seichter'
 
 
 def check_for_new_release():
+    """Check GitHub for newer stable releases.
+    
+    Returns:
+        bool: True if newer version available, False otherwise
+    """
     try:
         http = urllib3.PoolManager()
         r = http.request('GET', UPDATEURL)
@@ -44,6 +49,11 @@ def check_for_new_release():
         return False
 
 def get_computer_name():
+    """Get sanitized computer hostname.
+    
+    Returns:
+        str: Lowercase alphanumeric hostname
+    """
     hostname = socket.gethostname()
     # remove all non alphanumeric characters
     hostname = "".join(c for c in hostname if c.isalnum())

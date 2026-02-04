@@ -32,6 +32,14 @@ logger = logging.getLogger(__name__)
 
 
 def create_mqtt_sensor(computername: str):
+    """Create and configure MQTT binary sensor for Home Assistant discovery.
+    
+    Args:
+        computername: Computer hostname for sensor identification
+        
+    Returns:
+        BinarySensor: Configured sensor instance
+    """
     # Configure the required parameters for the MQTT broker
     mqtt_host = yahac_settings.load_value_from_json_file("mqtt_host")
     mqtt_port = yahac_settings.load_value_from_json_file("mqtt_port")
@@ -150,5 +158,11 @@ def create_mqtt_sensor(computername: str):
 
 
 def publish_sensor_state(sensor: BinarySensor, online: bool):
+    """Update sensor state to online or offline.
+    
+    Args:
+        sensor: BinarySensor instance
+        online: True for online, False for offline
+    """
     state = "online" if online else "offline"
     sensor.update_state(state)

@@ -10,12 +10,14 @@ import helper
 
 
 def test_get_computer_name_contains_only_alnum_and_lowercase():
+    """Test computer name is lowercase and alphanumeric."""
     name = helper.get_computer_name()
     assert name == name.lower()
     assert name.isalnum()
 
 
 def test_check_for_new_release_ignores_prereleases_and_detects_new():
+    """Test release check ignores prereleases and detects newer versions."""
     # releases list contains a prerelease first, then a stable
     releases = [
         {"tag_name": "v0.4.0-beta", "prerelease": True},
@@ -35,6 +37,7 @@ def test_check_for_new_release_ignores_prereleases_and_detects_new():
 
 
 def test_check_for_new_release_no_stable_found_returns_false():
+    """Test release check returns False when no stable releases exist."""
     releases = [
         {"tag_name": "v0.5.0-rc1", "prerelease": True},
         {"tag_name": "v0.6.0-alpha", "prerelease": True},

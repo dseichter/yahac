@@ -9,7 +9,14 @@ from PySide6.QtCore import QByteArray
 
 
 def get_icon_from_base64(data_str):
-    """Convert base64 string to QIcon"""
+    """Convert base64 string to QIcon.
+    
+    Args:
+        data_str: Base64-encoded PNG data
+        
+    Returns:
+        QIcon: Icon object or empty QIcon on error
+    """
     try:
         byte_array = QByteArray.fromBase64(data_str.encode('ascii'))
         pixmap = QPixmap()
@@ -128,7 +135,14 @@ ICON_DATA = {
 
 
 def get_icon(name):
-    """Get QIcon by name from the catalog"""
+    """Get QIcon by name from the catalog.
+    
+    Args:
+        name: Icon name from catalog
+        
+    Returns:
+        QIcon: Icon object or empty QIcon if not found
+    """
     if name in ICON_DATA:
         return get_icon_from_base64(ICON_DATA[name])
     print(f"Warning: Icon '{name}' not found in catalog")
