@@ -10,7 +10,7 @@ I am using pyenv on my computers and virtual machines.
 
 Create and activate an environment by running the following command:
 
-```pyenv virtualenv 3.12 yahac-venv```
+```pyenv virtualenv 3.14 yahac-venv```
 
 ```pyenv activate yahac-venv```
 
