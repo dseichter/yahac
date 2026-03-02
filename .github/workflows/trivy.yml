@@ -1,5 +1,6 @@
 # https://github.com/aquasecurity/trivy-action?tab=readme-ov-file#using-trivy-to-scan-your-git-repo
 name: Trivy
+
 on:
   push:
     branches:
@@ -14,11 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.2
 
       - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@0.34.1
-        continue-on-error: true
+        uses: aquasecurity/trivy-action@e368e328979b113139d6f9068e03accaed98a518 # v0.34.1
         with:
           ignore-unfixed: true
           scan-type: 'fs'

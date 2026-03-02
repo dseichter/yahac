@@ -30,23 +30,23 @@ jobs:
       uses: actions/configure-pages@v5
 
     - name: Checkout repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@v6.0.2
 
     - name: Set up Python
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v6.2.0
       with:
-        python-version: 3.14
+        python-version: '3.14'
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install zensical
 
-    - name: Build documentation site
+    - name: Build docs with Zensical
       run: |
-        zensical build -f docs/zensical.toml -c
+        zzensical build --clean --config-file docs/zensical.toml
 
-    - name: Upload Pages artifact
+    - name: Upload pages artifact
       uses: actions/upload-pages-artifact@v4
       with:
         path: docs/site
