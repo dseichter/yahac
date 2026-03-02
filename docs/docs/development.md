@@ -20,6 +20,11 @@ Install the required dependencies
 ```pip install -r icons/requirements.txt```
 ```pip install -r docs/requirements.txt```
 
+Build or preview the documentation locally:
+
+```zensical serve```
+```zensical build --clean```
+
 You can start the yahac by running the following command:
 
 ```cd src && python yahac.py```
