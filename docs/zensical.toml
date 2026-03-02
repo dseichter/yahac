@@ -1,0 +1,56 @@
+[project]
+site_name = "yahac"
+site_url = "https://dseichter.github.io/yahac/"
+site_description = "Yet Another Home Assistant Client"
+site_author = "Daniel Seichter"
+copyright = "Copyright © 2025 Daniel Seichter"
+repo_url = "https://github.com/dseichter/yahac"
+repo_name = "dseichter/yahac"
+docs_dir = "docs"
+site_dir = "site"
+nav = [
+  {"Home" = "index.md"},
+  {"Installation" = "installation.md"},
+  {"Configuration" = "configuration.md"},
+  {"Sensors" = "sensors.md"},
+  {"MQTT" = "mqtt.md"},
+  {"Automation" = "automation.md"},
+  {"Development" = "development.md"},
+  {"Compatibility" = "compatibility.md"}
+]
+
+[project.theme]
+logo = "assets/home_app_logo_48dp_1976D2_FILL0_wght400_GRAD0_opsz48.png"
+favicon = "assets/home_app_logo_24dp_1976D2_FILL0_wght400_GRAD0_opsz24.png"
+
+[[project.theme.palette]]
+scheme = "slate"
+primary = "cyan"
+accent = "blue"
+default = true
+toggle.icon = "material/weather-sunny"
+toggle.name = "Switch to light mode"
+
+[[project.theme.palette]]
+scheme = "default"
+primary = "cyan"
+accent = "blue"
+toggle.icon = "material/weather-night"
+toggle.name = "Switch to dark mode"
+
+[project.theme.icon]
+alternate = "assets/globe_24dp_1976D2_FILL0_wght400_GRAD0_opsz24.png"
+
+[project.markdown_extensions.attr_list]
+
+[project.markdown_extensions.footnotes]
+
+[project.markdown_extensions.admonition]
+
+[project.markdown_extensions.pymdownx.details]
+
+[project.markdown_extensions.pymdownx.superfences]
+
+[project.markdown_extensions.pymdownx.emoji]
+emoji_index = "zensical.extensions.emoji.twemoji"
+emoji_generator = "zensical.extensions.emoji.to_svg"
