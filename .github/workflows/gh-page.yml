@@ -44,7 +44,7 @@ jobs:
 
     - name: Build docs with Zensical
       run: |
-        zzensical build --clean --config-file docs/zensical.toml
+        zensical build --clean --config-file docs/zensical.toml
 
     - name: Upload pages artifact
       uses: actions/upload-pages-artifact@v4
