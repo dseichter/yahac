@@ -1,6 +1,6 @@
 # Maintainer: Daniel Seichter <daniel.seichter@dseichter.de>
 pkgname=yahac
-pkgver=0.4.2
+pkgver=0.5.0
 pkgrel=1
 pkgdesc="Yet Another Home Assistant Client - Desktop tray application for Home Assistant"
 arch=('x86_64')
