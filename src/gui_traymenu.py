@@ -185,6 +185,52 @@ class TrayIcon(QSystemTrayIcon):
         self.parent.close()
         QApplication.instance().quit()
 
+    def _add_entity_action(self, target_menu, entity):
+        """Add sensor or switch action for a configured entity."""
+        entity_id = entity.get("entity_id", "")
+        friendly_name = entity.get("friendly_name", entity_id)
+        entity_type = entity.get("type", "switch")
+        entity_state = api.get_entity_state(entity_id)
+        logger.info(f"Loaded sensor: {friendly_name} ({entity_id}) - {entity_type} - {entity_state}")
+
+        if entity_type == "sensor":
+            action = QAction(f"{friendly_name} ({entity_state})", self)
+            action.setIcon(icons.get_icon('sensors_24dp_1976d2_fill0_wght400_grad0_opsz24'))
+            action.setToolTip(entity_id)
+            action.triggered.connect(lambda checked, s=entity: self.on_sensor_selected(s))
+            target_menu.addAction(action)
+            return
+
+        if entity_type == "switch":
+            action = QAction(f"{friendly_name} ({entity_state})", self)
+            if entity_state == "on":
+                action.setIcon(icons.get_icon('toggle_on_24dp_1976d2_fill0_wght400_grad0_opsz24'))
+            else:
+                action.setIcon(icons.get_icon('toggle_off_24dp_1976d2_fill0_wght400_grad0_opsz24'))
+            action.setToolTip(entity_id)
+            action.triggered.connect(lambda checked, s=entity: self.on_switch_selected(s))
+            target_menu.addAction(action)
+
+    def _group_entities_by_domain(self, sensors):
+        """Group entities by domain while preserving first-seen domain order."""
+        groups = {}
+        for sensor in sensors:
+            entity_id = sensor.get("entity_id", "")
+            domain = entity_id.split('.')[0] if '.' in entity_id else 'other'
+            if domain not in groups:
+                groups[domain] = []
+            groups[domain].append(sensor)
+        return groups
+
+    def _should_use_submenus(self, sensors):
+        """Determine if entities should be shown in domain submenus."""
+        group_threshold = settings.load_value_from_json_file("group_threshold")
+        if group_threshold is None:
+            group_threshold = 5
+        else:
+            group_threshold = int(group_threshold)
+        return len(sensors) > group_threshold
+
     def load_sensors(self, menu):
         """Load and display configured entities in menu.
         
@@ -194,56 +240,21 @@ class TrayIcon(QSystemTrayIcon):
         sensors = settings.load_value_from_json_file("entities")
         if not sensors:
             return
-        
-        # Group entities by domain
-        groups = {}
-        for sensor in sensors:
-            entity_id = sensor.get("entity_id", "")
-            domain = entity_id.split('.')[0] if '.' in entity_id else 'other'
-            if domain not in groups:
-                groups[domain] = []
-            groups[domain].append(sensor)
-        
-        # Create submenus based on configured threshold
-        group_threshold = settings.load_value_from_json_file("group_threshold")
-        if group_threshold is None:
-            group_threshold = 5
-        else:
-            group_threshold = int(group_threshold)
-        use_submenus = len(sensors) > group_threshold
-        
-        for domain, entities in sorted(groups.items()):
-            if use_submenus and len(groups) > 1:
-                # Create submenu for this domain
-                submenu = QMenu(domain.capitalize(), menu)
-                menu.addMenu(submenu)
-                target_menu = submenu
-            else:
-                target_menu = menu
-            
+        groups = self._group_entities_by_domain(sensors)
+        use_submenus = self._should_use_submenus(sensors)
+
+        # Preserve the configured order in flat mode.
+        if not use_submenus or len(groups) <= 1:
+            for sensor in sensors:
+                self._add_entity_action(menu, sensor)
+            return
+
+        # In submenu mode, preserve the first-seen domain order from configuration.
+        for domain, entities in groups.items():
+            submenu = QMenu(domain.capitalize(), menu)
+            menu.addMenu(submenu)
             for sensor in entities:
-                entity_id = sensor.get("entity_id", "")
-                friendly_name = sensor.get("friendly_name", entity_id)
-                entity_type = sensor.get("type", "switch")
-                entity_state = api.get_entity_state(entity_id)
-                logger.info(f"Loaded sensor: {friendly_name} ({entity_id}) - {entity_type} - {entity_state}")
-                
-                if entity_type == "sensor":
-                    action = QAction(f"{friendly_name} ({entity_state})", self)
-                    action.setIcon(icons.get_icon('sensors_24dp_1976d2_fill0_wght400_grad0_opsz24'))
-                    action.setToolTip(entity_id)
-                    action.triggered.connect(lambda checked, s=sensor: self.on_sensor_selected(s))
-                    target_menu.addAction(action)
-                    
-                elif entity_type == "switch":
-                    action = QAction(f"{friendly_name} ({entity_state})", self)
-                    if entity_state == "on":
-                        action.setIcon(icons.get_icon('toggle_on_24dp_1976d2_fill0_wght400_grad0_opsz24'))
-                    else:
-                        action.setIcon(icons.get_icon('toggle_off_24dp_1976d2_fill0_wght400_grad0_opsz24'))
-                    action.setToolTip(entity_id)
-                    action.triggered.connect(lambda checked, s=sensor: self.on_switch_selected(s))
-                    target_menu.addAction(action)
+                self._add_entity_action(submenu, sensor)
 
     def on_sensor_selected(self, sensor):
         """Handle sensor selection.
