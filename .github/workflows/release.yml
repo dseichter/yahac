@@ -128,31 +128,48 @@ jobs:
 
         - name: Generate Release Notes
           id: release_notes
+          env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           run: |
             # Get commits since last tag
             LAST_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+
             if [ -z "$LAST_TAG" ]; then
-              COMMITS=$(git log --pretty=format:"* %s by @%an in %H" --no-merges)
+              COMMIT_SHAS=$(git log --pretty=format:"%H" --no-merges)
             else
-              COMMITS=$(git log ${LAST_TAG}..HEAD --pretty=format:"* %s by @%an in %H" --no-merges)
+              COMMIT_SHAS=$(git log ${LAST_TAG}..HEAD --pretty=format:"%H" --no-merges)
             fi
-            
+
+            COMMITS=""
+            while IFS= read -r SHA; do
+              [ -z "$SHA" ] && continue
+
+              SUBJECT=$(git log -n 1 --format=%s "$SHA")
+              AUTHOR_LOGIN=$(gh api "repos/${{ github.repository }}/commits/${SHA}" --jq '.author.login // .committer.login // ""' 2>/dev/null || true)
+
+              if [ -z "$AUTHOR_LOGIN" ] || [ "$AUTHOR_LOGIN" = "null" ]; then
+                AUTHOR_LOGIN=$(git log -n 1 --format=%an "$SHA" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+              fi
+
+              COMMITS="${COMMITS}* ${SUBJECT} by @${AUTHOR_LOGIN} in ${SHA}\n"
+            done <<< "$COMMIT_SHAS"
+
             # Separate dependabot and regular changes
-            DEPENDABOT_CHANGES=$(echo "$COMMITS" | grep -i "dependabot" || true)
-            OTHER_CHANGES=$(echo "$COMMITS" | grep -v -i "dependabot" || true)
-            
+            DEPENDABOT_CHANGES=$(echo -e "$COMMITS" | grep -i "dependabot" || true)
+            OTHER_CHANGES=$(echo -e "$COMMITS" | grep -v -i "dependabot" || true)
+
             # Build release notes
             RELEASE_NOTES="## What's Changed\n"
             if [ ! -z "$OTHER_CHANGES" ]; then
               RELEASE_NOTES="${RELEASE_NOTES}${OTHER_CHANGES}\n\n"
             fi
-            
+
             if [ ! -z "$DEPENDABOT_CHANGES" ]; then
               RELEASE_NOTES="${RELEASE_NOTES}## Dependency Updates\n${DEPENDABOT_CHANGES}\n\n"
             fi
-            
+
             RELEASE_NOTES="${RELEASE_NOTES}**Full Changelog**: https://github.com/${{ github.repository }}/compare/${LAST_TAG}...${{ github.ref_name }}"
-            
+
             # Save to output
             echo "RELEASE_NOTES<<EOF" >> $GITHUB_OUTPUT
             echo -e "$RELEASE_NOTES" >> $GITHUB_OUTPUT
