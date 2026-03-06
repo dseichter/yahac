@@ -121,11 +121,17 @@ class SensorSelectorDialog(QDialog):
         button_layout = QHBoxLayout()
         self.btn_save = QPushButton("Save Selection")
         self.btn_remove = QPushButton("Remove Selected")
+        self.btn_move_up = QPushButton("Move Up")
+        self.btn_move_down = QPushButton("Move Down")
         
         self.btn_save.clicked.connect(self.on_save_selection)
         self.btn_remove.clicked.connect(self.on_remove_selected)
+        self.btn_move_up.clicked.connect(self.on_move_up)
+        self.btn_move_down.clicked.connect(self.on_move_down)
         
         button_layout.addStretch()
+        button_layout.addWidget(self.btn_move_up)
+        button_layout.addWidget(self.btn_move_down)
         button_layout.addWidget(self.btn_save)
         button_layout.addWidget(self.btn_remove)
         
@@ -208,6 +214,47 @@ class SensorSelectorDialog(QDialog):
             self.selected_table.removeRow(current_row)
             self.entity_types.pop(entity_id, None)
             self.selected_entities.pop(entity_id, None)
+
+    def _move_row(self, from_row, to_row):
+        """Move a table row to a new position.
+
+        Args:
+            from_row: Current row index
+            to_row: Target row index
+        """
+        if (
+            from_row == to_row
+            or from_row < 0
+            or to_row < 0
+            or from_row >= self.selected_table.rowCount()
+            or to_row >= self.selected_table.rowCount()
+        ):
+            return
+
+        row_data = []
+        for col in range(self.selected_table.columnCount()):
+            item = self.selected_table.item(from_row, col)
+            row_data.append(item.text() if item else "")
+
+        self.selected_table.removeRow(from_row)
+        self.selected_table.insertRow(to_row)
+
+        for col, value in enumerate(row_data):
+            self.selected_table.setItem(to_row, col, QTableWidgetItem(value))
+
+        self.selected_table.setCurrentCell(to_row, 0)
+
+    def on_move_up(self):
+        """Move selected entity one row up."""
+        current_row = self.selected_table.currentRow()
+        if current_row > 0:
+            self._move_row(current_row, current_row - 1)
+
+    def on_move_down(self):
+        """Move selected entity one row down."""
+        current_row = self.selected_table.currentRow()
+        if 0 <= current_row < self.selected_table.rowCount() - 1:
+            self._move_row(current_row, current_row + 1)
 
     def load_selected_entities(self):
         """Load previously saved entities."""
