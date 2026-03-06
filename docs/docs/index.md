@@ -18,6 +18,7 @@ See current values/states of your sensors or turn on/off your switches. And ever
 * Integrate your computer as a binary sensor into Home Assistant (MQTT)
 * Receive and process MQTT commands and notifications (JSON supported)
 * Improved logging and diagnostics for troubleshooting
+* Linux AppImage downloads are available in the release assets
 
 You can configure as much as needed sensors and switches. As soon as you show the menu (left click on the yahac icon), the latest value of your entities will be collected and shown.
 

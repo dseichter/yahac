@@ -9,6 +9,15 @@ Download pre-built binaries from the latest [release](https://github.com/dseicht
 
 - **Windows**: `yahac-v*.exe` - No installation required
 - **Linux**: `yahac-ubuntu-*` or `yahac-archlinux-*` - Portable executables
+- **Linux (AppImage)**: `yahac-appimage-v*-x86_64.AppImage` - Portable executable for many distributions
+
+### AppImage (Linux)
+```bash
+# Download AppImage from releases
+wget https://github.com/dseichter/yahac/releases/latest/download/yahac-appimage-v*-x86_64.AppImage
+chmod +x yahac-appimage-v*-x86_64.AppImage
+./yahac-appimage-v*-x86_64.AppImage
+```
 
 ### Package Managers
 
@@ -56,6 +65,6 @@ Now you can choose to proceed with adding your first [sensors](sensors.md) or ma
 
 !!! note "Package vs Binary"
     - **Packages (.deb/.pkg.tar.zst)**: Integrate with system, handle dependencies automatically, receive updates through package manager
-    - **Binaries**: Portable, no system integration, manual updates required
+    - **Binaries/AppImage**: Portable, no installation required, manual updates
     
     See [compatibility](compatibility.md) for distribution-specific information.

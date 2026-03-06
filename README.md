@@ -34,7 +34,7 @@
 - 📊 **Real-time sensor monitoring** - View current values/states
 - 🔄 **One-click switch control** - Toggle switches instantly
 - 💻 **Computer integration** - Register as HA binary sensor via MQTT
-- 📦 **Native packages** - Debian/Ubuntu (.deb) and Arch Linux (.pkg.tar.zst)
+- 📦 **Linux distributions** - Debian/Ubuntu (.deb), Arch Linux (.pkg.tar.zst), and AppImage
 - 🚀 **Portable binaries** - No installation required
 - 🎨 **System tray integration** - Minimal desktop footprint
 
@@ -48,6 +48,11 @@ sudo apt install ./yahac-*.deb
 # Arch/Manjaro - auto-installs dependencies  
 sudo pacman -U yahac-*.pkg.tar.zst
 ```
+
+### Linux AppImage (Portable)
+1. Download `yahac-appimage-v*-x86_64.AppImage` from [**Releases**](https://github.com/dseichter/yahac/releases)
+2. Make executable: `chmod +x yahac-appimage-v*-x86_64.AppImage`
+3. Run: `./yahac-appimage-v*-x86_64.AppImage`
 
 ### Portable Binaries
 1. Download from [**Releases**](https://github.com/dseichter/yahac/releases)

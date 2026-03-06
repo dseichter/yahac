@@ -18,7 +18,7 @@ yahac is compatible with [Home Assistant](https://www.home-assistant.io/) 2025.x
 
 ### Linux
 
-YAHAC supports multiple Linux distributions through both native packages and portable binaries.
+YAHAC supports multiple Linux distributions through native packages, portable binaries, and AppImage.
 
 ## Package Support
 
@@ -57,13 +57,13 @@ YAHAC supports multiple Linux distributions through both native packages and por
 
 !!! note "Package vs Binary"
     - **Packages**: Automatic dependency resolution, system integration, desktop files
-    - **Binaries**: Portable, no installation required, manual dependency management
+    - **Binaries/AppImage**: Portable, no installation required, manual dependency management
 
 ## Installation Methods by Distribution
 
 ### Recommended Installation
 - **Debian/Ubuntu/Mint**: Use `.deb` packages for best integration
 - **Arch/Manjaro**: Use `.pkg.tar.zst` packages via pacman
-- **Other distributions**: Use portable binaries or build from source
+- **Other distributions**: Use AppImage first, then portable binaries or build from source
 
 If you test yahac on other distributions, please report compatibility at [#36](https://github.com/dseichter/yahac/issues/36).
