@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name="yahac",
@@ -12,7 +12,20 @@ setup(
     author_email="daniel.seichter@dseichter.de",
     url="https://github.com/dseichter/yahac",
     license="GPL-3.0",
-    packages=find_packages(where="src"),
+    py_modules=[
+        "api",
+        "gui_config",
+        "gui_mainframe",
+        "gui_sensors",
+        "gui_traymenu",
+        "helper",
+        "icons",
+        "logging_config",
+        "mqtt",
+        "mqtt_topic",
+        "settings",
+        "yahac",
+    ],
     package_dir={"": "src"},
     python_requires=">=3.12",
     install_requires=[
@@ -21,7 +34,7 @@ setup(
         "paho-mqtt>=2.1.0",
         "pywin32>=311; sys_platform == 'win32'",
         "win11toast>=0.36.3; sys_platform == 'win32'",
-        "ha_mqtt_discoverable>=0.23.0",
+        "ha_mqtt_discoverable>=0.24.1",
     ],
     entry_points={
         "console_scripts": [

@@ -8,7 +8,7 @@ YAHAC can be installed in multiple ways depending on your operating system and p
 Download pre-built binaries from the latest [release](https://github.com/dseichter/yahac/releases):
 
 - **Windows**: `yahac-v*.exe` - No installation required
-- **Linux**: `yahac-ubuntu-*` or `yahac-archlinux-*` - Portable executables
+- **Linux**: `yahac-ubuntu-*` - Portable executable
 - **Linux (AppImage)**: `yahac-appimage-v*-x86_64.AppImage` - Portable executable for many distributions
 
 ### AppImage (Linux)
@@ -31,9 +31,8 @@ sudo apt-get install -f  # Fix dependencies if needed
 
 #### Arch Linux/Manjaro
 ```bash
-# Download .pkg.tar.zst package from releases
-wget https://github.com/dseichter/yahac/releases/latest/download/yahac-arch-v*.pkg.tar.zst
-sudo pacman -U yahac-arch-v*.pkg.tar.zst
+# Install from AUR
+yay -S yahac
 ```
 
 #### Build from Source (Any Linux)
@@ -64,7 +63,7 @@ Now you can choose to proceed with adding your first [sensors](sensors.md) or ma
 ![empty sensors](assets/screenshots/yahac_traymenu_empty.png)
 
 !!! note "Package vs Binary"
-    - **Packages (.deb/.pkg.tar.zst)**: Integrate with system, handle dependencies automatically, receive updates through package manager
+    - **Packages (.deb/.rpm/AUR)**: Integrate with system, handle dependencies automatically, receive updates through package manager
     - **Binaries/AppImage**: Portable, no installation required, manual updates
     
     See [compatibility](compatibility.md) for distribution-specific information.

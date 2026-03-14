@@ -1,0 +1,77 @@
+name: Build Debian Package
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Existing release tag to rebuild (for manual runs)'
+        required: false
+        type: string
+
+jobs:
+  build-deb:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve release tag
+        id: vars
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ -n "$INPUT_RELEASE_TAG" ]; then
+            TAG="$INPUT_RELEASE_TAG"
+          fi
+          if [ -z "$TAG" ] || [[ ! "$TAG" =~ ^v[0-9A-Za-z._-]+$ ]]; then
+            echo "A valid tag (e.g. v0.5.0) is required." >&2
+            exit 1
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ steps.vars.outputs.tag }}
+
+      - name: Derive package version from tag
+        id: version
+        run: |
+          TAG="${{ steps.vars.outputs.tag }}"
+          VERSION="${TAG#v}"
+          VERSION="${VERSION//-/.}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            debhelper dh-python python3-all python3-setuptools \
+            python3-wheel devscripts fakeroot
+
+      - name: Update debian/changelog
+        env:
+          DEBEMAIL: daniel.seichter@dseichter.de
+          DEBFULLNAME: Daniel Seichter
+        run: |
+          cp -r packaging/debian debian/
+          chmod +x debian/rules
+          dch --newversion "${{ steps.version.outputs.version }}-1" \
+              --distribution unstable \
+              "New upstream release ${{ steps.vars.outputs.tag }}."
+
+      - name: Build binary .deb
+        run: dpkg-buildpackage -b -us -uc -rfakeroot
+
+      - name: Collect .deb artifact
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: yahac_${{ steps.version.outputs.version }}_all.deb
+          path: ../*.deb
+
+      - name: Attach .deb to GitHub Release
+        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
+        with:
+          tag_name: ${{ steps.vars.outputs.tag }}
+          files: ../*.deb

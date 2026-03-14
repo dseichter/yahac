@@ -21,14 +21,9 @@ build() {
 package() {
     cd "$pkgname-$pkgver"
     python -m installer --destdir="$pkgdir" dist/*.whl
-    
-    # Install main script
+
     install -Dm755 src/yahac.py "$pkgdir/usr/bin/yahac"
-    
-    # Install desktop file
-    install -Dm644 debian/yahac.desktop "$pkgdir/usr/share/applications/yahac.desktop"
-    
-    # Install documentation
+    install -Dm644 packaging/debian/yahac.desktop "$pkgdir/usr/share/applications/yahac.desktop"
     install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
     install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }

@@ -1,0 +1,65 @@
+name: Publish to AUR
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Existing release tag to rebuild (for manual runs)'
+        required: false
+        type: string
+
+jobs:
+  publish-aur:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve release tag
+        id: vars
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ -n "$INPUT_RELEASE_TAG" ]; then
+            TAG="$INPUT_RELEASE_TAG"
+          fi
+          if [ -z "$TAG" ] || [[ ! "$TAG" =~ ^v[0-9A-Za-z._-]+$ ]]; then
+            echo "A valid tag (e.g. v0.5.0) is required." >&2
+            exit 1
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ steps.vars.outputs.tag }}
+
+      - name: Derive pkgver from tag
+        id: pkgver
+        run: |
+          TAG="${{ steps.vars.outputs.tag }}"
+          PKGVER="${TAG#v}"
+          echo "pkgver=$PKGVER" >> "$GITHUB_OUTPUT"
+
+      - name: Compute source tarball sha256sum
+        id: checksum
+        run: |
+          URL="https://github.com/dseichter/yahac/archive/refs/tags/${{ steps.vars.outputs.tag }}.tar.gz"
+          SHA256=$(curl -fsSL "$URL" | sha256sum | cut -d' ' -f1)
+          echo "sha256=$SHA256" >> "$GITHUB_OUTPUT"
+
+      - name: Patch PKGBUILD with new version and checksum
+        run: |
+          sed -i "s/^pkgver=.*/pkgver=${{ steps.pkgver.outputs.pkgver }}/" packaging/aur/PKGBUILD
+          sed -i "s/^sha256sums=.*/sha256sums=('${{ steps.checksum.outputs.sha256 }}')/" packaging/aur/PKGBUILD
+
+      - name: Publish to AUR
+        uses: KSXGitHub/github-actions-deploy-aur@2ac5a4c1d7035885d46b10e3193393be8460b6f1 # v4.1.1
+        with:
+          pkgname: yahac
+          pkgbuild: packaging/aur/PKGBUILD
+          commit_username: ${{ secrets.AUR_USERNAME }}
+          commit_email: ${{ secrets.AUR_EMAIL }}
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: "Update to ${{ steps.vars.outputs.tag }}"
