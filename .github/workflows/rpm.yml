@@ -15,6 +15,12 @@ jobs:
   build-rpm:
     runs-on: ubuntu-latest
     container: fedora:42
+    env:
+      PROJECT_NAME: yahac
+      PACKAGE_NAME: yahac
+      WORKSPACE_NAME: yahac
+      SPEC_DIR: packaging/rpm
+      RPM_ARTIFACT_GLOB: ~/rpmbuild/RPMS/noarch/*.rpm
     steps:
       - name: Resolve release tag
         id: vars
@@ -56,26 +62,26 @@ jobs:
       - name: Update Version in spec file
         run: |
           sed -i "s/^Version:.*/Version:        ${{ steps.version.outputs.version }}/" \
-            packaging/rpm/yahac.spec
+            "${{ env.SPEC_DIR }}/${{ env.PACKAGE_NAME }}.spec"
 
       - name: Download source tarball
         run: |
-          spectool -g -R packaging/rpm/yahac.spec
+          spectool -g -R "${{ env.SPEC_DIR }}/${{ env.PACKAGE_NAME }}.spec"
 
       - name: Build RPM
         run: |
-          cp packaging/rpm/yahac.spec ~/rpmbuild/SPECS/
-          rpmbuild -bb ~/rpmbuild/SPECS/yahac.spec
+          cp "${{ env.SPEC_DIR }}/${{ env.PACKAGE_NAME }}.spec" ~/rpmbuild/SPECS/
+          rpmbuild -bb ~/rpmbuild/SPECS/${{ env.PACKAGE_NAME }}.spec
 
       - name: Collect RPM artifact
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
-          name: yahac-${{ steps.version.outputs.version }}-1.noarch.rpm
-          path: ~/rpmbuild/RPMS/noarch/*.rpm
+          name: ${{ env.PACKAGE_NAME }}-${{ steps.version.outputs.version }}-1.noarch.rpm
+          path: ${{ env.RPM_ARTIFACT_GLOB }}
 
       - name: Attach RPM to GitHub Release
         uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
         with:
           tag_name: ${{ steps.vars.outputs.tag }}
-          files: ~/rpmbuild/RPMS/noarch/*.rpm
+          files: ${{ env.RPM_ARTIFACT_GLOB }}
 

@@ -14,6 +14,12 @@ on:
 jobs:
   build-deb:
     runs-on: ubuntu-latest
+    env:
+      PROJECT_NAME: yahac
+      PACKAGE_NAME: yahac
+      WORKSPACE_NAME: yahac
+      DEBIAN_SOURCE_DIR: packaging/debian
+      DEB_ARTIFACT_GLOB: ../*.deb
     steps:
       - name: Resolve release tag
         id: vars
@@ -55,7 +61,7 @@ jobs:
           DEBEMAIL: daniel.seichter@dseichter.de
           DEBFULLNAME: Daniel Seichter
         run: |
-          cp -r packaging/debian debian/
+          cp -r "${{ env.DEBIAN_SOURCE_DIR }}" debian/
           chmod +x debian/rules
           dch --newversion "${{ steps.version.outputs.version }}-1" \
               --distribution unstable \
@@ -67,11 +73,11 @@ jobs:
       - name: Collect .deb artifact
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
-          name: yahac_${{ steps.version.outputs.version }}_all.deb
-          path: ../*.deb
+          name: ${{ env.PACKAGE_NAME }}_${{ steps.version.outputs.version }}_all.deb
+          path: ${{ env.DEB_ARTIFACT_GLOB }}
 
       - name: Attach .deb to GitHub Release
         uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
         with:
           tag_name: ${{ steps.vars.outputs.tag }}
-          files: ../*.deb
+          files: ${{ env.DEB_ARTIFACT_GLOB }}
