@@ -1,11 +1,13 @@
+%global tagver %(echo %{version} | tr '.' '-')
+
 Name:           yahac
-Version:        0.5.0
+Version:        2026.03.15
 Release:        1%{?dist}
 Summary:        Yet Another Home Assistant Client
 
 License:        GPL-3.0-only
 URL:            https://github.com/dseichter/yahac
-Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz
+Source0:        %{url}/archive/refs/tags/v%{tagver}.tar.gz
 
 BuildArch:      noarch
 BuildRequires:  python3-devel
@@ -23,7 +25,7 @@ for Home Assistant. It allows monitoring sensors and controlling
 switches directly from the desktop.
 
 %prep
-%autosetup -n yahac-%{version}
+%autosetup -n yahac-%{tagver}
 
 %build
 %py3_build
@@ -42,5 +44,5 @@ install -Dpm0644 packaging/debian/yahac.desktop %{buildroot}%{_datadir}/applicat
 %{_datadir}/applications/yahac.desktop
 
 %changelog
-* Sat Mar 14 2026 Daniel Seichter <daniel.seichter@dseichter.de> - 0.5.0-1
+* Sun Mar 15 2026 Daniel Seichter <daniel.seichter@dseichter.de> - 2026.03.15-1
 - Build package from source tarball

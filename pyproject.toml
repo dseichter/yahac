@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "yahac"
-version = "0.5.0"
+version = "2026.03.15"
 description = "Yet Another Home Assistant Client"
 readme = "README.md"
 authors = [

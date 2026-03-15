@@ -19,13 +19,20 @@ import json
 import logging
 from packaging import version
 
-VERSION = "v0.5.0"
+VERSION = "v2026-03-15"
 UPDATEURL = 'https://api.github.com/repos/dseichter/yahac/releases'
 RELEASES = 'https://github.com/dseichter/yahac/releases'
 WEBSITE = 'https://dseichter.github.io/yahac/'
 NAME = 'yahac'
 LICENCE = 'GPL-3.0'
 AUTHOR = 'Daniel Seichter'
+
+
+def normalize_version_tag(tag: str) -> str:
+    normalized = tag.strip()
+    if normalized.lower().startswith('v'):
+        normalized = normalized[1:]
+    return normalized.replace('-', '.')
 
 
 def check_for_new_release():
@@ -42,7 +49,7 @@ def check_for_new_release():
         for release in releases:
             if not release.get('prerelease', False):
                 latest_version = release.get('tag_name')
-                return version.parse(latest_version) > version.parse(VERSION)
+                return version.parse(normalize_version_tag(latest_version)) > version.parse(normalize_version_tag(VERSION))
         return False  # No stable release found
     except Exception as e:
         logging.error(f"Error checking for new release: {e}")

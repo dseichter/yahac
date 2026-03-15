@@ -7,7 +7,8 @@ The `packaging/rpm/yahac.spec` file defines the RPM package for YAHAC.
 ### Version strategy
 
 The `Version:` field in the spec is **updated automatically by CI** on each release package build.
-Tag format: `v0.5.0` → `Version: 0.5.0`.
+Tag format: `v2026-03-15` → `Version: 2026.03.15` (dashes replaced by dots, `v` stripped).
+The macro `%{tagver}` inside the spec reverses this to reconstruct the source tarball URL.
 
 You never need to manually update the version in the spec file.
 
@@ -26,9 +27,9 @@ No registration required. The workflow builds `.rpm` artifacts and attaches them
 Users install with:
 
 ```bash
-sudo rpm -i yahac-0.5.0-1.x86_64.rpm
+sudo rpm -i yahac-2026.03.15-1.noarch.rpm
 # or
-sudo dnf install yahac-0.5.0-1.x86_64.rpm
+sudo dnf install yahac-2026.03.15-1.noarch.rpm
 ```
 
 ---

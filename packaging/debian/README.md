@@ -8,7 +8,7 @@ The workflow builds binary `.deb` packages for Debian, Ubuntu, and derivatives.
 ### Version strategy
 
 The version in `debian/changelog` is **updated automatically by CI** on each release package build.
-Tag format: `v0.5.0` → package version `0.5.0-1`.
+Tag format: `v2026-03-15` → Debian package version `2026.03.15-1`.
 
 You never need to manually edit the version in `changelog`.
 
@@ -27,14 +27,14 @@ No registration is needed. The workflow builds `.deb` files and attaches them to
 Users install with:
 
 ```bash
-sudo apt install ./yahac_0.5.0-1_amd64.deb
+sudo apt install ./yahac_2026.03.15-1_all.deb
 ```
 
 ---
 
 ## Automation
 
-The workflow `.github/workflows/debian.yml` runs on release tags (and on manual dispatch):
+The workflow `.github/workflows/deb.yml` runs on release tags (and on manual dispatch):
 
 1. Checks out the tagged source revision.
 2. Copies `packaging/debian/` to `debian/`.

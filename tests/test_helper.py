@@ -20,8 +20,8 @@ def test_check_for_new_release_ignores_prereleases_and_detects_new():
     """Test release check ignores prereleases and detects newer versions."""
     # releases list contains a prerelease first, then a stable
     releases = [
-        {"tag_name": "v0.4.0-beta", "prerelease": True},
-        {"tag_name": "v0.4.0", "prerelease": False},
+        {"tag_name": "v2026-03-16-rc1", "prerelease": True},
+        {"tag_name": "v2026-03-16", "prerelease": False},
     ]
 
     mock_response = MagicMock()
@@ -31,16 +31,16 @@ def test_check_for_new_release_ignores_prereleases_and_detects_new():
     mock_pm.request.return_value = mock_response
 
     with patch('helper.urllib3.PoolManager', return_value=mock_pm):
-        # pretend current VERSION is older than v0.4.0
-        with patch.object(helper, 'VERSION', 'v0.3.0'):
+        # pretend current VERSION is older than v2026-03-16
+        with patch.object(helper, 'VERSION', 'v2026-03-15'):
             assert helper.check_for_new_release() is True
 
 
 def test_check_for_new_release_no_stable_found_returns_false():
     """Test release check returns False when no stable releases exist."""
     releases = [
-        {"tag_name": "v0.5.0-rc1", "prerelease": True},
-        {"tag_name": "v0.6.0-alpha", "prerelease": True},
+        {"tag_name": "v2026-03-16-rc1", "prerelease": True},
+        {"tag_name": "v2026-03-17-alpha", "prerelease": True},
     ]
 
     mock_response = MagicMock()
@@ -50,5 +50,5 @@ def test_check_for_new_release_no_stable_found_returns_false():
     mock_pm.request.return_value = mock_response
 
     with patch('helper.urllib3.PoolManager', return_value=mock_pm):
-        with patch.object(helper, 'VERSION', 'v0.3.0'):
+        with patch.object(helper, 'VERSION', 'v2026-03-15'):
             assert helper.check_for_new_release() is False

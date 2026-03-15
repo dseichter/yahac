@@ -7,7 +7,8 @@ The `PKGBUILD` in this directory defines the Arch Linux User Repository (AUR) pa
 ### Version strategy
 
 The `pkgver` field is **automatically derived from the git tag** by the CI workflow.
-Tag format: `v0.5.0` → `pkgver=0.5.0` (prefix `v` stripped).
+Tag format: `v2026-03-15` → `pkgver=2026.03.15` (dashes replaced by dots, `v` prefix stripped).
+The reverse conversion (`${pkgver//./-}`) reconstructs the original tag for the source URL.
 
 You never need to manually update the version in `PKGBUILD`.
 
@@ -66,9 +67,9 @@ The workflow `.github/workflows/aur.yml` handles AUR publishing on release tags:
 ```bash
 cd packaging/aur
 
-PKGVER="0.5.0"
+PKGVER="2026.03.15"
 sed -i "s/^pkgver=.*/pkgver=$PKGVER/" PKGBUILD
-SHA256=$(curl -fsSL "https://github.com/dseichter/yahac/archive/refs/tags/v${PKGVER}.tar.gz" | sha256sum | cut -d' ' -f1)
+SHA256=$(curl -fsSL "https://github.com/dseichter/yahac/archive/refs/tags/v${PKGVER//./-}.tar.gz" | sha256sum | cut -d' ' -f1)
 sed -i "s/^sha256sums=.*/sha256sums=('$SHA256')/" PKGBUILD
 
 makepkg -si
