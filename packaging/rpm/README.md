@@ -2,12 +2,12 @@
 
 ## Overview
 
-The `packaging/rpm/yahac.spec` file defines the RPM package for YAHAC.
+The `yahac.spec` file in this directory defines an RPM package for Fedora, openSUSE, RHEL, CentOS Stream, and any other RPM-based distribution.
 
 ### Version strategy
 
-The `Version:` field in the spec is **updated automatically by CI** on each release package build.
-Tag format: `v2026-03-15` → `Version: 2026.03.15` (dashes replaced by dots, `v` stripped).
+The `Version:` field in the spec is **updated automatically by the CI workflow** on each release.  
+Tag format: `v2026-03-15` → `Version: 2026.03.15` (dashes replaced by dots, `v` stripped).  
 The macro `%{tagver}` inside the spec reverses this to reconstruct the source tarball URL.
 
 You never need to manually update the version in the spec file.
@@ -16,15 +16,13 @@ You never need to manually update the version in the spec file.
 
 ## Availability note
 
-`python3-pyside6` must be available in your target RPM distribution.
-Recommended baseline: **Fedora 40+** or **openSUSE Tumbleweed**.
+`python3-pyside6` must be present in the target distro's package manager. Minimum recommended: **Fedora 40+** or **openSUSE Tumbleweed**.
 
 ---
 
-## One-time setup — GitHub Releases (recommended)
+## One-time setup — GitHub Releases (recommended, no registration required)
 
-No registration required. The workflow builds `.rpm` artifacts and attaches them to GitHub Releases.
-Users install with:
+No registration needed. The CI workflow builds an `.rpm` and attaches it to the GitHub Release. Users install it with:
 
 ```bash
 sudo rpm -i yahac-2026.03.15-1.noarch.rpm
@@ -34,29 +32,73 @@ sudo dnf install yahac-2026.03.15-1.noarch.rpm
 
 ---
 
-## Automation
+## One-time setup — Fedora COPR (optional, for `dnf` integration)
 
-The workflow `.github/workflows/rpm.yml` runs on release tags (and on manual dispatch):
+COPR is the equivalent of Ubuntu's PPA — a community build service for RPM packages.
 
-1. Resolves the release tag and version.
-2. Checks out the tagged source revision.
-3. Patches the spec `Version:` field.
-4. Downloads the source tarball via `spectool` and builds an `.rpm` in a Fedora container.
-5. Attaches the artifact to the GitHub Release.
+### 1. Create a COPR project
+
+1. Sign up at <https://copr.fedorainfracloud.org> (uses Fedora single sign-on)
+2. Create a new project, e.g. `yahac`
+3. Under _Settings → Packages_, add a package with **SCM type: git**  
+	- Clone URL: `https://github.com/dseichter/yahac`
+	- Spec file: `packaging/rpm/yahac.spec`
+	- Buildir: `/` (repo root)
+
+### 2. Trigger builds automatically via webhook
+
+In your COPR project under _Settings → Integrations_, copy the GitHub webhook URL and add it to your GitHub repository under _Settings → Webhooks_. COPR will rebuild on every push to the configured branch or tag.
+
+### 3. User installation
+
+```bash
+sudo dnf copr enable dseichter/yahac
+sudo dnf install yahac
+```
+
+---
+
+## One-time setup — openSUSE OBS (optional, cross-distro)
+
+OBS (Open Build Service) can produce packages for Fedora, openSUSE, Debian, and Ubuntu from a single spec:
+
+1. Sign up at <https://build.opensuse.org>
+2. Create a home project, e.g. `home:dseichter`
+3. Add a package and upload `yahac.spec` plus the source tarball
+4. OBS builds automatically for all configured target repos
+
+---
+
+## Automation (GitHub Actions)
+
+The workflow `.github/workflows/rpm.yml` runs on every release tag and:
+
+1. Updates `Version:` in the spec file from the git tag.
+2. Builds the `.rpm` inside a Fedora container.
+3. Attaches the resulting `.rpm` to the GitHub Release.
+
+*(COPR API rebuild trigger is included in the workflow as an optional step.)*
 
 ---
 
 ## Manual build
 
-Requires Fedora/RHEL system or container:
+Requires a Fedora/RHEL system or a Fedora container.
 
 ```bash
-sudo dnf install -y rpm-build python3-devel python3-setuptools python3-wheel rpmdevtools curl
+# Install build tools
+sudo dnf install rpm-build python3-devel python3-setuptools python3-wheel rpmdevtools
+
+# Set up RPM tree
 rpmdev-setuptree
 
+# Copy the spec and download sources
 cp packaging/rpm/yahac.spec ~/rpmbuild/SPECS/
 spectool -g -R ~/rpmbuild/SPECS/yahac.spec
+
+# Build
 rpmbuild -bb ~/rpmbuild/SPECS/yahac.spec
 
+# Find the result
 ls ~/rpmbuild/RPMS/noarch/
 ```

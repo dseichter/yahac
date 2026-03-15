@@ -53,12 +53,12 @@ Add the following secrets to your GitHub repository (_Settings → Secrets and v
 
 ## Automation
 
-The workflow `.github/workflows/aur.yml` handles AUR publishing on release tags:
+After the one-time setup, the GitHub Actions workflow `.github/workflows/aur.yml` handles everything automatically when you push a tag:
 
-1. Computes `pkgver` from the tag.
-2. Downloads the source tarball and computes its `sha256sum`.
-3. Patches `PKGBUILD` with version and checksum.
-4. Pushes the update to AUR.
+1. Computes the new `pkgver` from the tag.
+2. Downloads the release tarball and computes its `sha256sum`.
+3. Patches `PKGBUILD` with the new version and checksum.
+4. Pushes the updated `PKGBUILD` + `.SRCINFO` to AUR.
 
 ---
 
@@ -67,11 +67,16 @@ The workflow `.github/workflows/aur.yml` handles AUR publishing on release tags:
 ```bash
 cd packaging/aur
 
+# Update version and checksum manually
 PKGVER="2026.03.15"
 sed -i "s/^pkgver=.*/pkgver=$PKGVER/" PKGBUILD
 SHA256=$(curl -fsSL "https://github.com/dseichter/yahac/archive/refs/tags/v${PKGVER//./-}.tar.gz" | sha256sum | cut -d' ' -f1)
 sed -i "s/^sha256sums=.*/sha256sums=('$SHA256')/" PKGBUILD
 
+# Test the build locally (requires an Arch Linux machine or container)
 makepkg -si
+
+# Push to AUR
 makepkg --printsrcinfo > .SRCINFO
+# Then copy PKGBUILD + .SRCINFO to your local AUR clone and push
 ```
