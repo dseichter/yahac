@@ -20,7 +20,7 @@ jobs:
       PACKAGE_NAME: yahac
       WORKSPACE_NAME: yahac
       SPEC_DIR: packaging/rpm
-      RPM_ARTIFACT_GLOB: ~/rpmbuild/RPMS/noarch/*.rpm
+      RPM_ARTIFACT_GLOB: "*.rpm"
     steps:
       - name: Resolve release tag
         id: vars
@@ -73,6 +73,7 @@ jobs:
         run: |
           cp "${{ env.SPEC_DIR }}/${{ env.PACKAGE_NAME }}.spec" ~/rpmbuild/SPECS/
           rpmbuild -bb ~/rpmbuild/SPECS/${{ env.PACKAGE_NAME }}.spec
+          find ~/rpmbuild/RPMS -name "*.rpm" -exec cp {} . \;
 
       - name: Collect RPM artifact
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
