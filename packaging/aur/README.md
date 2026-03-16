@@ -33,10 +33,11 @@ The first time, clone the (empty) AUR repo for your package name:
 git clone ssh://aur@aur.archlinux.org/yahac.git aur-yahac
 cp packaging/aur/PKGBUILD aur-yahac/
 cd aur-yahac
+git switch -c master
 makepkg --printsrcinfo > .SRCINFO
 git add PKGBUILD .SRCINFO
 git commit -m "Initial release"
-git push
+git push -u origin master
 ```
 
 ### 4. Configure GitHub Actions secrets
