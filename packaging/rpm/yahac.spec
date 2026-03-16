@@ -13,6 +13,8 @@ BuildArch:      noarch
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-wheel
+BuildRequires:  python3-build
+BuildRequires:  python3-installer
 
 Requires:       python3 >= 3.12
 Requires:       python3-pyside6
@@ -28,10 +30,10 @@ switches directly from the desktop.
 %autosetup -n yahac-%{tagver}
 
 %build
-%py3_build
+python3 -m build --wheel --no-isolation
 
 %install
-%py3_install
+python3 -m installer --destdir=%{buildroot} dist/*.whl
 install -Dpm0644 packaging/debian/yahac.desktop %{buildroot}%{_datadir}/applications/yahac.desktop
 
 %files
@@ -39,7 +41,7 @@ install -Dpm0644 packaging/debian/yahac.desktop %{buildroot}%{_datadir}/applicat
 %doc README.md
 %{python3_sitelib}/*.py
 %{python3_sitelib}/__pycache__/
-%{python3_sitelib}/*.egg-info/
+%{python3_sitelib}/yahac-*.dist-info/
 %{_bindir}/yahac
 %{_datadir}/applications/yahac.desktop
 

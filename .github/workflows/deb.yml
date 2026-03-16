@@ -53,8 +53,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            debhelper dh-python python3-all python3-setuptools \
-            python3-wheel devscripts fakeroot
+            build-essential debhelper dh-python python3-all \
+            python3-setuptools python3-wheel devscripts fakeroot
 
       - name: Update debian/changelog
         env:

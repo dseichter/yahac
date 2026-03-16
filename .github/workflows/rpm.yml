@@ -54,7 +54,8 @@ jobs:
         run: |
           dnf install -y \
             rpm-build python3-devel python3-setuptools \
-            python3-wheel rpmdevtools curl
+            python3-wheel python3-build python3-installer \
+            rpmdevtools curl
 
       - name: Set up RPM build tree
         run: rpmdev-setuptree
