@@ -34,7 +34,7 @@
 - 📊 **Real-time sensor monitoring** - View current values/states
 - 🔄 **One-click switch control** - Toggle switches instantly
 - 💻 **Computer integration** - Register as HA binary sensor via MQTT
-- 📦 **Linux distributions** - Debian/Ubuntu (.deb), Arch Linux (.pkg.tar.zst), and AppImage
+- 📦 **Linux distributions** - Debian/Ubuntu (.deb), Arch Linux (AUR), RPM (.rpm), and AppImage
 - 🚀 **Portable binaries** - No installation required
 - 🎨 **System tray integration** - Minimal desktop footprint
 
@@ -45,8 +45,11 @@
 # Debian/Ubuntu/Mint - auto-installs dependencies
 sudo apt install ./yahac-*.deb
 
-# Arch/Manjaro - auto-installs dependencies  
-sudo pacman -U yahac-*.pkg.tar.zst
+# Arch/Manjaro (AUR)
+yay -S yahac
+
+# Fedora/openSUSE/RHEL (RPM-based)
+sudo rpm -i yahac-*.rpm
 ```
 
 ### Linux AppImage (Portable)
@@ -63,6 +66,23 @@ sudo pacman -U yahac-*.pkg.tar.zst
 - **Qt6**: `python3-pyside6` (Debian) / `python-pyside6` (Arch)
 - **MQTT**: `python3-paho-mqtt` (Debian) / `python-paho-mqtt` (Arch)
 - **HTTP**: `python3-urllib3` (Debian) / `python-urllib3` (Arch)
+
+## Release packaging checklist (Linux)
+
+This repository publishes Linux artifacts via GitHub Actions:
+
+- Binary release workflow: `.github/workflows/release.yml`
+- AppImage workflow: `.github/workflows/appimage.yml`
+- AUR publish workflow: `.github/workflows/aur.yml`
+- Debian package workflow: `.github/workflows/debian.yml`
+- RPM package workflow: `.github/workflows/rpm.yml`
+
+Before creating a release tag, verify:
+
+1. Tray icon and screenshots are up to date.
+2. Linux binary (Ubuntu) starts correctly.
+3. Debian and RPM source packaging workflows run successfully for the target tag.
+4. Packaging metadata under `packaging/` is synchronized with current dependencies.
 
 > [!NOTE]  
 > Windows Defender may flag the executable as false positive ([#34](https://github.com/dseichter/yahac/issues/34)). See [compatibility guide](https://dseichter.github.io/yahac/compatibility/) for details.

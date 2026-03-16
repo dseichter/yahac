@@ -34,10 +34,10 @@ YAHAC supports multiple Linux distributions through native packages, portable bi
 ### Arch-based Distributions
 | Distribution | Package Type | Status |
 | ------------ | ------------ | ------ |
-| Arch Linux | .pkg.tar.zst | ✅ |
-| Manjaro | .pkg.tar.zst | ✅ |
-| EndeavourOS | .pkg.tar.zst | ✅ |
-| ArcoLinux | .pkg.tar.zst | ✅ |
+| Arch Linux | AUR | ✅ |
+| Manjaro | AUR | ✅ |
+| EndeavourOS | AUR | ✅ |
+| ArcoLinux | AUR | ✅ |
 
 ## Desktop Environment Compatibility
 
@@ -63,7 +63,7 @@ YAHAC supports multiple Linux distributions through native packages, portable bi
 
 ### Recommended Installation
 - **Debian/Ubuntu/Mint**: Use `.deb` packages for best integration
-- **Arch/Manjaro**: Use `.pkg.tar.zst` packages via pacman
+- **Arch/Manjaro**: Use AUR (`yay -S yahac`)
 - **Other distributions**: Use AppImage first, then portable binaries or build from source
 
 If you test yahac on other distributions, please report compatibility at [#36](https://github.com/dseichter/yahac/issues/36).

@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "yahac"
+version = "2026.03.15"
+description = "Yet Another Home Assistant Client"
+readme = "README.md"
+authors = [
+    { name = "Daniel Seichter", email = "daniel.seichter@dseichter.de" }
+]
+license = { file = "LICENSE" }
+requires-python = ">=3.12"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Home Automation",
+    "Topic :: Desktop Environment",
+]
+dependencies = [
+    "PySide6>=6.10.2",
+    "urllib3>=2.6.3",
+    "paho-mqtt>=2.1.0",
+    "ha_mqtt_discoverable>=0.24.1",
+    "pywin32>=311; sys_platform == 'win32'",
+    "win11toast>=0.36.3; sys_platform == 'win32'",
+]
+
+[project.scripts]
+yahac = "yahac:main"
+
+[project.urls]
+Homepage = "https://github.com/dseichter/yahac"
+Documentation = "https://github.com/dseichter/yahac"
+Repository = "https://github.com/dseichter/yahac"
+
+[tool.setuptools]
+py-modules = [
+    "api",
+    "gui_config",
+    "gui_mainframe",
+    "gui_sensors",
+    "gui_traymenu",
+    "helper",
+    "icons",
+    "logging_config",
+    "mqtt",
+    "mqtt_topic",
+    "settings",
+    "yahac",
+]
+
+[tool.setuptools.package-dir]
+"" = "src"

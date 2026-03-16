@@ -15,10 +15,20 @@ jobs:
   build-appimage:
     name: Build AppImage
     runs-on: ubuntu-latest
+    env:
+      PROJECT_NAME: yahac
+      PACKAGE_NAME: yahac
+      WORKSPACE_NAME: yahac
+      ENTRYPOINT: src/yahac.py
+      ICON_FILE: icons/yahac.ico
+      APPDIR_ICON_SOURCE: icons/home_app_logo_48dp_1976D2_FILL0_wght400_GRAD0_opsz48.png
+      APP_ID: io.github.dseichter.yahac
+      APP_DISPLAY_NAME: yahac
+      DESKTOP_FILENAME: io.github.dseichter.yahac.desktop
 
     steps:
       - name: Checkout
-        uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Resolve release tag
         id: vars
@@ -50,7 +60,7 @@ jobs:
 
       - name: Build Linux binary
         run: |
-          pyinstaller --onefile src/yahac.py -n yahac --icon=icons/yahac.ico
+          pyinstaller --onefile "${{ env.ENTRYPOINT }}" -n "${{ env.PACKAGE_NAME }}" --icon="${{ env.ICON_FILE }}"
 
       - name: Prepare AppDir
         run: |
@@ -58,25 +68,25 @@ jobs:
           mkdir -p AppDir/usr/share/applications
           mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
 
-          install -Dm755 dist/yahac AppDir/usr/bin/yahac
-          install -Dm644 icons/home_app_logo_48dp_1976D2_FILL0_wght400_GRAD0_opsz48.png AppDir/usr/share/icons/hicolor/256x256/apps/yahac.png
+          install -Dm755 "dist/${{ env.PACKAGE_NAME }}" "AppDir/usr/bin/${{ env.PACKAGE_NAME }}"
+          install -Dm644 "${{ env.APPDIR_ICON_SOURCE }}" "AppDir/usr/share/icons/hicolor/256x256/apps/${{ env.APP_ID }}.png"
 
-          cat > AppDir/usr/share/applications/yahac.desktop << 'EOF'
+          cat > "AppDir/usr/share/applications/${{ env.DESKTOP_FILENAME }}" << EOF
           [Desktop Entry]
           Type=Application
-          Name=yahac
-          Exec=yahac
-          Icon=yahac
+          Name=${{ env.APP_DISPLAY_NAME }}
+          Exec=${{ env.PACKAGE_NAME }}
+          Icon=${{ env.APP_ID }}
           Categories=Utility;Development;
           Terminal=false
           EOF
 
-          install -Dm644 AppDir/usr/share/applications/yahac.desktop AppDir/yahac.desktop
-          install -Dm644 AppDir/usr/share/icons/hicolor/256x256/apps/yahac.png AppDir/yahac.png
+          install -Dm644 "AppDir/usr/share/applications/${{ env.DESKTOP_FILENAME }}" "AppDir/${{ env.DESKTOP_FILENAME }}"
+          install -Dm644 "AppDir/usr/share/icons/hicolor/256x256/apps/${{ env.APP_ID }}.png" "AppDir/${{ env.APP_ID }}.png"
 
           cat > AppDir/AppRun << 'EOF'
           #!/bin/sh
-          exec "$APPDIR/usr/bin/yahac" "$@"
+          exec "$APPDIR/usr/bin/${{ env.PACKAGE_NAME }}" "$@"
           EOF
           chmod +x AppDir/AppRun
 
@@ -86,16 +96,16 @@ jobs:
         run: |
           wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
           chmod +x appimagetool-x86_64.AppImage
-          ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir "yahac-appimage-${RELEASE_TAG}-x86_64.AppImage"
+          ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir "${{ env.PACKAGE_NAME }}-appimage-${RELEASE_TAG}-x86_64.AppImage"
 
       - name: Upload AppImage artifact
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
-          name: yahac-appimage-${{ steps.vars.outputs.tag }}-x86_64
-          path: yahac-appimage-${{ steps.vars.outputs.tag }}-x86_64.AppImage
+          name: ${{ env.PACKAGE_NAME }}-appimage-${{ steps.vars.outputs.tag }}-x86_64
+          path: ${{ env.PACKAGE_NAME }}-appimage-${{ steps.vars.outputs.tag }}-x86_64.AppImage
 
       - name: Upload AppImage to Release
         uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
         with:
           tag_name: ${{ steps.vars.outputs.tag }}
-          files: yahac-appimage-${{ steps.vars.outputs.tag }}-x86_64.AppImage
+          files: ${{ env.PACKAGE_NAME }}-appimage-${{ steps.vars.outputs.tag }}-x86_64.AppImage

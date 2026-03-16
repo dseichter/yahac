@@ -1,0 +1,87 @@
+name: Build RPM Package
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Existing release tag to rebuild (for manual runs)'
+        required: false
+        type: string
+
+jobs:
+  build-rpm:
+    runs-on: ubuntu-latest
+    container: fedora:42
+    env:
+      PROJECT_NAME: yahac
+      PACKAGE_NAME: yahac
+      WORKSPACE_NAME: yahac
+      SPEC_DIR: packaging/rpm
+      RPM_ARTIFACT_GLOB: ~/rpmbuild/RPMS/noarch/*.rpm
+    steps:
+      - name: Resolve release tag
+        id: vars
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ -n "$INPUT_RELEASE_TAG" ]; then
+            TAG="$INPUT_RELEASE_TAG"
+          fi
+          if [ -z "$TAG" ] || [[ ! "$TAG" =~ ^v[0-9A-Za-z._-]+$ ]]; then
+            echo "A valid tag (e.g. v2026-03-15) is required." >&2
+            exit 1
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ steps.vars.outputs.tag }}
+
+      - name: Derive package version from tag
+        id: version
+        run: |
+          TAG="${{ steps.vars.outputs.tag }}"
+          VERSION="${TAG#v}"
+          VERSION="${VERSION//-/.}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Install build tools
+        run: |
+          dnf install -y \
+            rpm-build python3-devel python3-setuptools \
+            python3-wheel rpmdevtools curl
+
+      - name: Set up RPM build tree
+        run: rpmdev-setuptree
+
+      - name: Update Version in spec file
+        run: |
+          sed -i "s/^Version:.*/Version:        ${{ steps.version.outputs.version }}/" \
+            "${{ env.SPEC_DIR }}/${{ env.PACKAGE_NAME }}.spec"
+
+      - name: Download source tarball
+        run: |
+          spectool -g -R "${{ env.SPEC_DIR }}/${{ env.PACKAGE_NAME }}.spec"
+
+      - name: Build RPM
+        run: |
+          cp "${{ env.SPEC_DIR }}/${{ env.PACKAGE_NAME }}.spec" ~/rpmbuild/SPECS/
+          rpmbuild -bb ~/rpmbuild/SPECS/${{ env.PACKAGE_NAME }}.spec
+
+      - name: Collect RPM artifact
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: ${{ env.PACKAGE_NAME }}-${{ steps.version.outputs.version }}-1.noarch.rpm
+          path: ${{ env.RPM_ARTIFACT_GLOB }}
+
+      - name: Attach RPM to GitHub Release
+        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
+        with:
+          tag_name: ${{ steps.vars.outputs.tag }}
+          files: ${{ env.RPM_ARTIFACT_GLOB }}
+
