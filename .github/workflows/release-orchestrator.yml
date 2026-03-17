@@ -1,0 +1,71 @@
+name: Release Orchestrator
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Existing release tag to build/publish (e.g. v2026-03-16-beta5)'
+        required: false
+        type: string
+
+jobs:
+  resolve-release-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.vars.outputs.tag }}
+    steps:
+      - name: Resolve release tag
+        id: vars
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          TAG=""
+          if [ "$EVENT_NAME" = "push" ] && [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            TAG="${GITHUB_REF_NAME}"
+          fi
+          if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ -n "$INPUT_RELEASE_TAG" ]; then
+            TAG="$INPUT_RELEASE_TAG"
+          fi
+          if [ -z "$TAG" ] || [[ ! "$TAG" =~ ^v[0-9A-Za-z._-]+$ ]]; then
+            echo "A valid tag (e.g. v2026-03-15) is required." >&2
+            exit 1
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+  smoke:
+    needs: resolve-release-tag
+    uses: ./.github/workflows/package-smoke.yml
+    with:
+      release_tag: ${{ needs.resolve-release-tag.outputs.tag }}
+
+  release:
+    needs: [resolve-release-tag, smoke]
+    uses: ./.github/workflows/release.yml
+    with:
+      release_tag: ${{ needs.resolve-release-tag.outputs.tag }}
+    secrets: inherit
+
+  publish-aur:
+    needs: [resolve-release-tag, smoke]
+    uses: ./.github/workflows/aur.yml
+    with:
+      release_tag: ${{ needs.resolve-release-tag.outputs.tag }}
+    secrets: inherit
+
+  build-deb:
+    needs: [resolve-release-tag, smoke]
+    uses: ./.github/workflows/deb.yml
+    with:
+      release_tag: ${{ needs.resolve-release-tag.outputs.tag }}
+    secrets: inherit
+
+  build-rpm:
+    needs: [resolve-release-tag, smoke]
+    uses: ./.github/workflows/rpm.yml
+    with:
+      release_tag: ${{ needs.resolve-release-tag.outputs.tag }}
+    secrets: inherit

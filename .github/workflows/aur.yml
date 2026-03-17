@@ -1,13 +1,15 @@
 name: Publish to AUR
 
 on:
-  push:
-    tags:
-      - 'v*'
   workflow_dispatch:
     inputs:
       release_tag:
         description: 'Existing release tag to rebuild (for manual runs)'
+        required: false
+        type: string
+  workflow_call:
+    inputs:
+      release_tag:
         required: false
         type: string
 
@@ -26,9 +28,12 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           INPUT_RELEASE_TAG: ${{ inputs.release_tag }}
         run: |
-          TAG="${GITHUB_REF_NAME}"
-          if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ -n "$INPUT_RELEASE_TAG" ]; then
+          TAG=""
+          if { [ "$EVENT_NAME" = "workflow_dispatch" ] || [ "$EVENT_NAME" = "workflow_call" ]; } && [ -n "$INPUT_RELEASE_TAG" ]; then
             TAG="$INPUT_RELEASE_TAG"
+          fi
+          if [ "$EVENT_NAME" = "push" ] && [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            TAG="${GITHUB_REF_NAME}"
           fi
           if [ -z "$TAG" ] || [[ ! "$TAG" =~ ^v[0-9A-Za-z._-]+$ ]]; then
             echo "A valid tag (e.g. v2026-03-15) is required." >&2
