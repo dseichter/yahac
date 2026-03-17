@@ -29,24 +29,29 @@ jobs:
       DESKTOP_FILENAME: io.github.dseichter.yahac.desktop
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
       - name: Resolve release tag
         id: vars
         env:
           EVENT_NAME: ${{ github.event_name }}
           INPUT_RELEASE_TAG: ${{ inputs.release_tag }}
         run: |
-          TAG="${GITHUB_REF_NAME}"
+          TAG=""
           if { [ "$EVENT_NAME" = "workflow_dispatch" ] || [ "$EVENT_NAME" = "workflow_call" ]; } && [ -n "$INPUT_RELEASE_TAG" ]; then
             TAG="$INPUT_RELEASE_TAG"
+          fi
+          if [ "$EVENT_NAME" = "push" ] && [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            TAG="${GITHUB_REF_NAME}"
           fi
           if [ -z "$TAG" ] || [[ ! "$TAG" =~ ^v[0-9A-Za-z._-]+$ ]]; then
             echo "A valid tag (e.g. v2026.3.1) is required." >&2
             exit 1
           fi
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ steps.vars.outputs.tag }}
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
