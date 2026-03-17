@@ -69,3 +69,10 @@ jobs:
     with:
       release_tag: ${{ needs.resolve-release-tag.outputs.tag }}
     secrets: inherit
+
+  build-appimage:
+    needs: [resolve-release-tag, smoke]
+    uses: ./.github/workflows/appimage.yml
+    with:
+      release_tag: ${{ needs.resolve-release-tag.outputs.tag }}
+    secrets: inherit

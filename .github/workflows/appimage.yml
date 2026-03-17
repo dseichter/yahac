@@ -1,9 +1,11 @@
 name: Build AppImage
 
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_call:
+    inputs:
+      release_tag:
+        required: false
+        type: string
   workflow_dispatch:
     inputs:
       release_tag:
@@ -37,7 +39,7 @@ jobs:
           INPUT_RELEASE_TAG: ${{ inputs.release_tag }}
         run: |
           TAG="${GITHUB_REF_NAME}"
-          if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ -n "$INPUT_RELEASE_TAG" ]; then
+          if { [ "$EVENT_NAME" = "workflow_dispatch" ] || [ "$EVENT_NAME" = "workflow_call" ]; } && [ -n "$INPUT_RELEASE_TAG" ]; then
             TAG="$INPUT_RELEASE_TAG"
           fi
           if [ -z "$TAG" ] || [[ ! "$TAG" =~ ^v[0-9A-Za-z._-]+$ ]]; then
