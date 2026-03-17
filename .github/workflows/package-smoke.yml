@@ -1,0 +1,183 @@
+name: Package Smoke Tests
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Optional release tag to test (e.g. v2026-03-16-beta5)'
+        required: false
+        type: string
+
+jobs:
+  resolve-ref:
+    runs-on: ubuntu-latest
+    outputs:
+      checkout_ref: ${{ steps.resolve.outputs.checkout_ref }}
+      artifact_label: ${{ steps.resolve.outputs.artifact_label }}
+      release_tag: ${{ steps.resolve.outputs.release_tag }}
+      release_version: ${{ steps.resolve.outputs.release_version }}
+    steps:
+      - name: Resolve checkout ref and optional release metadata
+        id: resolve
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          TAG=""
+
+          if [ "$EVENT_NAME" = "push" ] && [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            TAG="${GITHUB_REF_NAME}"
+          fi
+
+          if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ -n "$INPUT_RELEASE_TAG" ]; then
+            TAG="$INPUT_RELEASE_TAG"
+          fi
+
+          if [ -n "$TAG" ] && [[ ! "$TAG" =~ ^v[0-9A-Za-z._-]+$ ]]; then
+            echo "A valid tag (e.g. v2026-03-15) is required." >&2
+            exit 1
+          fi
+
+          CHECKOUT_REF="${TAG:-$GITHUB_SHA}"
+          VERSION=""
+          ARTIFACT_LABEL=""
+          if [ -n "$TAG" ]; then
+            VERSION="${TAG#v}"
+            VERSION="${VERSION//-/.}"
+            ARTIFACT_LABEL="$TAG"
+          else
+            ARTIFACT_LABEL="${GITHUB_SHA:0:12}"
+          fi
+
+          echo "checkout_ref=$CHECKOUT_REF" >> "$GITHUB_OUTPUT"
+          echo "artifact_label=$ARTIFACT_LABEL" >> "$GITHUB_OUTPUT"
+          echo "release_tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "release_version=$VERSION" >> "$GITHUB_OUTPUT"
+
+  smoke-aur:
+    runs-on: ubuntu-latest
+    needs: resolve-ref
+    container: archlinux:base-devel
+    env:
+      PKGBUILD_PATH: packaging/aur/PKGBUILD
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ needs.resolve-ref.outputs.checkout_ref }}
+
+      - name: Install AUR build dependencies
+        run: |
+          pacman -Syu --noconfirm --needed \
+            base-devel git python python-build python-installer python-wheel \
+            pyside6 python-urllib3 python-paho-mqtt curl
+
+      - name: Patch PKGBUILD for selected release tag
+        if: ${{ needs.resolve-ref.outputs.release_tag != '' }}
+        run: |
+          URL="https://github.com/${{ github.repository }}/archive/${{ needs.resolve-ref.outputs.release_tag }}.tar.gz"
+          SHA256=$(curl -fsSL "$URL" | sha256sum | cut -d' ' -f1)
+          sed -i "s/^pkgver=.*/pkgver=${{ needs.resolve-ref.outputs.release_version }}/" "${{ env.PKGBUILD_PATH }}"
+          sed -i "s/^sha256sums=.*/sha256sums=('${SHA256}')/" "${{ env.PKGBUILD_PATH }}"
+
+      - name: Build AUR package
+        run: |
+          useradd -m builder
+          chown -R builder:builder "$GITHUB_WORKSPACE"
+          su builder -c "cd '$GITHUB_WORKSPACE/packaging/aur' && makepkg --cleanbuild --force --noconfirm"
+
+      - name: Upload AUR build artifact
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: aur-package-${{ needs.resolve-ref.outputs.artifact_label }}
+          path: |
+            packaging/aur/*.pkg.tar.*
+            packaging/aur/*.pkg.tar.*.sig
+          if-no-files-found: error
+
+  smoke-deb:
+    runs-on: ubuntu-latest
+    needs: resolve-ref
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ needs.resolve-ref.outputs.checkout_ref }}
+
+      - name: Install Debian build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential debhelper dh-python pybuild-plugin-pyproject \
+            python3-all python3-setuptools python3-wheel devscripts fakeroot
+
+      - name: Prepare debian source
+        run: |
+          cp -r packaging/debian debian
+          chmod +x debian/rules
+
+      - name: Update debian/changelog for selected release tag
+        if: ${{ needs.resolve-ref.outputs.release_version != '' }}
+        env:
+          DEBEMAIL: daniel.seichter@dseichter.de
+          DEBFULLNAME: Daniel Seichter
+        run: |
+          dch --newversion "${{ needs.resolve-ref.outputs.release_version }}-1" \
+              --distribution unstable \
+              "Smoke test build for ${{ needs.resolve-ref.outputs.release_tag }}."
+
+      - name: Build Debian package
+        run: |
+          dpkg-buildpackage -b -us -uc -rfakeroot
+
+      - name: Upload Debian build artifact
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: deb-package-${{ needs.resolve-ref.outputs.artifact_label }}
+          path: |
+            ../*.deb
+          if-no-files-found: error
+
+  smoke-rpm:
+    runs-on: ubuntu-latest
+    needs: resolve-ref
+    container: fedora:42
+    env:
+      SPEC_FILE: packaging/rpm/yahac.spec
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ needs.resolve-ref.outputs.checkout_ref }}
+
+      - name: Install RPM build dependencies
+        run: |
+          dnf install -y \
+            rpm-build python3-devel python3-setuptools \
+            python3-wheel python3-build python3-installer \
+            rpmdevtools curl
+
+      - name: Set up RPM build tree
+        run: rpmdev-setuptree
+
+      - name: Update spec version for selected release tag
+        if: ${{ needs.resolve-ref.outputs.release_version != '' }}
+        run: |
+          sed -i "s/^Version:.*/Version:        ${{ needs.resolve-ref.outputs.release_version }}/" "${{ env.SPEC_FILE }}"
+
+      - name: Download source tarball
+        run: |
+          spectool -g -R "${{ env.SPEC_FILE }}"
+
+      - name: Build RPM package
+        run: |
+          cp "${{ env.SPEC_FILE }}" ~/rpmbuild/SPECS/
+          rpmbuild -bb ~/rpmbuild/SPECS/yahac.spec
+
+      - name: Upload RPM build artifact
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: rpm-package-${{ needs.resolve-ref.outputs.artifact_label }}
+          path: |
+            /github/home/rpmbuild/RPMS/**/*.rpm
+          if-no-files-found: error
