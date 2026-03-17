@@ -73,7 +73,7 @@ jobs:
       - name: Install AUR build dependencies
         run: |
           pacman -Syu --noconfirm --needed \
-            base-devel git python python-build python-installer python-wheel \
+            base-devel git python python-build python-installer python-wheel python-setuptools \
             pyside6 python-urllib3 python-paho-mqtt curl
 
       - name: Patch PKGBUILD for selected release tag
