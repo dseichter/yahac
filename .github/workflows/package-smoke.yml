@@ -132,13 +132,13 @@ jobs:
       - name: Build Debian package
         run: |
           dpkg-buildpackage -b -us -uc -rfakeroot
+          find .. -maxdepth 1 -name '*.deb' -exec cp {} . \;
 
       - name: Upload Debian build artifact
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: deb-package-${{ needs.resolve-ref.outputs.artifact_label }}
-          path: |
-            ../*.deb
+          path: '*.deb'
           if-no-files-found: error
 
   smoke-rpm:

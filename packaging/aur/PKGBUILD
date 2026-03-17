@@ -14,12 +14,12 @@ source=("$pkgname-$pkgver.tar.gz::https://github.com/dseichter/yahac/archive/v${
 sha256sums=('493b2c2d05db588d98b67dcb97d360421136e1245b3ee79ec6efb2851d0cc049')
 
 build() {
-    cd "$pkgname-$pkgver"
+    cd "$pkgname-${pkgver//./-}"
     python -m build --wheel --no-isolation
 }
 
 package() {
-    cd "$pkgname-$pkgver"
+    cd "$pkgname-${pkgver//./-}"
     python -m installer --destdir="$pkgdir" dist/*.whl
 
     install -Dm755 src/yahac.py "$pkgdir/usr/bin/yahac"
