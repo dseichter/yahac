@@ -63,7 +63,7 @@ sudo rpm -i yahac-*.rpm
 3. Run: `./yahac-*`
 
 ### Dependencies
-- **Qt6**: `python3-pyside6` (Debian) / `python-pyside6` (Arch)
+- **Qt6**: `python3-pyside6` (Debian) / `pyside6` (Arch)
 - **MQTT**: `python3-paho-mqtt` (Debian) / `python-paho-mqtt` (Arch)
 - **HTTP**: `python3-urllib3` (Debian) / `python-urllib3` (Arch)
 

@@ -51,7 +51,7 @@ jobs:
       - name: Compute source tarball sha256sum
         id: checksum
         run: |
-          URL="https://github.com/${{ github.repository_owner }}/${{ env.PROJECT_NAME }}/archive/refs/tags/${{ steps.vars.outputs.tag }}.tar.gz"
+          URL="https://github.com/${{ github.repository }}/archive/${{ steps.vars.outputs.tag }}.tar.gz"
           SHA256=$(curl -fsSL "$URL" | sha256sum | cut -d' ' -f1)
           echo "sha256=$SHA256" >> "$GITHUB_OUTPUT"
 
