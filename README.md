@@ -74,7 +74,7 @@ This repository publishes Linux artifacts via GitHub Actions:
 - Binary release workflow: `.github/workflows/release.yml`
 - AppImage workflow: `.github/workflows/appimage.yml`
 - AUR publish workflow: `.github/workflows/aur.yml`
-- Debian package workflow: `.github/workflows/debian.yml`
+- Debian package workflow: `.github/workflows/deb.yml`
 - RPM package workflow: `.github/workflows/rpm.yml`
 
 Before creating a release tag, verify:

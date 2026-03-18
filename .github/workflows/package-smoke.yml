@@ -90,6 +90,25 @@ jobs:
           chown -R builder:builder "$GITHUB_WORKSPACE"
           su builder -c "cd '$GITHUB_WORKSPACE/packaging/aur' && makepkg --cleanbuild --force --noconfirm"
 
+      - name: Assert AUR launcher entrypoint
+        run: |
+          PKG_FILE=$(ls -1t packaging/aur/*.pkg.tar.* | head -n 1)
+          FIRST_LINE=$(bsdtar -xOf "$PKG_FILE" usr/bin/yahac | head -n 1)
+          if [[ ! "$FIRST_LINE" =~ ^\#\!.*python ]]; then
+            echo "Unexpected launcher shebang in $PKG_FILE: $FIRST_LINE" >&2
+            exit 1
+          fi
+
+      - name: Assert AUR desktop assets
+        run: |
+          PKG_FILE=$(ls -1t packaging/aur/*.pkg.tar.* | head -n 1)
+          bsdtar -tf "$PKG_FILE" | grep -qx 'usr/share/applications/io.github.dseichter.yahac.desktop'
+          bsdtar -tf "$PKG_FILE" | grep -qx 'usr/share/icons/hicolor/48x48/apps/io.github.dseichter.yahac.png'
+          if bsdtar -xOf "$PKG_FILE" usr/share/applications/io.github.dseichter.yahac.desktop | grep -Eq '^NoDisplay\s*=\s*true\s*$'; then
+            echo "Desktop file is hidden (NoDisplay=true) in $PKG_FILE" >&2
+            exit 1
+          fi
+
       - name: Upload AUR build artifact
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
@@ -134,6 +153,32 @@ jobs:
           dpkg-buildpackage -b -us -uc -rfakeroot
           find .. -maxdepth 1 -name '*.deb' -exec cp {} . \;
 
+      - name: Assert Debian launcher entrypoint
+        run: |
+          DEB_FILE=$(ls -1t ./*.deb | head -n 1)
+          FIRST_LINE=$(dpkg-deb --fsys-tarfile "$DEB_FILE" | tar -xOf - ./usr/bin/yahac 2>/dev/null | head -n 1)
+          if [ -z "$FIRST_LINE" ]; then
+            FIRST_LINE=$(dpkg-deb --fsys-tarfile "$DEB_FILE" | tar -xOf - usr/bin/yahac 2>/dev/null | head -n 1)
+          fi
+          if [[ ! "$FIRST_LINE" =~ ^\#\!.*python ]]; then
+            echo "Unexpected launcher shebang in $DEB_FILE: $FIRST_LINE" >&2
+            exit 1
+          fi
+
+      - name: Assert Debian desktop assets
+        run: |
+          DEB_FILE=$(ls -1t ./*.deb | head -n 1)
+          dpkg-deb --fsys-tarfile "$DEB_FILE" | tar -tf - | grep -Eq '^\./?usr/share/applications/io.github.dseichter.yahac.desktop$'
+          dpkg-deb --fsys-tarfile "$DEB_FILE" | tar -tf - | grep -Eq '^\./?usr/share/icons/hicolor/48x48/apps/io.github.dseichter.yahac.png$'
+          DESKTOP_CONTENT=$(dpkg-deb --fsys-tarfile "$DEB_FILE" | tar -xOf - ./usr/share/applications/io.github.dseichter.yahac.desktop 2>/dev/null || true)
+          if [ -z "$DESKTOP_CONTENT" ]; then
+            DESKTOP_CONTENT=$(dpkg-deb --fsys-tarfile "$DEB_FILE" | tar -xOf - usr/share/applications/io.github.dseichter.yahac.desktop 2>/dev/null)
+          fi
+          if echo "$DESKTOP_CONTENT" | grep -Eq '^NoDisplay\s*=\s*true\s*$'; then
+            echo "Desktop file is hidden (NoDisplay=true) in $DEB_FILE" >&2
+            exit 1
+          fi
+
       - name: Upload Debian build artifact
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
@@ -175,6 +220,32 @@ jobs:
         run: |
           cp "${{ env.SPEC_FILE }}" ~/rpmbuild/SPECS/
           rpmbuild -bb ~/rpmbuild/SPECS/yahac.spec
+
+      - name: Assert RPM launcher entrypoint
+        run: |
+          RPM_FILE=$(find /github/home/rpmbuild/RPMS -name '*.rpm' | head -n 1)
+          FIRST_LINE=$(rpm2cpio "$RPM_FILE" | cpio -iv --to-stdout './usr/bin/yahac' 2>/dev/null | head -n 1)
+          if [ -z "$FIRST_LINE" ]; then
+            FIRST_LINE=$(rpm2cpio "$RPM_FILE" | cpio -iv --to-stdout 'usr/bin/yahac' 2>/dev/null | head -n 1)
+          fi
+          if [[ ! "$FIRST_LINE" =~ ^\#\!.*python ]]; then
+            echo "Unexpected launcher shebang in $RPM_FILE: $FIRST_LINE" >&2
+            exit 1
+          fi
+
+      - name: Assert RPM desktop assets
+        run: |
+          RPM_FILE=$(find /github/home/rpmbuild/RPMS -name '*.rpm' | head -n 1)
+          rpm2cpio "$RPM_FILE" | cpio -it 2>/dev/null | grep -Eq '^\./?usr/share/applications/io.github.dseichter.yahac.desktop$'
+          rpm2cpio "$RPM_FILE" | cpio -it 2>/dev/null | grep -Eq '^\./?usr/share/icons/hicolor/48x48/apps/io.github.dseichter.yahac.png$'
+          DESKTOP_CONTENT=$(rpm2cpio "$RPM_FILE" | cpio -iv --to-stdout './usr/share/applications/io.github.dseichter.yahac.desktop' 2>/dev/null | cat)
+          if [ -z "$DESKTOP_CONTENT" ]; then
+            DESKTOP_CONTENT=$(rpm2cpio "$RPM_FILE" | cpio -iv --to-stdout 'usr/share/applications/io.github.dseichter.yahac.desktop' 2>/dev/null | cat)
+          fi
+          if echo "$DESKTOP_CONTENT" | grep -Eq '^NoDisplay\s*=\s*true\s*$'; then
+            echo "Desktop file is hidden (NoDisplay=true) in $RPM_FILE" >&2
+            exit 1
+          fi
 
       - name: Upload RPM build artifact
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0

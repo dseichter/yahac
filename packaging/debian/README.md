@@ -5,8 +5,8 @@
 The `packaging/debian/` directory contains the standard Debian packaging metadata.  
 It produces a binary `.deb` for Debian, Ubuntu, and all their derivatives.
 
-Desktop integration files for YAHAC are provided through the Debian packaging files in this directory,
-including `yahac.desktop`.
+Desktop integration files for YAHAC are declared in `pyproject.toml` via setuptools
+`data-files`, including `packaging/debian/io.github.dseichter.yahac.desktop`.
 
 ### Version strategy
 

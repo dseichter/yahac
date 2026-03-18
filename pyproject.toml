@@ -59,3 +59,7 @@ py-modules = [
 
 [tool.setuptools.package-dir]
 "" = "src"
+
+[tool.setuptools.data-files]
+"share/applications" = ["packaging/debian/io.github.dseichter.yahac.desktop"]
+"share/icons/hicolor/48x48/apps" = ["icons/io.github.dseichter.yahac.png"]

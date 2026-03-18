@@ -34,7 +34,6 @@ python3 -m build --wheel --no-isolation
 
 %install
 python3 -m installer --destdir=%{buildroot} dist/*.whl
-install -Dpm0644 packaging/debian/yahac.desktop %{buildroot}%{_datadir}/applications/yahac.desktop
 
 %files
 %license LICENSE
@@ -43,7 +42,8 @@ install -Dpm0644 packaging/debian/yahac.desktop %{buildroot}%{_datadir}/applicat
 %{python3_sitelib}/__pycache__/
 %{python3_sitelib}/yahac-*.dist-info/
 %{_bindir}/yahac
-%{_datadir}/applications/yahac.desktop
+%{_datadir}/applications/io.github.dseichter.yahac.desktop
+%{_datadir}/icons/hicolor/48x48/apps/io.github.dseichter.yahac.png
 
 %changelog
 * Sun Mar 15 2026 Daniel Seichter <daniel.seichter@dseichter.de> - 2026.03.15-1
