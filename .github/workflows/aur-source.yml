@@ -20,7 +20,7 @@ jobs:
       PROJECT_NAME: yahac
       PACKAGE_NAME: yahac
       WORKSPACE_NAME: yahac
-      PKGBUILD_PATH: packaging/aur/PKGBUILD.source
+      PKGBUILD_PATH: packaging/aur/PKGBUILD
     steps:
       - name: Resolve release tag
         id: vars
@@ -44,6 +44,9 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ steps.vars.outputs.tag }}
+
+      - name: Prepare source PKGBUILD
+        run: cp packaging/aur/PKGBUILD.source packaging/aur/PKGBUILD
 
       - name: Derive package version from tag
         id: version
