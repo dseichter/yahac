@@ -4,6 +4,11 @@
 
 The `PKGBUILD` in this directory defines the Arch Linux User Repository (AUR) package for YAHAC (`yahac-bin`).
 
+## Package variants
+
+- `yahac` (source): builds from source and uses Arch/Python system dependencies.
+- `yahac-bin` (binary): installs prebuilt release binaries and is recommended when source dependencies are unavailable in Arch repos.
+
 ### Version strategy
 
 The `pkgver` field is **automatically derived from the git tag** by the CI workflow.

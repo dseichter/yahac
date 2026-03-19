@@ -49,7 +49,14 @@ jobs:
       release_tag: ${{ needs.resolve-release-tag.outputs.tag }}
     secrets: inherit
 
-  publish-aur:
+  publish-aur-source:
+    needs: [resolve-release-tag, smoke]
+    uses: ./.github/workflows/aur-source.yml
+    with:
+      release_tag: ${{ needs.resolve-release-tag.outputs.tag }}
+    secrets: inherit
+
+  publish-aur-bin:
     needs: [resolve-release-tag, smoke, release]
     uses: ./.github/workflows/aur.yml
     with:

@@ -1,4 +1,4 @@
-name: Publish to AUR (bin)
+name: Publish to AUR (source)
 
 on:
   workflow_dispatch:
@@ -14,14 +14,13 @@ on:
         type: string
 
 jobs:
-  publish-aur:
+  publish-aur-source:
     runs-on: ubuntu-latest
     env:
       PROJECT_NAME: yahac
-      PACKAGE_NAME: yahac-bin
-      PACKAGE_BASENAME: yahac
+      PACKAGE_NAME: yahac
       WORKSPACE_NAME: yahac
-      PKGBUILD_PATH: packaging/aur/PKGBUILD
+      PKGBUILD_PATH: packaging/aur/PKGBUILD.source
     steps:
       - name: Resolve release tag
         id: vars
@@ -54,28 +53,17 @@ jobs:
           VERSION="${VERSION//-/.}"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Ensure GitHub Release exists for tag
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          TAG="${{ steps.vars.outputs.tag }}"
-          API_URL="https://api.github.com/repos/${{ github.repository }}/releases/tags/${TAG}"
-          if ! curl -fsSL -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "$API_URL" >/dev/null; then
-            echo "GitHub Release for ${TAG} not found. Run release workflow first, then rerun AUR publish." >&2
-            exit 1
-          fi
-
-      - name: Compute binary sha256sum
+      - name: Compute source tarball sha256sum
         id: checksum
         run: |
-          URL="https://github.com/${{ github.repository }}/releases/download/${{ steps.vars.outputs.tag }}/${{ env.PACKAGE_BASENAME }}-ubuntu-24-04-${{ steps.vars.outputs.tag }}"
+          URL="https://github.com/${{ github.repository }}/archive/${{ steps.vars.outputs.tag }}.tar.gz"
           SHA256=$(curl -fsSL "$URL" | sha256sum | cut -d' ' -f1)
           echo "sha256=$SHA256" >> "$GITHUB_OUTPUT"
 
       - name: Patch PKGBUILD with new version and checksum
         run: |
           sed -i "s/^pkgver=.*/pkgver=${{ steps.version.outputs.version }}/" "${{ env.PKGBUILD_PATH }}"
-          sed -i "s/^sha256sums=.*/sha256sums=('${{ steps.checksum.outputs.sha256 }}' 'SKIP' 'SKIP')/" "${{ env.PKGBUILD_PATH }}"
+          sed -i "s/^sha256sums=.*/sha256sums=('${{ steps.checksum.outputs.sha256 }}')/" "${{ env.PKGBUILD_PATH }}"
 
       - name: Publish to AUR
         uses: KSXGitHub/github-actions-deploy-aur@2ac5a4c1d7035885d46b10e3193393be8460b6f1 # v4.1.1
