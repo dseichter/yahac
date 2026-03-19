@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `PKGBUILD` in this directory defines the Arch Linux User Repository (AUR) package for YAHAC.
+The `PKGBUILD` in this directory defines the Arch Linux User Repository (AUR) package for YAHAC (`yahac-bin`).
 
 ### Version strategy
 
@@ -30,9 +30,9 @@ _My Account → SSH Public Key_.
 The first time, clone the (empty) AUR repo for your package name:
 
 ```bash
-git clone ssh://aur@aur.archlinux.org/yahac.git aur-yahac
-cp packaging/aur/PKGBUILD aur-yahac/
-cd aur-yahac
+git clone ssh://aur@aur.archlinux.org/yahac-bin.git aur-yahac-bin
+cp packaging/aur/PKGBUILD aur-yahac-bin/
+cd aur-yahac-bin
 git switch -c master
 makepkg --printsrcinfo > .SRCINFO
 git add PKGBUILD .SRCINFO
@@ -57,7 +57,7 @@ Add the following secrets to your GitHub repository (_Settings → Secrets and v
 After the one-time setup, the GitHub Actions workflow `.github/workflows/aur.yml` handles everything automatically when you push a tag:
 
 1. Computes the new `pkgver` from the tag.
-2. Downloads the release tarball and computes its `sha256sum`.
+2. Downloads the prebuilt Linux binary release asset and computes its `sha256sum`.
 3. Patches `PKGBUILD` with the new version and checksum.
 4. Pushes the updated `PKGBUILD` + `.SRCINFO` to AUR.
 
@@ -71,8 +71,8 @@ cd packaging/aur
 # Update version and checksum manually
 PKGVER="2026.03.15"
 sed -i "s/^pkgver=.*/pkgver=$PKGVER/" PKGBUILD
-SHA256=$(curl -fsSL "https://github.com/dseichter/yahac/archive/refs/tags/v${PKGVER//./-}.tar.gz" | sha256sum | cut -d' ' -f1)
-sed -i "s/^sha256sums=.*/sha256sums=('$SHA256')/" PKGBUILD
+SHA256=$(curl -fsSL "https://github.com/dseichter/yahac/releases/download/v${PKGVER//./-}/yahac-ubuntu-24-04-v${PKGVER//./-}" | sha256sum | cut -d' ' -f1)
+sed -i "s/^sha256sums=.*/sha256sums=('$SHA256' 'SKIP' 'SKIP')/" PKGBUILD
 
 # Test the build locally (requires an Arch Linux machine or container)
 makepkg -si
