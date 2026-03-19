@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Name=YAHAC
+Name=yahac
 Comment=Yet Another Home Assistant Client
 Exec=yahac
 Icon=io.github.dseichter.yahac
