@@ -22,7 +22,8 @@ Depends:
  ${misc:Depends},
  python3-pyside6,
  python3-urllib3,
- python3-paho-mqtt
+ python3-paho-mqtt,
+ python3-ha-mqtt-discoverable
 Description: Yet Another Home Assistant Client
  yahac is a desktop application that provides a system tray interface
  for Home Assistant. It allows users to monitor sensors and control
