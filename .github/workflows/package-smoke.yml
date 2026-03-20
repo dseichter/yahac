@@ -80,7 +80,7 @@ jobs:
       - name: Patch PKGBUILD for selected release tag
         if: ${{ needs.resolve-ref.outputs.release_tag != '' }}
         run: |
-          URL="https://github.com/${{ github.repository }}/releases/download/${{ needs.resolve-ref.outputs.release_tag }}/${{ env.PACKAGE_BASENAME }}-linux-x86_64-${{ needs.resolve-ref.outputs.release_tag }}"
+          URL="https://github.com/${{ github.repository }}/releases/download/${{ needs.resolve-ref.outputs.release_tag }}/${{ env.PACKAGE_BASENAME }}-archlinux-x86_64-${{ needs.resolve-ref.outputs.release_tag }}"
           SHA256=$(curl -fsSL "$URL" | sha256sum | cut -d' ' -f1)
           sed -i "s/^pkgver=.*/pkgver=${{ needs.resolve-ref.outputs.release_version }}/" "${{ env.PKGBUILD_PATH }}"
           sed -i "s/^sha256sums=.*/sha256sums=('${SHA256}' 'SKIP' 'SKIP')/" "${{ env.PKGBUILD_PATH }}"

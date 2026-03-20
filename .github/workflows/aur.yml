@@ -68,7 +68,7 @@ jobs:
       - name: Compute binary sha256sum
         id: checksum
         run: |
-          URL="https://github.com/${{ github.repository }}/releases/download/${{ steps.vars.outputs.tag }}/${{ env.PACKAGE_BASENAME }}-linux-x86_64-${{ steps.vars.outputs.tag }}"
+          URL="https://github.com/${{ github.repository }}/releases/download/${{ steps.vars.outputs.tag }}/${{ env.PACKAGE_BASENAME }}-archlinux-x86_64-${{ steps.vars.outputs.tag }}"
           SHA256=$(curl -fsSL "$URL" | sha256sum | cut -d' ' -f1)
           echo "sha256=$SHA256" >> "$GITHUB_OUTPUT"
 
