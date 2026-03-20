@@ -4,7 +4,7 @@ paho-mqtt==2.1.0
 pyinstaller==6.19.0
 pywin32==311; sys_platform == "win32"
 win11toast==0.36.3; sys_platform == "win32"
-ha_mqtt_discoverable==0.24.1
+ha_mqtt_discoverable==0.24.2
 
 # Linux system dependencies (install via package manager):
 # Ubuntu/Debian: sudo apt install libxcb-xinerama0 libxcb-cursor0 libxkbcommon-x11-0
