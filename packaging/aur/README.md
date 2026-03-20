@@ -76,7 +76,7 @@ cd packaging/aur
 # Update version and checksum manually
 PKGVER="2026.03.15"
 sed -i "s/^pkgver=.*/pkgver=$PKGVER/" PKGBUILD
-SHA256=$(curl -fsSL "https://github.com/dseichter/yahac/releases/download/v${PKGVER//./-}/yahac-ubuntu-24-04-v${PKGVER//./-}" | sha256sum | cut -d' ' -f1)
+SHA256=$(curl -fsSL "https://github.com/dseichter/yahac/releases/download/v${PKGVER//./-}/yahac-linux-x86_64-v${PKGVER//./-}" | sha256sum | cut -d' ' -f1)
 sed -i "s/^sha256sums=.*/sha256sums=('$SHA256' 'SKIP' 'SKIP')/" PKGBUILD
 
 # Test the build locally (requires an Arch Linux machine or container)
