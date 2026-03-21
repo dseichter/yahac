@@ -20,4 +20,5 @@ package() {
     install -Dm755 "yahac" "$pkgdir/usr/bin/yahac"
     install -Dm644 "io.github.dseichter.yahac.desktop" "$pkgdir/usr/share/applications/io.github.dseichter.yahac.desktop"
     install -Dm644 "io.github.dseichter.yahac.png" "$pkgdir/usr/share/icons/hicolor/48x48/apps/io.github.dseichter.yahac.png"
+    install -Dm644 "io.github.dseichter.yahac.png" "$pkgdir/usr/share/pixmaps/io.github.dseichter.yahac.png"
 }

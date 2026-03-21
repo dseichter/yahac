@@ -44,6 +44,7 @@ python3 -m pip install --no-deps --no-build-isolation --root=%{buildroot} dist/*
 %{_bindir}/yahac
 %{_datadir}/applications/io.github.dseichter.yahac.desktop
 %{_datadir}/icons/hicolor/48x48/apps/io.github.dseichter.yahac.png
+%{_datadir}/pixmaps/io.github.dseichter.yahac.png
 
 %changelog
 * Sun Mar 15 2026 Daniel Seichter <daniel.seichter@dseichter.de> - 2026.03.15-1

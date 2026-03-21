@@ -8,7 +8,8 @@ YAHAC can be installed in multiple ways depending on your operating system and p
 Download pre-built binaries from the latest [release](https://github.com/dseichter/yahac/releases):
 
 - **Windows**: `yahac-v*.exe` - No installation required
-- **Linux**: `yahac-ubuntu-*` - Portable executable
+- **Linux (generic)**: `yahac-linux-x86_64-v*` - Portable executable
+- **Linux (Arch build)**: `yahac-archlinux-x86_64-v*` - Portable executable
 - **Linux (AppImage)**: `yahac-appimage-v*-x86_64.AppImage` - Portable executable for many distributions
 
 ### AppImage (Linux)
@@ -24,15 +25,15 @@ chmod +x yahac-appimage-v*-x86_64.AppImage
 #### Debian/Ubuntu/Linux Mint
 ```bash
 # Download .deb package from releases
-wget https://github.com/dseichter/yahac/releases/latest/download/yahac-debian-12-v*.deb
-sudo dpkg -i yahac-debian-12-v*.deb
+wget https://github.com/dseichter/yahac/releases/latest/download/yahac_*_all.deb
+sudo dpkg -i yahac_*_all.deb
 sudo apt-get install -f  # Fix dependencies if needed
 ```
 
 #### Arch Linux/Manjaro
 ```bash
 # Install from AUR
-yay -S yahac
+yay -S yahac-bin
 ```
 
 #### Build from Source (Any Linux)

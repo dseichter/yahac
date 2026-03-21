@@ -46,7 +46,7 @@
 sudo apt install ./yahac-*.deb
 
 # Arch/Manjaro (AUR)
-yay -S yahac
+yay -S yahac-bin
 
 # Fedora/openSUSE/RHEL (RPM-based)
 sudo rpm -i yahac-*.rpm
@@ -59,13 +59,14 @@ sudo rpm -i yahac-*.rpm
 
 ### Portable Binaries
 1. Download from [**Releases**](https://github.com/dseichter/yahac/releases)
-2. Make executable: `chmod +x yahac-*`
-3. Run: `./yahac-*`
+2. Make executable: `chmod +x yahac-linux-x86_64-v*`
+3. Run: `./yahac-linux-x86_64-v*`
 
 ### Dependencies
 - **Qt6**: `python3-pyside6` (Debian) / `pyside6` (Arch)
 - **MQTT**: `python3-paho-mqtt` (Debian) / `python-paho-mqtt` (Arch)
 - **HTTP**: `python3-urllib3` (Debian) / `python-urllib3` (Arch)
+- **HA MQTT discovery**: `python3-ha-mqtt-discoverable` (Debian) / `python-ha-mqtt-discoverable` (Arch)
 
 ## Release packaging checklist (Linux)
 
@@ -80,7 +81,7 @@ This repository publishes Linux artifacts via GitHub Actions:
 Before creating a release tag, verify:
 
 1. Tray icon and screenshots are up to date.
-2. Linux binary (Ubuntu) starts correctly.
+2. Linux binaries (`linux-x86_64` and `archlinux-x86_64`) start correctly.
 3. Debian and RPM source packaging workflows run successfully for the target tag.
 4. Packaging metadata under `packaging/` is synchronized with current dependencies.
 
