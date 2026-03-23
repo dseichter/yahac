@@ -43,6 +43,7 @@ python3 -m pip install --no-deps --no-build-isolation --root=%{buildroot} dist/*
 %{python3_sitelib}/yahac-*.dist-info/
 %{_bindir}/yahac
 %{_datadir}/applications/io.github.dseichter.yahac.desktop
+%{_datadir}/metainfo/io.github.dseichter.yahac.metainfo.xml
 %{_datadir}/icons/hicolor/48x48/apps/io.github.dseichter.yahac.png
 %{_datadir}/pixmaps/io.github.dseichter.yahac.png
 
