@@ -52,8 +52,8 @@ Add the following secrets to your GitHub repository (_Settings → Secrets and v
 | Secret | Value |
 |---|---|
 | `AUR_SSH_PRIVATE_KEY` | The private SSH key paired with the public key on AUR |
-| `AUR_USERNAME` | Your AUR username |
-| `AUR_EMAIL` | Your AUR email address |
+
+The AUR commit author name and email are regular workflow inputs with defaults. Adjust them in `.github/workflows/aur.yml` and `.github/workflows/aur-source.yml` if needed.
 
 ---
 

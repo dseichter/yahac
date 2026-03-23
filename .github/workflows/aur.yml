@@ -12,6 +12,16 @@ on:
         required: false
         default: '1'
         type: string
+      commit_username:
+        description: 'Git author name for AUR commits'
+        required: false
+        default: 'Daniel Seichter'
+        type: string
+      commit_email:
+        description: 'Git author email for AUR commits'
+        required: false
+        default: 'daniel.seichter@dseichter.de'
+        type: string
   workflow_call:
     inputs:
       release_tag:
@@ -21,6 +31,17 @@ on:
         required: false
         default: '1'
         type: string
+      commit_username:
+        required: false
+        default: 'Daniel Seichter'
+        type: string
+      commit_email:
+        required: false
+        default: 'daniel.seichter@dseichter.de'
+        type: string
+    secrets:
+      AUR_SSH_PRIVATE_KEY:
+        required: true
 
 jobs:
   publish-aur:
@@ -104,7 +125,7 @@ jobs:
         with:
           pkgname: ${{ env.PACKAGE_NAME }}
           pkgbuild: ${{ env.PKGBUILD_PATH }}
-          commit_username: ${{ secrets.AUR_USERNAME }}
-          commit_email: ${{ secrets.AUR_EMAIL }}
+          commit_username: ${{ inputs.commit_username }}
+          commit_email: ${{ inputs.commit_email }}
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
           commit_message: "Update to ${{ steps.vars.outputs.tag }}-${{ steps.pkgrel.outputs.pkgrel }}"
