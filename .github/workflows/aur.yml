@@ -7,10 +7,19 @@ on:
         description: 'Existing release tag to rebuild (for manual runs)'
         required: false
         type: string
+      pkgrel:
+        description: 'Arch package release number for packaging-only updates'
+        required: false
+        default: '1'
+        type: string
   workflow_call:
     inputs:
       release_tag:
         required: false
+        type: string
+      pkgrel:
+        required: false
+        default: '1'
         type: string
 
 jobs:
@@ -54,6 +63,18 @@ jobs:
           VERSION="${VERSION//-/.}"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
+      - name: Resolve package release number
+        id: pkgrel
+        env:
+          INPUT_PKGREL: ${{ inputs.pkgrel }}
+        run: |
+          PKGREL="${INPUT_PKGREL:-1}"
+          if [[ ! "$PKGREL" =~ ^[1-9][0-9]*$ ]]; then
+            echo "A positive integer pkgrel is required." >&2
+            exit 1
+          fi
+          echo "pkgrel=$PKGREL" >> "$GITHUB_OUTPUT"
+
       - name: Ensure GitHub Release exists for tag
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -75,6 +96,7 @@ jobs:
       - name: Patch PKGBUILD with new version and checksum
         run: |
           sed -i "s/^pkgver=.*/pkgver=${{ steps.version.outputs.version }}/" "${{ env.PKGBUILD_PATH }}"
+          sed -i "s/^pkgrel=.*/pkgrel=${{ steps.pkgrel.outputs.pkgrel }}/" "${{ env.PKGBUILD_PATH }}"
           sed -i "s/^sha256sums=.*/sha256sums=('${{ steps.checksum.outputs.sha256 }}' 'SKIP' 'SKIP')/" "${{ env.PKGBUILD_PATH }}"
 
       - name: Publish to AUR
@@ -85,4 +107,4 @@ jobs:
           commit_username: ${{ secrets.AUR_USERNAME }}
           commit_email: ${{ secrets.AUR_EMAIL }}
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
-          commit_message: "Update to ${{ steps.vars.outputs.tag }}"
+          commit_message: "Update to ${{ steps.vars.outputs.tag }}-${{ steps.pkgrel.outputs.pkgrel }}"

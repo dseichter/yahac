@@ -73,10 +73,13 @@ sudo rpm -i yahac-*.rpm
 This repository publishes Linux artifacts via GitHub Actions:
 
 - Binary release workflow: `.github/workflows/release.yml`
+- Release orchestrator: `.github/workflows/release-orchestrator.yml`
 - AppImage workflow: `.github/workflows/appimage.yml`
 - AUR publish workflow: `.github/workflows/aur.yml`
 - Debian package workflow: `.github/workflows/deb.yml`
 - RPM package workflow: `.github/workflows/rpm.yml`
+
+For an AUR packaging-only hotfix of an existing release, run `.github/workflows/release-orchestrator.yml` manually with `publish_mode=aur-hotfix`, the existing `release_tag`, and an incremented `aur_pkgrel` such as `2`.
 
 Before creating a release tag, verify:
 

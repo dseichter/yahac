@@ -10,40 +10,77 @@ on:
         description: 'Existing release tag to build/publish (e.g. v2026-03-16-beta5)'
         required: false
         type: string
+      publish_mode:
+        description: 'Choose full release publishing or an AUR packaging-only hotfix'
+        required: true
+        default: full
+        type: choice
+        options:
+          - full
+          - aur-hotfix
+      aur_pkgrel:
+        description: 'Arch package release number used for AUR packaging-only hotfixes'
+        required: false
+        default: '1'
+        type: string
 
 jobs:
   resolve-release-tag:
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.vars.outputs.tag }}
+      publish_mode: ${{ steps.vars.outputs.publish_mode }}
+      aur_pkgrel: ${{ steps.vars.outputs.aur_pkgrel }}
     steps:
       - name: Resolve release tag
         id: vars
         env:
           EVENT_NAME: ${{ github.event_name }}
           INPUT_RELEASE_TAG: ${{ inputs.release_tag }}
+          INPUT_PUBLISH_MODE: ${{ inputs.publish_mode }}
+          INPUT_AUR_PKGREL: ${{ inputs.aur_pkgrel }}
         run: |
           TAG=""
+          PUBLISH_MODE="full"
+          AUR_PKGREL="1"
           if [ "$EVENT_NAME" = "push" ] && [ "${GITHUB_REF_TYPE}" = "tag" ]; then
             TAG="${GITHUB_REF_NAME}"
           fi
           if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ -n "$INPUT_RELEASE_TAG" ]; then
             TAG="$INPUT_RELEASE_TAG"
           fi
+          if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ -n "$INPUT_PUBLISH_MODE" ]; then
+            PUBLISH_MODE="$INPUT_PUBLISH_MODE"
+          fi
+          if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ -n "$INPUT_AUR_PKGREL" ]; then
+            AUR_PKGREL="$INPUT_AUR_PKGREL"
+          fi
           if [ -z "$TAG" ] || [[ ! "$TAG" =~ ^v[0-9A-Za-z._-]+$ ]]; then
             echo "A valid tag (e.g. v2026-03-15) is required." >&2
             exit 1
           fi
+          if [[ ! "$PUBLISH_MODE" =~ ^(full|aur-hotfix)$ ]]; then
+            echo "publish_mode must be one of: full, aur-hotfix." >&2
+            exit 1
+          fi
+          if [[ ! "$AUR_PKGREL" =~ ^[1-9][0-9]*$ ]]; then
+            echo "aur_pkgrel must be a positive integer." >&2
+            exit 1
+          fi
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "publish_mode=$PUBLISH_MODE" >> "$GITHUB_OUTPUT"
+          echo "aur_pkgrel=$AUR_PKGREL" >> "$GITHUB_OUTPUT"
 
   smoke:
     needs: resolve-release-tag
+    if: ${{ needs.resolve-release-tag.outputs.publish_mode == 'full' }}
     uses: ./.github/workflows/package-smoke.yml
     with:
       release_tag: ${{ needs.resolve-release-tag.outputs.tag }}
 
   release:
     needs: [resolve-release-tag, smoke]
+    if: ${{ needs.resolve-release-tag.outputs.publish_mode == 'full' }}
     uses: ./.github/workflows/release.yml
     with:
       release_tag: ${{ needs.resolve-release-tag.outputs.tag }}
@@ -51,6 +88,7 @@ jobs:
 
   publish-aur-source:
     needs: [resolve-release-tag, smoke]
+    if: ${{ needs.resolve-release-tag.outputs.publish_mode == 'full' }}
     uses: ./.github/workflows/aur-source.yml
     with:
       release_tag: ${{ needs.resolve-release-tag.outputs.tag }}
@@ -58,13 +96,16 @@ jobs:
 
   publish-aur-bin:
     needs: [resolve-release-tag, smoke, release]
+    if: ${{ always() && needs.resolve-release-tag.result == 'success' && (needs.resolve-release-tag.outputs.publish_mode == 'aur-hotfix' || (needs.smoke.result == 'success' && needs.release.result == 'success')) }}
     uses: ./.github/workflows/aur.yml
     with:
       release_tag: ${{ needs.resolve-release-tag.outputs.tag }}
+      pkgrel: ${{ needs.resolve-release-tag.outputs.aur_pkgrel }}
     secrets: inherit
 
   build-deb:
     needs: [resolve-release-tag, smoke, release]
+    if: ${{ needs.resolve-release-tag.outputs.publish_mode == 'full' }}
     uses: ./.github/workflows/deb.yml
     with:
       release_tag: ${{ needs.resolve-release-tag.outputs.tag }}
@@ -72,6 +113,7 @@ jobs:
 
   build-rpm:
     needs: [resolve-release-tag, smoke, release]
+    if: ${{ needs.resolve-release-tag.outputs.publish_mode == 'full' }}
     uses: ./.github/workflows/rpm.yml
     with:
       release_tag: ${{ needs.resolve-release-tag.outputs.tag }}
@@ -79,6 +121,7 @@ jobs:
 
   build-appimage:
     needs: [resolve-release-tag, smoke, release]
+    if: ${{ needs.resolve-release-tag.outputs.publish_mode == 'full' }}
     uses: ./.github/workflows/appimage.yml
     with:
       release_tag: ${{ needs.resolve-release-tag.outputs.tag }}

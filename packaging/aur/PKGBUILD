@@ -10,15 +10,15 @@ options=('!debug')
 depends=('glibc')
 optdepends=('libnotify: Desktop notifications')
 source=(
-    "yahac::https://github.com/dseichter/yahac/releases/download/v${pkgver//./-}/yahac-archlinux-x86_64-v${pkgver//./-}"
-    "io.github.dseichter.yahac.desktop::https://raw.githubusercontent.com/dseichter/yahac/v${pkgver//./-}/packaging/debian/io.github.dseichter.yahac.desktop"
-    "io.github.dseichter.yahac.png::https://raw.githubusercontent.com/dseichter/yahac/v${pkgver//./-}/icons/io.github.dseichter.yahac.png"
+    "yahac-v${pkgver//./-}::https://github.com/dseichter/yahac/releases/download/v${pkgver//./-}/yahac-archlinux-x86_64-v${pkgver//./-}"
+    "io.github.dseichter.yahac-v${pkgver//./-}.desktop::https://raw.githubusercontent.com/dseichter/yahac/v${pkgver//./-}/packaging/debian/io.github.dseichter.yahac.desktop"
+    "io.github.dseichter.yahac-v${pkgver//./-}.png::https://raw.githubusercontent.com/dseichter/yahac/v${pkgver//./-}/icons/io.github.dseichter.yahac.png"
 )
 sha256sums=('493b2c2d05db588d98b67dcb97d360421136e1245b3ee79ec6efb2851d0cc049' 'SKIP' 'SKIP')
 
 package() {
-    install -Dm755 "yahac" "$pkgdir/usr/bin/yahac"
-    install -Dm644 "io.github.dseichter.yahac.desktop" "$pkgdir/usr/share/applications/io.github.dseichter.yahac.desktop"
-    install -Dm644 "io.github.dseichter.yahac.png" "$pkgdir/usr/share/icons/hicolor/48x48/apps/io.github.dseichter.yahac.png"
-    install -Dm644 "io.github.dseichter.yahac.png" "$pkgdir/usr/share/pixmaps/io.github.dseichter.yahac.png"
+    install -Dm755 "yahac-v${pkgver//./-}" "$pkgdir/usr/bin/yahac"
+    install -Dm644 "io.github.dseichter.yahac-v${pkgver//./-}.desktop" "$pkgdir/usr/share/applications/io.github.dseichter.yahac.desktop"
+    install -Dm644 "io.github.dseichter.yahac-v${pkgver//./-}.png" "$pkgdir/usr/share/icons/hicolor/48x48/apps/io.github.dseichter.yahac.png"
+    install -Dm644 "io.github.dseichter.yahac-v${pkgver//./-}.png" "$pkgdir/usr/share/pixmaps/io.github.dseichter.yahac.png"
 }

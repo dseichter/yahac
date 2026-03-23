@@ -12,6 +12,8 @@ Update versions explicitly in packaging files as needed:
 
 Release tags (`v*`) drive CI packaging and release automation.
 
+For an AUR packaging-only hotfix without a new upstream release, trigger `.github/workflows/release-orchestrator.yml` manually with the existing tag, `publish_mode=aur-hotfix`, and a bumped `aur_pkgrel`.
+
 ## Dependency Updates
 
 Update dependencies where they are consumed:

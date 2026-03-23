@@ -66,6 +66,10 @@ After the one-time setup, the GitHub Actions workflow `.github/workflows/aur.yml
 3. Patches `PKGBUILD` with the new version and checksum.
 4. Pushes the updated `PKGBUILD` + `.SRCINFO` to AUR.
 
+The local filenames in `source=()` are intentionally versioned. This prevents `makepkg` from reusing a stale cached file from an older release under the same local name, which would otherwise trigger a checksum mismatch.
+
+For packaging-only fixes without a new upstream tag, rerun the AUR workflow manually with the existing `release_tag` and a higher `pkgrel` such as `2`.
+
 ---
 
 ## Manual release (without CI)
@@ -75,12 +79,20 @@ cd packaging/aur
 
 # Update version and checksum manually
 PKGVER="2026.03.15"
+PKGREL="1"
 sed -i "s/^pkgver=.*/pkgver=$PKGVER/" PKGBUILD
+sed -i "s/^pkgrel=.*/pkgrel=$PKGREL/" PKGBUILD
 SHA256=$(curl -fsSL "https://github.com/dseichter/yahac/releases/download/v${PKGVER//./-}/yahac-archlinux-x86_64-v${PKGVER//./-}" | sha256sum | cut -d' ' -f1)
 sed -i "s/^sha256sums=.*/sha256sums=('$SHA256' 'SKIP' 'SKIP')/" PKGBUILD
 
 # Test the build locally (requires an Arch Linux machine or container)
 makepkg -si
+
+# If you previously built another release locally, clear old cached sources once
+rm -f yahac-v* io.github.dseichter.yahac-v*.desktop io.github.dseichter.yahac-v*.png
+
+# For a packaging-only hotfix of an existing upstream release, bump pkgrel
+# Example: v2026-03-21 with the same binary but corrected packaging => PKGREL="2"
 
 # Push to AUR
 makepkg --printsrcinfo > .SRCINFO
