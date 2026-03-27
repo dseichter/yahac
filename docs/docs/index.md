@@ -5,10 +5,11 @@ See current values/states of your sensors or turn on/off your switches. And ever
 
 ![yahac in tray Icon](assets/screenshots/yahac_traymenu_with_entities.png)
 
-[![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/dseichter/yahac/total)](https://github.com/dseichter/yahac/releases)
-![GitHub License](https://img.shields.io/github/license/dseichter/yahac)
-[![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/dseichter/yahac)](https://github.com/dseichter/yahac/issues)
-[![GitHub Issues or Pull Requests](https://img.shields.io/github/issues-pr/dseichter/yahac)](https://github.com/dseichter/yahac/pulls)
+[![GitHub Downloads (latest release assets)](https://badgen.net/github/assets-dl/dseichter/yahac)](https://github.com/dseichter/yahac/releases)
+[![GitHub Stars](https://badgen.net/github/stars/dseichter/yahac)](https://github.com/dseichter/yahac/stargazers)
+![GitHub License](https://badgen.net/github/license/dseichter/yahac)
+[![GitHub Open Issues](https://badgen.net/github/open-issues/dseichter/yahac)](https://github.com/dseichter/yahac/issues)
+[![GitHub Open Pull Requests](https://badgen.net/github/open-prs/dseichter/yahac)](https://github.com/dseichter/yahac/pulls)
 
 
 ## Features

@@ -7,9 +7,10 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/github/v/release/dseichter/yahac?style=flat-square" alt="Release">
-  <img src="https://img.shields.io/github/downloads/dseichter/yahac/total?style=flat-square" alt="Downloads">
-  <img src="https://img.shields.io/github/license/dseichter/yahac?style=flat-square" alt="License">
+  <img src="https://badgen.net/github/release/dseichter/yahac" alt="Release">
+  <img src="https://badgen.net/github/assets-dl/dseichter/yahac" alt="Downloads (latest release assets)">
+  <img src="https://badgen.net/github/stars/dseichter/yahac" alt="Stars">
+  <img src="https://badgen.net/github/license/dseichter/yahac" alt="License">
 </p>
 
 <p align="center">
