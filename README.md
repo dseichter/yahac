@@ -7,10 +7,10 @@
 </p>
 
 <p align="center">
-  <img src="https://badgen.net/github/release/dseichter/yahac" alt="Release">
-  <img src="https://badgen.net/github/assets-dl/dseichter/yahac" alt="Downloads (latest release assets)">
-  <img src="https://badgen.net/github/stars/dseichter/yahac" alt="Stars">
-  <img src="https://badgen.net/github/license/dseichter/yahac" alt="License">
+  <img src="https://img.shields.io/github/v/release/dseichter/yahac" alt="Release">
+  <img src="https://img.shields.io/github/downloads/dseichter/yahac/total" alt="Downloads">
+  <img src="https://img.shields.io/github/stars/dseichter/yahac" alt="Stars">
+  <img src="https://img.shields.io/github/license/dseichter/yahac" alt="License">
 </p>
 
 <p align="center">
@@ -22,7 +22,6 @@
 <p align="center">
 <img src="https://github.com/dseichter/yahac/actions/workflows/ruff.yml/badge.svg" alt="ruff">
 <img src="https://github.com/dseichter/yahac/actions/workflows/bandit.yml/badge.svg" alt="bandit">
-<img src="https://github.com/dseichter/yahac/actions/workflows/trivy.yml/badge.svg" alt="trivy">
 <a href="https://sonarcloud.io/summary/new_code?id=dseichter_yahac"><img src="https://sonarcloud.io/api/project_badges/measure?project=dseichter_yahac&metric=alert_status" alt="Quality Gate Status"></a>
 </p>
 
