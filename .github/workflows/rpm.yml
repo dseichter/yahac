@@ -16,7 +16,7 @@ on:
 jobs:
   build-rpm:
     runs-on: ubuntu-latest
-    container: fedora:45
+    container: fedora:46
     env:
       PROJECT_NAME: yahac
       PACKAGE_NAME: yahac
