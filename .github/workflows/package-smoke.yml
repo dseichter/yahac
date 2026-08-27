@@ -193,7 +193,7 @@ jobs:
   smoke-rpm:
     runs-on: ubuntu-latest
     needs: resolve-ref
-    container: fedora:45
+    container: fedora:46
     env:
       SPEC_FILE: packaging/rpm/yahac.spec
     steps:
