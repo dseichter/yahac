@@ -1,6 +1,6 @@
+import json
 import os
 import sys
-import json
 from unittest.mock import MagicMock, patch
 
 # Ensure src is importable
@@ -30,10 +30,11 @@ def test_check_for_new_release_ignores_prereleases_and_detects_new():
     mock_pm = MagicMock()
     mock_pm.request.return_value = mock_response
 
-    with patch('helper.urllib3.PoolManager', return_value=mock_pm):
-        # pretend current VERSION is older than v2026-03-16
-        with patch.object(helper, 'VERSION', 'v2026-03-15'):
-            assert helper.check_for_new_release() is True
+    with (
+        patch('helper.urllib3.PoolManager', return_value=mock_pm),
+        patch.object(helper, 'VERSION', 'v2026-03-15'),
+    ):
+        assert helper.check_for_new_release() is True
 
 
 def test_check_for_new_release_no_stable_found_returns_false():
@@ -49,6 +50,8 @@ def test_check_for_new_release_no_stable_found_returns_false():
     mock_pm = MagicMock()
     mock_pm.request.return_value = mock_response
 
-    with patch('helper.urllib3.PoolManager', return_value=mock_pm):
-        with patch.object(helper, 'VERSION', 'v2026-03-15'):
-            assert helper.check_for_new_release() is False
+    with (
+        patch('helper.urllib3.PoolManager', return_value=mock_pm),
+        patch.object(helper, 'VERSION', 'v2026-03-15'),
+    ):
+        assert helper.check_for_new_release() is False

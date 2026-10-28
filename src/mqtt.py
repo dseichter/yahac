@@ -13,20 +13,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+import json
+import logging
+import threading
+
+import paho.mqtt.client as mqtt
 from ha_mqtt_discoverable import Settings
 from ha_mqtt_discoverable.sensors import BinarySensor, BinarySensorInfo
 
 import helper
-import settings as yahac_settings
-import mqtt_topic
-
-import paho.mqtt.client as mqtt
-import threading
-
-import json
-
 import logging_config  # Setup the logging  # noqa: F401
-import logging
+import mqtt_topic
+import settings as yahac_settings
 
 logger = logging.getLogger(__name__)
 

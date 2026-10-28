@@ -14,8 +14,8 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import json
-import tempfile
 import os
+import tempfile
 
 CONFIGFILE = os.path.join(os.path.expanduser('~'), '.yahac', 'config.json')
 os.makedirs(os.path.dirname(CONFIGFILE), exist_ok=True)

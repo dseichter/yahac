@@ -13,20 +13,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-from PySide6.QtWidgets import QSystemTrayIcon, QMenu, QMessageBox, QApplication
-from PySide6.QtGui import QAction, QCursor
-from PySide6.QtCore import QTimer
+import logging
+import webbrowser
 
+from PySide6.QtCore import QTimer
+from PySide6.QtGui import QAction, QCursor
+from PySide6.QtWidgets import QApplication, QMenu, QMessageBox, QSystemTrayIcon
+
+import api
 import gui_config
 import gui_sensors
-import settings
 import helper
-import webbrowser
-import api
-import icons as icons
-
+import icons
 import logging_config  # Setup the logging  # noqa: F401
-import logging
+import settings
 
 logger = logging.getLogger(__name__)
 

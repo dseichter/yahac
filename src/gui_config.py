@@ -15,20 +15,31 @@
 
 import os
 import sys
-from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QGridLayout, 
-                               QLabel, QLineEdit, QPushButton, QCheckBox, QComboBox,
-                               QMessageBox)
-from PySide6.QtCore import Qt
 
-import settings
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QDialog,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QMessageBox,
+    QPushButton,
+    QVBoxLayout,
+)
+
 import api
-import icons as icons
+import icons
+import settings
 
 if sys.platform.startswith("win"):
     import win32com.client
 
-import logging_config  # Setup the logging  # noqa: F401
 import logging
+
+import logging_config  # Setup the logging  # noqa: F401
 
 logger = logging.getLogger(__name__)
 

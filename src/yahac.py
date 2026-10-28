@@ -13,19 +13,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+import logging
 import sys
-from PySide6.QtWidgets import QApplication, QMessageBox
+import threading
+import webbrowser
+
 from PySide6.QtCore import QTimer
+from PySide6.QtWidgets import QApplication, QMessageBox
 
 import gui_mainframe
-import settings
 import helper
-import mqtt
-import webbrowser
-import threading
-
 import logging_config  # Setup the logging  # noqa: F401
-import logging
+import mqtt
+import settings
 
 logger = logging.getLogger(__name__)
 
@@ -43,16 +43,15 @@ class YahacApp(QApplication):
         settings.create_config()
         
         # Check for update if enabled
-        if settings.load_value_from_json_file("checkupdate"):
-            if helper.check_for_new_release():
-                reply = QMessageBox.question(
-                    None,
-                    "Update available",
-                    "A new release is available.\nWould you like to open the download page?",
-                    QMessageBox.Yes | QMessageBox.No
-                )
-                if reply == QMessageBox.Yes:
-                    webbrowser.open_new_tab(helper.RELEASES)
+        if settings.load_value_from_json_file("checkupdate") and helper.check_for_new_release():
+            reply = QMessageBox.question(
+                None,
+                "Update available",
+                "A new release is available.\nWould you like to open the download page?",
+                QMessageBox.Yes | QMessageBox.No
+            )
+            if reply == QMessageBox.Yes:
+                webbrowser.open_new_tab(helper.RELEASES)
 
         self.main_window = gui_mainframe.MainWindow()
         
@@ -64,7 +63,7 @@ class YahacApp(QApplication):
                 self.timer = QTimer()
                 self.timer.timeout.connect(self.on_timer)
                 self.timer.start(5000)  # Check every 5 seconds
-            except Exception as e:
+            except RuntimeError as e:
                 QMessageBox.critical(
                     None,
                     "MQTT Error",

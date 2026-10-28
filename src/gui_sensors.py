@@ -13,16 +13,26 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLabel, 
-                               QComboBox, QPushButton, QTableWidget, QTableWidgetItem,
-                               QInputDialog, QHeaderView, QLineEdit)
+import logging
+
+from PySide6.QtWidgets import (
+    QComboBox,
+    QDialog,
+    QHBoxLayout,
+    QHeaderView,
+    QInputDialog,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QTableWidget,
+    QTableWidgetItem,
+    QVBoxLayout,
+)
 
 import api
-import settings
-import icons as icons
-
+import icons
 import logging_config  # Setup the logging  # noqa: F401
-import logging
+import settings
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +91,7 @@ class SensorSelectorDialog(QDialog):
         filter_layout = QHBoxLayout()
         filter_layout.addWidget(QLabel("Domain:"))
         self.domain_filter = QComboBox()
-        domains = ['All'] + sorted(set(e.split('.')[0] for e in self.entity_list))
+        domains = ['All'] + sorted({e.split('.')[0] for e in self.entity_list})
         self.domain_filter.addItems(domains)
         self.domain_filter.currentTextChanged.connect(self.filter_entities)
         filter_layout.addWidget(self.domain_filter)

@@ -13,14 +13,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+import json
+import logging
+
 import urllib3
 
-import settings
 import helper
-import json
-
 import logging_config  # Setup the logging  # noqa: F401
-import logging
+import settings
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ def check_connection(url, token):
             return "Your url and token are valid."
         else:
             return f"API returned status code: {response.status}"
-    except Exception as e:
+    except urllib3.exceptions.HTTPError as e:
         return f"Error checking API status: {e}"
 
 
@@ -68,7 +68,7 @@ def check_api_status():
             return "API is up and running"
         else:
             return f"API returned status code: {response.status}"
-    except Exception as e:
+    except urllib3.exceptions.HTTPError as e:
         return f"Error checking API status: {e}"
 
 
@@ -85,7 +85,11 @@ def list_states():
             return json.loads(response.data.decode("utf-8"))
         else:
             return f"API returned status code: {response.status}"
-    except Exception as e:
+    except (
+        urllib3.exceptions.HTTPError,
+        UnicodeDecodeError,
+        json.JSONDecodeError,
+    ) as e:
         return f"Error checking API status: {e}"
 
 
@@ -108,7 +112,11 @@ def get_entity_state(entity_id):
             return f"{current_state} {unit_of_measurement}".strip()
         else:
             return f"API returned status code: {response.status}"
-    except Exception as e:
+    except (
+        urllib3.exceptions.HTTPError,
+        UnicodeDecodeError,
+        json.JSONDecodeError,
+    ) as e:
         return f"Error checking API status: {e}"
 
 
@@ -126,10 +134,7 @@ def set_entity_switch_state(entity_id, state):
     payload = {"entity_id": entity_id}
     try:
         response = http.request("POST", url, headers=headers, body=json.dumps(payload))
-        if response.status == 200:
-            return True
-        else:
-            return False
-    except Exception as e:
+        return response.status == 200
+    except (urllib3.exceptions.HTTPError, TypeError) as e:
         logger.error(f"Error setting switch state: {e}")
         return False

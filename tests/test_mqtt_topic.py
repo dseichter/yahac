@@ -1,6 +1,7 @@
+import logging
 import os
 import sys
-import logging
+from unittest.mock import patch
 
 # Ensure src is importable
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
@@ -15,7 +16,7 @@ def test_process_command_run_script_logs(caplog):
         caplog: Pytest log capture fixture
     """
     caplog.set_level(logging.INFO)
-    mqtt_topic.process_command('run_script', {'path': '/tmp/test.sh'})
+    mqtt_topic.process_command('run_script', {'path': '/tmp/test.sh'}, None)
     assert any('Running script' in r.message for r in caplog.records)
 
 
@@ -26,7 +27,7 @@ def test_process_command_unknown_logs(caplog):
         caplog: Pytest log capture fixture
     """
     caplog.set_level(logging.WARNING)
-    mqtt_topic.process_command('unknown_cmd', None)
+    mqtt_topic.process_command('unknown_cmd', None, None)
     assert any('Unknown command' in r.message or 'Unknown command' in r.getMessage() for r in caplog.records)
 
 
@@ -37,5 +38,6 @@ def test_process_notification_logs(caplog):
         caplog: Pytest log capture fixture
     """
     caplog.set_level(logging.INFO)
-    mqtt_topic.process_notification('Hello world')
+    with patch('win11toast.toast'):
+        mqtt_topic.process_notification('Hello world', None)
     assert any('Processing notification' in r.message for r in caplog.records)

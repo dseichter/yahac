@@ -13,10 +13,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-import urllib3
-import socket
 import json
 import logging
+import socket
+
+import urllib3
+
 from packaging import version
 
 VERSION = "v2026-03-21"
@@ -26,6 +28,8 @@ WEBSITE = 'https://dseichter.github.io/yahac/'
 NAME = 'yahac'
 LICENCE = 'GPL-3.0'
 AUTHOR = 'Daniel Seichter'
+
+logger = logging.getLogger(__name__)
 
 
 def normalize_version_tag(tag: str) -> str:
@@ -51,9 +55,17 @@ def check_for_new_release():
                 latest_version = release.get('tag_name')
                 return version.parse(normalize_version_tag(latest_version)) > version.parse(normalize_version_tag(VERSION))
         return False  # No stable release found
-    except Exception as e:
-        logging.error(f"Error checking for new release: {e}")
+    except (
+        urllib3.exceptions.HTTPError,
+        UnicodeDecodeError,
+        json.JSONDecodeError,
+        version.InvalidVersion,
+        AttributeError,
+        TypeError,
+    ) as e:
+        logger.error(f"Error checking for new release: {e}")
         return False
+
 
 def get_computer_name():
     """Get sanitized computer hostname.

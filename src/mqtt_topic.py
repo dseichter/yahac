@@ -13,10 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-import logging
-import subprocess # nosec B404
 import json
+import logging
 import os
+import subprocess  # nosec B404
+
 import settings
 
 logger = logging.getLogger(__name__)
@@ -95,14 +96,14 @@ def process_notification(payload, secstring):
 
     # be able to show JSON payloads nicely formatted
     try:
-        payload = json.dumps(payload, default=str, indent=2)
+        notification = json.dumps(payload, default=str, indent=2)
     except (TypeError, ValueError):
-        payload = payload
+        notification = payload
 
     if os.name == "posix":
-        subprocess.Popen(['notify-send', 'yahac', str(payload), '-t', '5000'])  # nosec B603 B607
+        subprocess.Popen(['notify-send', 'yahac', str(notification), '-t', '5000'])  # nosec B603 B607
     elif os.name == "nt":
         from win11toast import toast
-        toast('yahac', str(payload), duration=5)
+        toast('yahac', str(notification), duration=5)
     else:
         logger.warning("Notifications are only supported on Linux (posix) and Windows (nt).")
